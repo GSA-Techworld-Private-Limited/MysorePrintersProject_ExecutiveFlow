@@ -1,0 +1,50 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_dashboard"
+        android:icon="@drawable/ic_dashboard"
+        android:title="Dashboard" />
+    <item
+        android:id="@+id/nav_attendance"
+        android:icon="@drawable/ic_attendance"
+        android:title="Attendance &amp; Location" />
+    <item
+        android:id="@+id/nav_work_summary"
+        android:icon="@drawable/ic_work_summary"
+        android:title="Daily Working Summary" />
+    <item
+        android:id="@+id/nav_collections_performance"
+        android:icon="@drawable/ic_collections_performance"
+        android:title="Collections Performance" />
+    <item
+        android:id="@+id/nav_daily_work_summary"
+        android:icon="@drawable/ic_daily_work_summary"
+        android:title="Daily Work Summary" />
+    <item
+        android:id="@+id/nav_collection_summary"
+        android:icon="@drawable/ic_collection_summary"
+        android:title="Collection Summary" />
+    <item
+        android:id="@+id/nav_data_reporting"
+        android:icon="@drawable/ic_data_reporting"
+        android:title="Data Reporting">
+        <menu>
+            <item
+                android:id="@+id/nav_supply_reports"
+                android:title="Supply Reports" />
+            <item
+                android:id="@+id/nav_net_sales_report"
+                android:title="Net Sales Report" />
+            <item
+                android:id="@+id/nav_collections_report"
+                android:title="Collections Report" />
+        </menu>
+    </item>
+    <item
+        android:id="@+id/nav_notifications"
+        android:icon="@drawable/ic_notifications"
+        android:title="Notifications" />
+    <item
+        android:id="@+id/nav_logout"
+        android:icon="@drawable/ic_logout"
+        android:title="Logout" />
+</menu>

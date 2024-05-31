@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    app:startDestination="@id/nav_dashboard">
+
+    <fragment
+        android:id="@+id/nav_dashboard"
+        android:name="com.example.mysoreprintersproject.app.homefragment.HomeFragment"
+        android:label="HomeFragment"
+        tools:layout="@layout/fragment_home"/>
+
+    <fragment
+        android:id="@+id/nav_attendance"
+        android:name="com.example.mysoreprintersproject.app.attendance.AttendanceFragment"
+        android:label="AttendanceFragment"
+        tools:layout="@layout/fragment_attendance"
+        />
+
+    <fragment
+        android:id="@+id/nav_reportFragment"
+        android:name="com.example.mysoreprintersproject.app.report.ReportFragment"
+        android:label="ReportFragment"
+        tools:layout="@layout/fragment_report"/>
+    <fragment
+        android:id="@+id/nav_profileFragment"
+        android:name="com.example.mysoreprintersproject.app.profilefragment.ProfileFragment"
+        android:label="ProfileFragment"
+        tools:layout="@layout/fragment_profile"/>
+
+    <fragment
+        android:id="@+id/nav_work_summary"
+        android:name="com.example.mysoreprintersproject.app.dailyworkingsummryfragment.DailyWorkingSummaryFragment"
+        android:label="DailyWorkingSummary"
+        tools:layout="@layout/fragment_daily_working_summary" />
+
+
+
+</navigation>

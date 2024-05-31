@@ -1,0 +1,73 @@
+<resources>
+    <string name="app_name">MysorePrintersProject</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string-array name="last_six_months">
+        <item>Last 6 Months</item>
+        <item>Last 12 Months</item>
+        <item>Last 18 Months</item>
+    </string-array>
+    <string name="title_activity_navigation">NavigationActivity</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string name="title_activity_navi">Navi</string>
+
+    <string-array name="from_dates">
+        <item>06-Jan-2024</item>
+        <item>07-Feb-2024</item>
+        <item>08-Mar-2024</item>
+    </string-array>
+
+    <string-array name="to_dates">
+        <item>06-Jan-2024</item>
+        <item>07-Feb-2024</item>
+        <item>08-Mar-2024</item>
+    </string-array>
+
+    <string-array name="segments">
+        <item>Segments</item>
+        <item>Trade TD</item>
+        <item>Petrol Bunk-PTR</item>
+        <item>Hospete</item>
+        <item>Hotels</item>
+        <item>Hotel—Htl</item>
+        <item>Harihara(Davangere)</item>
+        <item>Petrol Bunk-PTR</item>
+    </string-array>
+
+
+    <string-array name="dateRange">
+        <item>Date Range</item>
+        <item>01-10</item>
+        <item>10-20</item>
+        <item>20-30</item>
+        <item>01-30</item>
+    </string-array>
+
+    <string-array name="tarritoryWise">
+        <item>Tarritory Wise</item>
+    </string-array>
+
+    <string-array name="Agents">
+        <item>Agents</item>
+        <item>CH001</item>
+        <item>CH002</item>
+        <item>CH003</item>
+        <item>CH004</item>
+    </string-array>
+
+    <string-array name="publication">
+        <item>Publication</item>
+        <item>DH</item>
+        <item>PV</item>
+    </string-array>
+</resources>

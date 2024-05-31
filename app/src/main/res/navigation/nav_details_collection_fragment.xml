@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_details_collection_fragment"
+    app:startDestination="@id/dailyColletionFragment">
+
+    <fragment
+        android:id="@+id/dailyColletionFragment"
+        android:name="com.example.mysoreprintersproject.app.dailycollections.DailyColletionFragment"
+        android:label="DailyColletionFragment"
+        tools:layout="@layout/fragment_daily_colletion"/>
+</navigation>

@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    
+    <style name="txtSemiBolpoppinsSemibold28">
+        <item name="android:textSize">28dp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="fontFamily">@font/poppinssemibold</item>
+        <item name="android:textFontWeight" tools:targetApi="p">500</item>
+    </style>
+
+
+    <style name="txtSemiBolpoppinsMedium18">
+        <item name="android:textSize">18dp</item>
+        <item name="android:textColor">@color/black_01</item>
+        <item name="fontFamily">@font/poppinsmidium</item>
+        <item name="android:textFontWeight" tools:targetApi="p">500</item>
+    </style>
+
+    <style name="txtSemiBolpoppinsMedium14">
+        <item name="android:textSize">14dp</item>
+        <item name="android:textColor">@color/black_01</item>
+        <item name="fontFamily">@font/poppinsmidium</item>
+        <item name="android:textFontWeight" tools:targetApi="p">500</item>
+    </style>
+
+    <style name="txtpoppinsRegular12">
+        <item name="android:textSize">12dp</item>
+        <item name="android:textColor">@color/black_01</item>
+        <item name="fontFamily">@font/poppins_regular</item>
+        <item name="android:textFontWeight" tools:targetApi="p">500</item>
+    </style>
+
+    <style name="txtpoppinsRegular14">
+        <item name="android:textSize">14dp</item>
+        <item name="android:textColor">#4B465C</item>
+        <item name="fontFamily">@font/poppins_regular</item>
+        <item name="android:textFontWeight" tools:targetApi="p">500</item>
+    </style>
+
+    <style name="groupStylecornerRadius_3">
+        <item name="android:background">@drawable/rectangle_grey_border</item>
+    </style>
+
+    <style name="txtInterMedium12">
+        <item name="android:textSize">12dp</item>
+        <item name="android:textColor">#0342C4</item>
+        <item name="fontFamily">@font/intermedium</item>
+        <item name="android:textFontWeight" tools:targetApi="p">500</item>
+    </style>
+
+    <style name="txtbuttonpoppinsmidum22">
+        <item name="android:textSize">22dp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="fontFamily">@font/intermedium</item>
+        <item name="android:textFontWeight" tools:targetApi="p">500</item>
+        <item name="android:background">@drawable/button_rectangle</item>
+    </style>
+
+
+    <style name="groupStylewhite_1">
+        <item name="android:background">@drawable/rectangle_bg_white_a700</item>
+    </style>
+
+    <style name="groupStylewhite_11">
+        <item name="android:background">@drawable/rectangle_bg_white_check_button</item>
+    </style>
+    <style name="groupStylebluegray_9011">
+        <item name="android:background">@drawable/rectangle_bg_darkblue</item>
+    </style>
+
+    <style name="groupStyleButtonforCheck">
+        <item name="android:background">@drawable/rectangle_for_chack_button</item>
+    </style>
+
+
+    <style name="txtCheckButton">
+        <item name="android:textSize">22dp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="fontFamily">@font/intermedium</item>
+        <item name="android:textFontWeight" tools:targetApi="p">500</item>
+        <item name="android:background">@drawable/rectangle_for_chack_button</item>
+
+    </style>
+
+    <style name="txtCheckButton1">
+        <item name="android:textSize">22dp</item>
+        <item name="android:textColor">@color/shade_blue</item>
+        <item name="fontFamily">@font/intermedium</item>
+        <item name="android:textFontWeight" tools:targetApi="p">500</item>
+        <item name="android:background">@drawable/rectangle_bg_white_check_button</item>
+
+    </style>
+
+    <style name="txtSemiBolpoppinsMedium28">
+        <item name="android:textSize">28dp</item>
+        <item name="android:textColor">@color/white_A700</item>
+        <item name="fontFamily">@font/poppinsmidium</item>
+        <item name="android:textFontWeight" tools:targetApi="p">400</item>
+    </style>
+
+
+    <style name="groupStyleblue_802cornerRadius">
+        <item name="android:background">@drawable/rectangle_for_white_50</item>
+    </style>
+
+    <style name="txtpublicsnas20">
+        <item name="android:textSize">20dp</item>
+        <item name="android:textColor">#4B465C</item>
+        <item name="fontFamily">@font/publicsans_medium</item>
+        <item name="android:textFontWeight" tools:targetApi="p">400</item>
+    </style>
+
+    <style name="txtpublicsnas14">
+        <item name="android:textSize">14dp</item>
+        <item name="android:textColor">#4B465C</item>
+        <item name="fontFamily">@font/publicsans_medium</item>
+        <item name="android:textFontWeight" tools:targetApi="p">450</item>
+    </style>
+    <style name="txtpublicsnas22">
+        <item name="android:textSize">22dp</item>
+        <item name="android:textColor">#4B465C</item>
+        <item name="fontFamily">@font/publicsans_medium</item>
+        <item name="android:textFontWeight" tools:targetApi="p">500</item>
+    </style>
+    <style name="txtpublicsnas16">
+        <item name="android:textSize">16dp</item>
+        <item name="android:textColor">#4B465C</item>
+        <item name="fontFamily">@font/publicsans_medium</item>
+        <item name="android:textFontWeight" tools:targetApi="p">500</item>
+    </style>
+    <style name="txtpoppinssemibold16">
+        <item name="android:textSize">16dp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="fontFamily">@font/poppins_semibold</item>
+        <item name="android:textFontWeight" tools:targetApi="p">700</item>
+    </style>
+
+    <style name="txtpoppinssemibold18">
+        <item name="android:textSize">18dp</item>
+        <item name="android:textColor">@color/white_A700</item>
+        <item name="fontFamily">@font/poppins_semibold</item>
+        <item name="android:textFontWeight" tools:targetApi="p">400</item>
+    </style>
+    <style name="txtpublicsanregular12">
+        <item name="android:textSize">12dp</item>
+        <item name="android:textColor">#4B465C</item>
+        <item name="fontFamily">@font/public_san_regular</item>
+        <item name="android:textFontWeight" tools:targetApi="p">500</item>
+    </style>
+
+    <style name="txtpoppinmedium14">
+        <item name="android:textSize">14dp</item>
+        <item name="android:textColor">#3A3A3A</item>
+        <item name="fontFamily">@font/poppinsmidium</item>
+        <item name="android:textFontWeight" tools:targetApi="p">500</item>
+    </style>
+
+    <style name="txtpoppinmedium16">
+        <item name="android:textSize">16dp</item>
+        <item name="android:textColor">#3A3A3A</item>
+        <item name="fontFamily">@font/poppinsmidium</item>
+        <item name="android:textFontWeight" tools:targetApi="p">500</item>
+    </style>
+
+    <style name="txtpoppinmedium13">
+        <item name="android:textSize">13dp</item>
+        <item name="android:textColor">#3A3A3A</item>
+        <item name="fontFamily">@font/poppinsmidium</item>
+        <item name="android:textFontWeight" tools:targetApi="p">400</item>
+    </style>
+
+    <style name="txtinterregular17">
+        <item name="android:textSize">17dp</item>
+        <item name="android:textColor">#3A3A3A</item>
+        <item name="fontFamily">@font/inter_regular</item>
+        <item name="android:textFontWeight" tools:targetApi="p">400</item>
+    </style>
+    <style name="txtinterbold17">
+        <item name="android:textSize">17dp</item>
+        <item name="android:textColor">#3A3A3A</item>
+        <item name="fontFamily">@font/inter_semibold</item>
+        <item name="android:textFontWeight" tools:targetApi="p">600</item>
+    </style>
+
+</resources>

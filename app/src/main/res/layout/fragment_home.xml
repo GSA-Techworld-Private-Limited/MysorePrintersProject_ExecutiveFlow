@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".app.homefragment.HomeFragment">
+
+
+    <LinearLayout android:id="@+id/linearHeader"
+        android:layout_gravity="top|start"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        style="@style/groupStylebluegray_9011">
+        <LinearLayout
+
+            android:id="@+id/linearRowsettings"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="59dp"
+            android:layout_marginStart="23dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="23dp"
+            android:layout_width="match_parent"
+            android:orientation="horizontal">
+            <ImageView android:id="@+id/imageSettings"
+                android:layout_height="30dp"
+                android:layout_marginBottom="1dp"
+                android:layout_marginTop="1dp"
+                android:layout_width="30dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/menu_icon"
+                tools:ignore="ContentDescription"
+                tools:src="@drawable/menu_icon"/>
+
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_marginStart="239dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+            <ImageView android:id="@+id/imageSettings1"
+                android:layout_height="30dp"
+                android:layout_marginBottom="1dp"
+                android:layout_marginTop="1dp"
+                android:layout_width="30dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/notification_icon"
+                tools:ignore="ContentDescription"
+                tools:src="@drawable/notification_icon"/>
+
+
+            <ImageView android:id="@+id/imageSettings2"
+                android:layout_height="30dp"
+                android:layout_marginStart="13dp"
+                android:layout_marginBottom="1dp"
+                android:layout_marginTop="1dp"
+                android:layout_width="35dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/profile_image"
+                tools:ignore="ContentDescription"
+                tools:src="@drawable/profile_image"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+        <TextView
+            android:layout_gravity="center_horizontal"
+            android:text="Welcome to Team"
+            style="@style/txtSemiBolpoppinsMedium28"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="50dp"/>
+
+    </LinearLayout>
+
+
+
+    <LinearLayout android:id="@+id/linearColumntotalincome"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:layout_marginTop="170dp"
+        android:orientation="vertical"
+        style="@style/groupStyleblue_802cornerRadius">
+
+
+        <ScrollView
+            android:fillViewport="true"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_marginTop="45dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:id="@+id/linearLayout"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+            <TextView
+                android:text="Key Matrix Statistics"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/txtpublicsnas20"/>
+
+            <Spinner
+                android:gravity="end"
+                android:layout_marginEnd="5dp"
+                android:layout_marginStart="27dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:entries="@array/last_six_months"
+                android:spinnerMode="dropdown"
+                android:background="@drawable/spinner_background"/>
+
+        </LinearLayout>
+
+
+
+        <LinearLayout
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:id="@+id/statistics"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:src="@drawable/statistics_icon"
+                    android:id="@+id/imagehours"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"/>
+
+
+                <LinearLayout
+                    android:layout_marginStart="5dp"
+                    android:orientation="vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        style="@style/txtpublicsnas14"
+                        android:text="40 Hours"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        style="@style/txtpublicsanregular12"
+                        android:text="Total Hours Worked:"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_marginStart="15dp"
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:src="@drawable/location_visited_icon"
+                    android:id="@+id/imagelocation"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"/>
+
+
+                <LinearLayout
+                    android:layout_marginStart="5dp"
+                    android:orientation="vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        style="@style/txtpublicsnas14"
+                        android:text="5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        style="@style/txtpublicsanregular12"
+                        android:text="Location Visited"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:id="@+id/statistics1"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:src="@drawable/distance_travelled_icon"
+                android:id="@+id/imagehours1"
+                android:layout_width="36dp"
+                android:layout_height="36dp"/>
+
+
+            <LinearLayout
+                android:layout_marginStart="5dp"
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    style="@style/txtpublicsnas14"
+                    android:text="120 Km"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    style="@style/txtpublicsanregular12"
+                    android:text="Distance Travelled"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+
+        <androidx.cardview.widget.CardView
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="30dp"
+            app:cardCornerRadius="10dp"
+            android:orientation="horizontal"
+            android:gravity="start"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_gravity="start"
+                android:layout_marginStart="35dp"
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_marginTop="25dp"
+                    style="@style/txtpublicsnas16"
+                    android:text="Total Hours Worked "
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:layout_marginTop="20dp"
+                    style="@style/txtpublicsanregular12"
+                    android:text="Monthly Report"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="15dp"
+                    style="@style/txtpublicsnas22"
+                    android:text="250 Hours "
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+
+
+            <FrameLayout
+                android:id="@+id/frameStackthirtyfive"
+                android:layout_gravity="end"
+                android:layout_height="100dp"
+                android:layout_width="100dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginTop="20dp">
+                <com.example.mysoreprintersproject.app.homefragment.DonutChartView
+                    android:id="@+id/donutChart"
+                    android:layout_gravity="center"
+                    android:layout_height="match_parent"
+                    android:layout_width="match_parent"/>
+            </FrameLayout>
+
+        </androidx.cardview.widget.CardView>
+
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            tools:context=".MainActivity">
+
+            <TextView
+                android:id="@+id/attendance_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Attendance Graph"
+                android:textSize="18sp"
+                android:textColor="@android:color/black"
+                android:layout_marginTop="16dp" />
+
+            <com.github.mikephil.charting.charts.BarChart
+                android:id="@+id/bar_chart"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:layout_below="@id/attendance_label"
+                android:layout_marginTop="16dp"/>
+
+            <Spinner
+                android:id="@+id/spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="16dp"
+                android:entries="@array/last_six_months"
+                android:spinnerMode="dropdown"
+                android:background="@drawable/spinner_background"/>
+        </RelativeLayout>
+
+        </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+
+
+
+</FrameLayout>

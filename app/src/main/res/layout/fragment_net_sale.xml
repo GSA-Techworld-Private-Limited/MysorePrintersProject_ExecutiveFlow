@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".app.homefragment.HomeFragment">
+
+
+    <LinearLayout android:id="@+id/linearHeader"
+        android:layout_gravity="top|start"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        style="@style/groupStylebluegray_9011">
+        <LinearLayout android:id="@+id/linearRowsettings"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="59dp"
+            android:layout_marginStart="23dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="23dp"
+            android:layout_width="match_parent"
+            android:orientation="horizontal">
+            <ImageView android:id="@+id/imageSettings"
+                android:layout_height="30dp"
+                android:layout_marginBottom="1dp"
+                android:layout_marginTop="1dp"
+                android:layout_width="30dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/menu_icon"
+                tools:ignore="ContentDescription"
+                tools:src="@drawable/menu_icon"/>
+
+
+            <TextView
+                style="@style/txtpoppinssemibold18"
+                android:layout_marginStart="8dp"
+                android:layout_gravity="center"
+                android:text="Supply Report"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_marginStart="115dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <ImageView android:id="@+id/imageSettings1"
+                    android:layout_height="30dp"
+                    android:layout_marginBottom="1dp"
+                    android:layout_marginTop="1dp"
+                    android:layout_width="30dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/icon_notification"
+                    tools:ignore="ContentDescription"
+                    tools:src="@drawable/icon_notification"/>
+
+
+                <ImageView android:id="@+id/imageSettings2"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="13dp"
+                    android:layout_marginBottom="1dp"
+                    android:layout_marginTop="1dp"
+                    android:layout_width="30dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/icon_search"
+                    tools:ignore="ContentDescription"
+                    tools:src="@drawable/icon_search"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+
+
+    <!-- Search and Export -->
+    <LinearLayout
+        android:id="@+id/search_expo"
+        android:layout_marginStart="20dp"
+        android:layout_below="@+id/linearHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp">
+
+        <EditText
+            android:id="@+id/search_bar"
+            android:layout_width="265dp"
+            android:layout_height="48dp"
+            android:hint="Search"
+            android:background="@drawable/search_bar_background"
+            android:padding="10dp"
+            android:drawableStart="@drawable/ic_search"
+            android:drawablePadding="10dp" />
+
+        <Button
+            android:layout_gravity="start"
+            android:id="@+id/export_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/button_background"
+            android:text="Export"
+            android:textColor="@android:color/white"
+            android:padding="10dp" />
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:layout_below="@+id/search_expo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/spinner_items"
+        android:orientation="horizontal"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="16dp">
+
+        <Spinner
+            android:layout_marginStart="5dp"
+            android:id="@+id/spinner_from"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:background="@drawable/spinner_background_ratio"
+            android:entries="@array/dateRange" />
+
+        <Spinner
+            android:id="@+id/spinner_to"
+            android:layout_width="90dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="3dp"
+            android:background="@drawable/spinner_background_ratio"
+            android:entries="@array/tarritoryWise"
+             />
+
+
+        <Spinner
+            android:id="@+id/spinner_three"
+            android:layout_width="80dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="3dp"
+            android:background="@drawable/spinner_background_ratio"
+            android:entries="@array/Agents"
+            />
+
+        <Spinner
+            android:id="@+id/spinner_four"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="3dp"
+            android:background="@drawable/spinner_background_ratio"
+            android:entries="@array/publication" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_below="@+id/spinner_items"
+        android:id="@+id/scrollviewid"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+    <LinearLayout
+        android:id="@+id/complete_ui"
+        android:layout_below="@+id/spinner_items"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/graph"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_below="@+id/complete_ui">
+
+        <TextView
+            android:id="@+id/attendance_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Average Month-wise Trend-Net Sale"
+            android:textSize="13sp"
+            android:textColor="@android:color/black"
+            android:layout_marginTop="16dp" />
+
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/bar_chart"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:layout_below="@id/attendance_label"
+            android:layout_marginTop="16dp"/>
+
+        <Spinner
+            android:id="@+id/spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="16dp"
+            android:entries="@array/last_six_months"
+            android:spinnerMode="dropdown"
+            android:background="@drawable/spinner_background"/>
+    </RelativeLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerview"
+        android:layout_below="@+id/graph"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"/>
+
+    </LinearLayout>
+
+    </ScrollView>
+</RelativeLayout>

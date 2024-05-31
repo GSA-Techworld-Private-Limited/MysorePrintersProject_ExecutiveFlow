@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.MysorePrintersProject" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.MysorePrintersProject.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.MysorePrintersProject.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="Theme.MysorePrintersProject.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+</resources>

@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".app.homefragment.HomeFragment">
+
+
+    <LinearLayout android:id="@+id/linearHeader"
+        android:layout_gravity="top|start"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        style="@style/groupStylebluegray_9011">
+        <LinearLayout android:id="@+id/linearRowsettings"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="59dp"
+            android:layout_marginStart="23dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="23dp"
+            android:layout_width="match_parent"
+            android:orientation="horizontal">
+            <ImageView android:id="@+id/imageSettings"
+                android:layout_height="30dp"
+                android:layout_marginBottom="1dp"
+                android:layout_marginTop="1dp"
+                android:layout_width="30dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/menu_icon"
+                tools:ignore="ContentDescription"
+                tools:src="@drawable/menu_icon"/>
+
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_marginStart="239dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <ImageView android:id="@+id/imageSettings1"
+                    android:layout_height="30dp"
+                    android:layout_marginBottom="1dp"
+                    android:layout_marginTop="1dp"
+                    android:layout_width="30dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/notification_icon"
+                    tools:ignore="ContentDescription"
+                    tools:src="@drawable/notification_icon"/>
+
+
+                <ImageView android:id="@+id/imageSettings2"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="13dp"
+                    android:layout_marginBottom="1dp"
+                    android:layout_marginTop="1dp"
+                    android:layout_width="35dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/profile_image"
+                    tools:ignore="ContentDescription"
+                    tools:src="@drawable/profile_image"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:layout_below="@+id/linearHeader"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="20dp"
+        android:id="@+id/linearLayout"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <TextView
+            android:text="Summary Report"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/txtpublicsnas20"/>
+
+        <Spinner
+            android:gravity="end"
+            android:layout_marginEnd="5dp"
+            android:layout_marginStart="27dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/last_six_months"
+            android:spinnerMode="dropdown"
+            android:background="@drawable/spinner_background"/>
+
+    </LinearLayout>
+
+
+    <androidx.cardview.widget.CardView
+        android:layout_below="@+id/linearLayout"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="30dp"
+        app:cardCornerRadius="10dp"
+        android:orientation="horizontal"
+        android:gravity="start"
+        android:id="@+id/cardviewlayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_gravity="start"
+            android:layout_marginStart="35dp"
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_marginTop="25dp"
+                style="@style/txtpublicsnas16"
+                android:text="Total Hours Worked "
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:layout_marginTop="20dp"
+                style="@style/txtpublicsanregular12"
+                android:text="Last 6 months"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="15dp"
+                style="@style/txtpublicsnas22"
+                android:text="250 Hours "
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+
+
+        <FrameLayout
+            android:id="@+id/frameStackthirtyfive"
+            android:layout_gravity="end"
+            android:layout_height="100dp"
+            android:layout_width="100dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginTop="20dp">
+            <com.example.mysoreprintersproject.app.homefragment.DonutChartView
+                android:id="@+id/donutChart"
+                android:layout_gravity="center"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"/>
+        </FrameLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <LinearLayout
+        android:layout_marginTop="30dp"
+        android:layout_marginStart="20dp"
+        android:layout_below="@+id/cardviewlayout"
+        android:id="@+id/linearText1"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        
+        
+        
+        <TextView
+            android:text="Total Hours Worked :"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/txtpoppinmedium16"/>
+
+
+        <TextView
+            android:text="40 hours"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/txtpoppinmedium16"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="30dp"
+        android:layout_marginStart="20dp"
+        android:layout_below="@+id/linearText1"
+        android:id="@+id/linearText2"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+
+
+        <TextView
+            android:text="Distance Travelled :"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/txtpoppinmedium16"/>
+
+
+        <TextView
+            android:text="250"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/txtpoppinmedium16"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="30dp"
+        android:layout_marginStart="20dp"
+        android:layout_below="@+id/linearText2"
+        android:id="@+id/linearText3"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+
+
+        <TextView
+            android:text="Location Visited :"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/txtpoppinmedium16"/>
+
+
+        <TextView
+            android:text="03"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/txtpoppinmedium16"/>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="30dp"
+        android:layout_below="@+id/linearText3"
+        android:id="@+id/linearText4"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+
+
+        <TextView
+            android:text="1.Raichur:"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/txtpoppinmedium13"/>
+
+
+        <TextView
+            android:text="3 visit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/txtpoppinmedium13"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="30dp"
+        android:layout_below="@+id/linearText4"
+        android:id="@+id/linearText5"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+
+
+        <TextView
+            android:text="2.Gulbarga:"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/txtpoppinmedium13"/>
+
+
+        <TextView
+            android:text="5 visit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/txtpoppinmedium13"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="30dp"
+        android:layout_below="@+id/linearText5"
+        android:id="@+id/linearText6"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+
+
+        <TextView
+            android:text="3.Kolar:"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/txtpoppinmedium13"/>
+
+
+        <TextView
+            android:text="4 visit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/txtpoppinmedium13"/>
+    </LinearLayout>
+</RelativeLayout>

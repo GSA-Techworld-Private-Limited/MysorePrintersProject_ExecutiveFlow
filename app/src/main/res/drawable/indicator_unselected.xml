@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/drawable/indicator_unselected.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="#CCCCCC" /> <!-- Change the color as desired -->
+    <size android:width="16dp" android:height="16dp" /> <!-- Change the size as desired -->
+</shape>

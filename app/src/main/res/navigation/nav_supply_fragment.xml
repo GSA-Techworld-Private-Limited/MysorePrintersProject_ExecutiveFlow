@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_supply_fragment"
+    app:startDestination="@id/supplyReportFragment">
+
+    <fragment
+        android:id="@+id/supplyReportFragment"
+        android:name="com.example.mysoreprintersproject.app.supplyreport.SupplyReportFragment"
+        android:label="SupplyReportFragment"
+        tools:layout="@layout/fragment_supply_report"/>
+</navigation>
