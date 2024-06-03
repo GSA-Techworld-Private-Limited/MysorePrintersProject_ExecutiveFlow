@@ -26,19 +26,24 @@
     <item
         android:id="@+id/nav_data_reporting"
         android:icon="@drawable/ic_data_reporting"
-        android:title="Data Reporting">
-        <menu>
-            <item
-                android:id="@+id/nav_supply_reports"
-                android:title="Supply Reports" />
-            <item
-                android:id="@+id/nav_net_sales_report"
-                android:title="Net Sales Report" />
-            <item
-                android:id="@+id/nav_collections_report"
-                android:title="Collections Report" />
-        </menu>
-    </item>
+        android:title="Data Reporting"/>
+
+    <item
+        android:id="@+id/nav_supply_reports"
+        android:icon="@drawable/circle_icon"
+        android:title="Supply Reports" />
+
+
+    <item
+        android:id="@+id/nav_net_sales_report"
+        android:icon="@drawable/circle_icon"
+        android:title="Net Sales Report" />
+
+    <item
+        android:id="@+id/nav_collections_report"
+        android:icon="@drawable/circle_icon"
+        android:title="Collections Report" />
+
     <item
         android:id="@+id/nav_notifications"
         android:icon="@drawable/ic_notifications"

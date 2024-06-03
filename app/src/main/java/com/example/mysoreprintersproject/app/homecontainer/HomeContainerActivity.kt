@@ -15,9 +15,11 @@ import androidx.fragment.app.FragmentManager
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import com.example.mysoreprintersproject.R
+import com.example.mysoreprintersproject.app.attendance.AttendanceActivity
 import com.example.mysoreprintersproject.app.attendance.AttendanceFragment
 import com.example.mysoreprintersproject.app.dailycollections.DailyCollectionActivity
 import com.example.mysoreprintersproject.app.dailyworkingsummryfragment.DailyWorkingSummaryActivity
+import com.example.mysoreprintersproject.app.homefragment.HomeActivity
 import com.example.mysoreprintersproject.app.homefragment.HomeFragment
 import com.example.mysoreprintersproject.app.netsale.NetSaleActivity
 import com.example.mysoreprintersproject.app.profilefragment.ProfileFragment
@@ -69,17 +71,6 @@ class HomeContainerActivity : AppCompatActivity() {
         frameBottomBar.setOnNavigationItemSelectedListener {it ->
             when(it.itemId){
 
-                R.id.nav_dashboard->{
-                    navController.navigate(R.id.nav_dashboard)
-                    true
-                }
-
-                R.id.nav_attendance -> {
-                    navController.navigate(R.id.nav_attendance)
-                    true
-                }
-
-
                 R.id.home -> {
                     replaceFragment(HomeFragment())
                     true
@@ -110,10 +101,25 @@ class HomeContainerActivity : AppCompatActivity() {
         navigationView.setNavigationItemSelectedListener { item ->
             when (item.itemId) {
 
+                R.id.nav_dashboard->{
+                   startActivity(Intent(this,HomeContainerActivity::class.java))
+
+                }
+
+                R.id.nav_attendance -> {
+                    startActivity(Intent(this,AttendanceActivity::class.java))
+
+                }
+
+
                 R.id.nav_daily_work_summary -> {
                     startActivity(Intent(this, DailyWorkingSummaryActivity::class.java))
                 }
-                R.id.nav_collection_summary -> {
+
+                R.id.nav_collections_performance -> {
+                    startActivity(Intent(this,DailyCollectionActivity::class.java))
+                }
+                R.id.nav_collections_report -> {
                     startActivity(Intent(this, DailyCollectionActivity::class.java))
                 }
                 R.id.nav_supply_reports -> {
@@ -130,8 +136,6 @@ class HomeContainerActivity : AppCompatActivity() {
             drawerLayout.closeDrawers()
             true
         }
-
-
 
 
         window.statusBarColor= ContextCompat.getColor(this,R.color.shade_blue)
