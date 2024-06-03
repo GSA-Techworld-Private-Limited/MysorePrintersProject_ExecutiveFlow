@@ -1,14 +1,25 @@
 package com.example.mysoreprintersproject.app.netsale
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mysoreprintersproject.R
+import com.example.mysoreprintersproject.app.attendance.AttendanceActivity
+import com.example.mysoreprintersproject.app.dailycollections.DailyCollectionActivity
+import com.example.mysoreprintersproject.app.dailyworkingsummryfragment.DailyWorkingSummaryActivity
+import com.example.mysoreprintersproject.app.homecontainer.HomeContainerActivity
+import com.example.mysoreprintersproject.app.homefragment.HomeActivity
+import com.example.mysoreprintersproject.app.supplyreport.SupplyReportActivity
 import com.example.mysoreprintersproject.app.supplyreport.SupplyReportAdapter
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.components.XAxis
@@ -16,6 +27,7 @@ import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.google.android.material.navigation.NavigationView
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -34,6 +46,10 @@ class NetSaleFragment : Fragment() {
 
     private lateinit var barChart: BarChart
 
+    private lateinit var drawerLayout: DrawerLayout
+
+    private lateinit var navigationView: NavigationView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -48,6 +64,58 @@ class NetSaleFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_net_sale, container, false).apply {
+
+            drawerLayout = findViewById(R.id.drawer_layout)
+
+            val navigatioViewIcon: ImageView =findViewById(R.id.imageSettings)
+            navigatioViewIcon.setOnClickListener {
+                drawerLayout.openDrawer(GravityCompat.START)
+            }
+
+            navigationView=findViewById(R.id.navigationView)
+
+            navigationView.setNavigationItemSelectedListener { item ->
+                when (item.itemId) {
+
+                    R.id.nav_dashboard->{
+                        startActivity(Intent(requireActivity(), HomeContainerActivity::class.java))
+
+                    }
+
+                    R.id.nav_attendance -> {
+                        startActivity(Intent(requireActivity(), AttendanceActivity::class.java))
+
+                    }
+
+
+                    R.id.nav_daily_work_summary -> {
+                        startActivity(Intent(requireActivity(), DailyWorkingSummaryActivity::class.java))
+                    }
+                    R.id.nav_collections_performance -> {
+                        startActivity(
+                            Intent(requireActivity(),
+                                DailyCollectionActivity::class.java)
+                        )
+                    }
+                    R.id.nav_collections_report -> {
+                        startActivity(Intent(requireActivity(), DailyCollectionActivity::class.java))
+                    }
+                    R.id.nav_supply_reports -> {
+                        startActivity(Intent(requireActivity(), SupplyReportActivity::class.java))
+                    }
+                    R.id.nav_net_sales_report -> {
+                        startActivity(Intent(requireActivity(), NetSaleActivity::class.java))
+                    }
+                    // Add other cases for different activities
+                    else -> {
+                        Log.d("NavigationDrawer", "Unhandled item clicked: ${item.itemId}")
+                    }
+                }
+                drawerLayout.closeDrawers()
+                true
+            }
+
+
             barChart=findViewById(R.id.bar_chart)
             setupBarChart()
 
