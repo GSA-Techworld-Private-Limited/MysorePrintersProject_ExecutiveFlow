@@ -11,13 +11,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <LinearLayout android:id="@+id/linearHeader"
+    <LinearLayout
+        android:id="@+id/linearHeader"
         android:layout_gravity="top|start"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:orientation="vertical"
         style="@style/groupStylebluegray_9011">
-        <LinearLayout android:id="@+id/linearRowsettings"
+
+        <LinearLayout
+            android:id="@+id/linearRowsettings"
             android:layout_height="wrap_content"
             android:layout_marginBottom="59dp"
             android:layout_marginStart="23dp"
@@ -38,7 +41,7 @@
 
             <LinearLayout
                 android:orientation="horizontal"
-                android:layout_marginStart="239dp"
+                android:layout_marginStart="219dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
                 <ImageView android:id="@+id/imageSettings1"
