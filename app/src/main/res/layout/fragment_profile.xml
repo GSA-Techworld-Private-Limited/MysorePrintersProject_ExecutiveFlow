@@ -140,10 +140,11 @@
                     android:drawablePadding="8dp" />
 
                 <EditText
+                    android:id="@+id/nameEdit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Ahansh"
-                    android:text="Ahansh"
+                    android:hint=""
+                    android:text=""
                     android:padding="8dp"
                     android:layout_marginTop="10dp"
                     style="@style/txtinterbold17"
@@ -166,11 +167,12 @@
                     android:drawablePadding="8dp" />
 
                 <EditText
+                    android:id="@+id/editPhoneNumber"
                     android:layout_marginTop="10dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="+7273463729"
-                    android:text="+7273463729"
+                    android:hint=""
+                    android:text=""
                     style="@style/txtinterbold17"
                     android:padding="8dp"
                     android:background="@drawable/edit_text_background"
@@ -194,11 +196,12 @@
                     android:drawablePadding="8dp" />
 
                 <EditText
+                    android:id="@+id/editEmail"
                     android:layout_marginTop="10dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Ahansh@gmail.com"
-                    android:text="Ahansh@gmail.com"
+                    android:hint=""
+                    android:text=""
                     style="@style/txtinterbold17"
                     android:padding="8dp"
                     android:background="@drawable/edit_text_background"
@@ -227,9 +230,10 @@
                 <EditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Raichur"
-                    android:text="Raichur"
+                    android:hint=""
+                    android:text=""
                     android:padding="8dp"
+                    android:id="@+id/editLocation"
                     android:layout_marginTop="10dp"
                     style="@style/txtinterbold17"
                     android:background="@drawable/edit_text_background" />
