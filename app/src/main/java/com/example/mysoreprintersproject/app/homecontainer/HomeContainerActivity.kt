@@ -15,6 +15,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import com.example.mysoreprintersproject.R
+import com.example.mysoreprintersproject.app.SplashScreenActivity
 import com.example.mysoreprintersproject.app.attendance.AttendanceActivity
 import com.example.mysoreprintersproject.app.attendance.AttendanceFragment
 import com.example.mysoreprintersproject.app.dailycollections.DailyCollectionActivity
@@ -25,6 +26,7 @@ import com.example.mysoreprintersproject.app.netsale.NetSaleActivity
 import com.example.mysoreprintersproject.app.profilefragment.ProfileFragment
 import com.example.mysoreprintersproject.app.report.ReportFragment
 import com.example.mysoreprintersproject.app.supplyreport.SupplyReportActivity
+import com.example.mysoreprintersproject.network.SessionManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 
@@ -38,8 +40,10 @@ class HomeContainerActivity : AppCompatActivity() {
     private lateinit var navigationView: NavigationView
 
 
+    private lateinit var sessionManager: SessionManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        sessionManager= SessionManager(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home_container)
 
@@ -128,6 +132,15 @@ class HomeContainerActivity : AppCompatActivity() {
                 R.id.nav_net_sales_report -> {
                     startActivity(Intent(this, NetSaleActivity::class.java))
                 }
+
+                R.id.nav_logout -> {
+                    startActivity(Intent(this,SplashScreenActivity::class.java))
+                    finishAffinity()
+                    Log.d("logoutbuttontag","Tag is hitting")
+                    sessionManager.logout()
+                    sessionManager.clearSession()
+
+                }
                 // Add other cases for different activities
                 else -> {
                     Log.d("NavigationDrawer", "Unhandled item clicked: ${item.itemId}")
@@ -142,8 +155,10 @@ class HomeContainerActivity : AppCompatActivity() {
     }
 
 
-    private fun setupNavigationDrawer() {
-
+    private fun setUpLogout() {
+        val i=Intent(this,SplashScreenActivity::class.java)
+        startActivity(i)
+        finish()
     }
 
     private fun replaceFragment(fragment: Fragment) {

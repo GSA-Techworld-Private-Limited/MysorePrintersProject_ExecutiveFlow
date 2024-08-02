@@ -19,6 +19,7 @@
         style="@style/txtSemiBolpoppinsMedium18"/>
 
     <EditText
+        android:id="@+id/username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="User Name"
@@ -26,6 +27,7 @@
         style="@style/groupStylecornerRadius_3"/>
 
     <EditText
+        android:id="@+id/password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Password"
@@ -41,6 +43,13 @@
        style="@style/txtInterMedium12"
        android:layout_gravity="center_horizontal"/>
 
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:visibility="gone"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/loginButton"
         android:layout_width="match_parent"
