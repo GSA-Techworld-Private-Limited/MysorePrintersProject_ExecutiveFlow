@@ -26,4 +26,8 @@ object APIManager {
             .build()
             .create(DataSource::class.java)
     }
+
+    fun getImageUrl(imagePath: String): String {
+        return BASE_URL + imagePath
+    }
 }

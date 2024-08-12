@@ -9,14 +9,13 @@ import com.example.mysoreprintersproject.responses.UserRepository
 import java.lang.IllegalArgumentException
 
 class ViewModelFactory(
-    private val repository : BaseRepository,
-    private val sessionManager: SessionManager
+    private val repository : BaseRepository
 ):ViewModelProvider.NewInstanceFactory(){
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when{
             modelClass.isAssignableFrom(AuthViewModel::class.java) -> AuthViewModel(repository as AuthRepository) as T
-            modelClass.isAssignableFrom(ProfileViewModel::class.java) -> ProfileViewModel(repository as UserRepository,sessionManager) as T
+            modelClass.isAssignableFrom(CheckInViewModel::class.java) -> CheckInViewModel(repository as UserRepository) as T
 //            modelClass.isAssignableFrom(ResetOtpViewModel::class.java) -> ResetOtpViewModel(repository as AuthRepository) as T
 //            modelClass.isAssignableFrom(OtpViewModel::class.java) -> OtpViewModel(repository as AuthRepository) as T
 //            modelClass.isAssignableFrom(ResetViewModel::class.java) -> ResetViewModel(repository as AuthRepository) as T

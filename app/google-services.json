@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "919497914245",
+    "firebase_url": "https://mysore-printers-default-rtdb.firebaseio.com",
+    "project_id": "mysore-printers",
+    "storage_bucket": "mysore-printers.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:919497914245:android:0aaaaeab1d879f428276ec",
+        "android_client_info": {
+          "package_name": "com.example.mysoreprintersproject"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCoZC2ep7in3m1d0ONYnJCn_FAvycsiEco"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

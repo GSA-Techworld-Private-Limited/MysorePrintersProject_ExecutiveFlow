@@ -1,9 +1,15 @@
 package com.example.mysoreprintersproject.app.homecontainer
 
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.IntentSender
+import android.content.pm.PackageManager
+import android.location.Address
+import android.location.Geocoder
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -27,8 +33,18 @@ import com.example.mysoreprintersproject.app.profilefragment.ProfileFragment
 import com.example.mysoreprintersproject.app.report.ReportFragment
 import com.example.mysoreprintersproject.app.supplyreport.SupplyReportActivity
 import com.example.mysoreprintersproject.network.SessionManager
+import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.android.gms.location.*
+import android.location.Location
+import android.os.Looper
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
+import com.google.android.gms.common.api.ResolvableApiException
+import java.io.IOException
 
 
 class HomeContainerActivity : AppCompatActivity() {
@@ -40,18 +56,43 @@ class HomeContainerActivity : AppCompatActivity() {
     private lateinit var navigationView: NavigationView
 
 
+    private  val REQUEST_CHECK_SETTINGS = 100
+
     private lateinit var sessionManager: SessionManager
+
+
+    private lateinit var database: DatabaseReference
+
+
+
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var locationCallback: LocationCallback
 
     override fun onCreate(savedInstanceState: Bundle?) {
         sessionManager= SessionManager(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home_container)
 
+
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+        database = FirebaseDatabase.getInstance().reference.child("coordinate")
+
+        if (isLocationPermissionGranted()) {
+            checkLocationSettingsAndStartUpdates()
+        } else {
+            requestLocationPermission()
+        }
+
+
         drawerLayout=findViewById(R.id.drawerlayout)
 
         navigationView=findViewById(R.id.navigationView)
 
         navigationView.itemIconTintList=null
+
+
 
         replaceFragment(HomeFragment())
 
@@ -134,11 +175,11 @@ class HomeContainerActivity : AppCompatActivity() {
                 }
 
                 R.id.nav_logout -> {
-                    startActivity(Intent(this,SplashScreenActivity::class.java))
-                    finishAffinity()
-                    Log.d("logoutbuttontag","Tag is hitting")
-                    sessionManager.logout()
-                    sessionManager.clearSession()
+//                    startActivity(Intent(this,SplashScreenActivity::class.java))
+//                    finishAffinity()
+//                    Log.d("logoutbuttontag","Tag is hitting")
+//                    sessionManager.logout()
+//                    sessionManager.clearSession()
 
                 }
                 // Add other cases for different activities
@@ -151,7 +192,128 @@ class HomeContainerActivity : AppCompatActivity() {
         }
 
 
+        //startLocationUpdates()
         window.statusBarColor= ContextCompat.getColor(this,R.color.shade_blue)
+    }
+
+
+
+
+    private fun isLocationPermissionGranted(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+
+    private fun requestLocationPermission() {
+        requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+    }
+
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                checkLocationSettingsAndStartUpdates()
+            } else {
+                Toast.makeText(this, "Location permission is required.", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+
+    private fun checkLocationSettingsAndStartUpdates() {
+        val locationRequest = LocationRequest.create().apply {
+            interval = 150000
+            fastestInterval = 5000
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        }
+
+        val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
+        val client = LocationServices.getSettingsClient(this)
+
+        client.checkLocationSettings(builder.build()).addOnSuccessListener {
+            startLocationUpdates()
+        }.addOnFailureListener { e ->
+            if (e is ResolvableApiException) {
+                try {
+                    e.startResolutionForResult(this, REQUEST_CHECK_SETTINGS)
+                } catch (sendEx: IntentSender.SendIntentException) {
+                    // Ignore the error.
+                }
+            }
+        }
+    }
+
+
+    @SuppressLint("MissingPermission")
+    private fun startLocationUpdates() {
+        val locationRequest = LocationRequest.create().apply {
+            interval = 20000
+            fastestInterval = 5000
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        }
+
+        locationCallback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult) {
+                val location = locationResult.lastLocation ?: return
+                sessionManager.storeLatitude(location.latitude )
+                sessionManager.storeLongitude(location.longitude)
+                Log.d("Location", "Lat: ${location.latitude}, Lng: ${location.longitude}")
+
+                // Send location to Firebase
+                sendLocationToFirebase(location.latitude, location.longitude)
+            }
+        }
+
+        fusedLocationClient.requestLocationUpdates(
+            locationRequest,
+            locationCallback,
+            Looper.getMainLooper()
+        )
+    }
+
+
+
+    @Deprecated("This method has been deprecated in favor of using the Activity Result API\n      which brings increased type safety via an {@link ActivityResultContract} and the prebuilt\n      contracts for common intents available in\n      {@link androidx.activity.result.contract.ActivityResultContracts}, provides hooks for\n      testing, and allow receiving results in separate, testable classes independent from your\n      activity. Use\n      {@link #registerForActivityResult(ActivityResultContract, ActivityResultCallback)}\n      with the appropriate {@link ActivityResultContract} and handling the result in the\n      {@link ActivityResultCallback#onActivityResult(Object) callback}.")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CHECK_SETTINGS) {
+            if (resultCode == RESULT_OK) {
+                startLocationUpdates()
+            } else {
+                Toast.makeText(this, "Please enable location services.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+
+    private fun sendLocationToFirebase(latitude: Double, longitude: Double) {
+        // Retrieve the user ID
+        val userId = sessionManager.fetchUserId()!!
+
+        // Reference to the user's location data in Firebase
+        val userLocationRef = database.child(userId)
+
+        // Get the current number of children to determine the next location key
+        userLocationRef.get().addOnSuccessListener { snapshot ->
+            val locationCount = snapshot.childrenCount
+            val newLocationKey = "location_${locationCount + 1}"
+
+            val locationData = mapOf(
+                "latitude" to latitude,
+                "longitude" to longitude,
+                "timestamp" to System.currentTimeMillis()
+            )
+
+            // Store the new location data under the new key
+            userLocationRef.child(newLocationKey).setValue(locationData)
+                .addOnSuccessListener {
+                    Log.d("Firebase", "Location data sent successfully.")
+                }
+                .addOnFailureListener { e ->
+                    Log.e("Firebase", "Failed to send location data.", e)
+                }
+        }
     }
 
 

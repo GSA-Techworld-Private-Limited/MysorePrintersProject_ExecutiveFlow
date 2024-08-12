@@ -1,6 +1,5 @@
 package com.example.mysoreprintersproject.app.homefragment
 
-
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -10,24 +9,27 @@ import android.util.AttributeSet
 import android.view.View
 
 class DonutChartView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
-    private val completedPaint: Paint
-    private val uncompletedPaint: Paint
-    private val rectF: RectF
+    private val completedPaint: Paint = Paint().apply {
+        color = Color.parseColor("#0342C4") // shade_blue
+        style = Paint.Style.FILL
+        isAntiAlias = true
+    }
+    private val uncompletedPaint: Paint = Paint().apply {
+        color = Color.GRAY // uncompleted color
+        style = Paint.Style.FILL
+        isAntiAlias = true
+    }
+    private val rectF: RectF = RectF()
 
-    init {
-        completedPaint = Paint().apply {
-            color = Color.parseColor("#0342C4") // shade_blue
-            style = Paint.Style.FILL
-            isAntiAlias = true
-        }
+    // Variables to store the percentages
+    private var completedPercentage = 0f
+    private var uncompletedPercentage = 0f
 
-        uncompletedPaint = Paint().apply {
-            color = Color.GRAY // uncompleted color
-            style = Paint.Style.FILL
-            isAntiAlias = true
-        }
-
-        rectF = RectF()
+    // Method to set the completed percentage
+    fun setCompletedPercentage(percentage: Float) {
+        completedPercentage = percentage
+        uncompletedPercentage = 100 - completedPercentage
+        invalidate() // Request to redraw the view
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -41,9 +43,6 @@ class DonutChartView(context: Context?, attrs: AttributeSet?) : View(context, at
         rectF.set(centerX - radius, centerY - radius, centerX + radius, centerY + radius)
 
         val totalAngle = 360f
-
-        val completedPercentage = 45f
-        val uncompletedPercentage = 100 - completedPercentage
 
         val completedAngle = totalAngle * completedPercentage / 100
         val uncompletedAngle = totalAngle * uncompletedPercentage / 100

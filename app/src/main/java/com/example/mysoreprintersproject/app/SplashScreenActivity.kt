@@ -37,19 +37,19 @@ class SplashScreenActivity : AppCompatActivity() {
         indicator2 = findViewById(R.id.indicator2)
         nextButton = findViewById(R.id.nextButton)
 
-
-        val userrtype=sessionManager.fetchUserRole()
-
-        if(userrtype=="executive"){
-            navigateToHome()
-        }else{
-            return
-        }
+//
+//        val userrtype=sessionManager.fetchUserRole()
+//
+//        if(userrtype=="executive"){
+//            navigateToHome()
+//        }else{
+//            return
+//        }
 
         val api = remoteDateSource.buildApi(AuthApi::class.java)
         val preferences = UserPreferences(this)
         val authRepository = AuthRepository(api,preferences)
-        val factory = ViewModelFactory(authRepository,sessionManager)
+        val factory = ViewModelFactory(authRepository)
         val adapter = ViewPagerAdapter(this, factory)
 
 

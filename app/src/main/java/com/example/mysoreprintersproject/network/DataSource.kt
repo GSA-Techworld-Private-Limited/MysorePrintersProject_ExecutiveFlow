@@ -1,6 +1,11 @@
 package com.example.mysoreprintersproject.network
+import com.example.mysoreprintersproject.responses.CheckInRequest
+import com.example.mysoreprintersproject.responses.CheckOutRequest
+import com.example.mysoreprintersproject.responses.ChecksResponses
+import com.example.mysoreprintersproject.responses.ExecutiveDashboard
 import com.example.mysoreprintersproject.responses.LoginResponse
 import com.example.mysoreprintersproject.responses.ProfileResponses
+import com.example.mysoreprintersproject.responses.SummaryReportResponses
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.Body
@@ -17,12 +22,41 @@ import retrofit2.http.Query
 interface DataSource {
 
 
-    @GET("/app/app-profile/")
-    suspend fun getProfileOfExecutive(
+    @GET("/app-executive/profile_setting/")
+     fun getProfileOfExecutive(
         @Header("Authorization") token: String,
         @Query("id") id: Int
-    ): ProfileResponses
+    ):Call<ProfileResponses>
 
+    @POST("/app-executive/check_in/")
+    suspend fun checkIn(
+        @Header("Authorization") token: String,
+        @Body checkInRequest: CheckInRequest
+    ) : ChecksResponses
+
+
+
+    @POST("/app-executive/check_out/")
+    suspend fun cheOut(
+        @Header("Authorization") token: String,
+        @Body checkOutRequest:CheckOutRequest
+    ) : ChecksResponses
+
+
+    @GET("/app-executive/working_summary/")
+    fun getExecutiveDashboard(
+        @Header("Authorization") token: String,
+        @Query("id")id:String,
+        @Query("period")period:String
+    ):Call<ExecutiveDashboard>
+
+
+    @GET("/app-executive/summary-report/")
+    fun getSummaryReport(
+        @Header("Authorization") token: String,
+        @Query("id")id:String,
+        @Query("period")period:String
+    ):Call<SummaryReportResponses>
 
 //    @GET("api/event/create/")
 //    suspend fun getAllEvents(
