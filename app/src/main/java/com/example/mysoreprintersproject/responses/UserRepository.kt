@@ -22,4 +22,19 @@ class UserRepository (
     }
 
 
+
+    suspend fun checkIn(
+        authorization:String,
+        checkInRequest:CheckInRequest
+    )=safeApiCall {
+        api.checkIn(authorization,checkInRequest)
+    }
+
+
+    suspend fun checkOut(
+        authorization:String,
+        checkOutRequest:CheckOutRequest
+    )=safeApiCall {
+        api.cheOut(authorization,checkOutRequest)
+    }
 }

@@ -1,6 +1,7 @@
 package com.example.mysoreprintersproject.repository
 
 import com.example.mysoreprintersproject.network.AuthApi
+import com.example.mysoreprintersproject.responses.CheckInRequest
 import com.example.mysoreprintersproject.responses.UserPreferences
 
 

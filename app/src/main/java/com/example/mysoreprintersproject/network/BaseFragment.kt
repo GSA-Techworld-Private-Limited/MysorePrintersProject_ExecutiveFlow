@@ -24,17 +24,15 @@ abstract class BaseFragment<VM : ViewModel,B:ViewBinding, R: BaseRepository>:Fra
     protected lateinit var viewModel: VM
     protected val remoteDateSource=  RemoteDataSource()
 
-    protected lateinit var sessionManager: SessionManager
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        sessionManager=SessionManager(requireActivity())
         userPreferences=UserPreferences(requireContext())
         binding=getFragmentBinding(inflater, container)
-        val factory= ViewModelFactory(getFragmentRepository(),sessionManager)
+        val factory= ViewModelFactory(getFragmentRepository())
         viewModel= ViewModelProvider(this,factory)[getViewModel()]
         lifecycleScope.launch{userPreferences.authToken.first()}
         return binding.root

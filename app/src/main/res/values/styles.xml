@@ -79,7 +79,7 @@
         <item name="android:textColor">@color/white</item>
         <item name="fontFamily">@font/intermedium</item>
         <item name="android:textFontWeight" tools:targetApi="p">500</item>
-        <item name="android:background">@drawable/rectangle_for_chack_button</item>
+            <item name="android:background">@drawable/rectangle_for_chack_button</item>
 
     </style>
 

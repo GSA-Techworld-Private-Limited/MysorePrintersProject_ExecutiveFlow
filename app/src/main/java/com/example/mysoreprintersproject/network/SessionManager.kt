@@ -21,6 +21,8 @@ class SessionManager (context: Context) {
         const val USER_ID="id"
         const val ROLE="role"
         const val COUNTRY_CODE="country_code"
+        private const val KEY_LATITUDE = "latitude"
+        private const val KEY_LONGITUDE = "longitude"
     }
 
 
@@ -93,4 +95,30 @@ class SessionManager (context: Context) {
         return  prefs.getString(ROLE,null)
     }
 
+
+    // Store latitude
+    fun storeLatitude(latitude: Double) {
+        val editor = prefs.edit()
+        editor.putFloat(KEY_LATITUDE, latitude.toFloat())
+        editor.apply()
+    }
+
+    // Retrieve latitude
+    fun getLatitude(): Double? {
+        val latitude = prefs.getFloat(KEY_LATITUDE, Float.NaN)
+        return if (!latitude.isNaN()) latitude.toDouble() else null
+    }
+
+    // Store longitude
+    fun storeLongitude(longitude: Double) {
+        val editor = prefs.edit()
+        editor.putFloat(KEY_LONGITUDE, longitude.toFloat())
+        editor.apply()
+    }
+
+    // Retrieve longitude
+    fun getLongitude(): Double? {
+        val longitude = prefs.getFloat(KEY_LONGITUDE, Float.NaN)
+        return if (!longitude.isNaN()) longitude.toDouble() else null
+    }
 }

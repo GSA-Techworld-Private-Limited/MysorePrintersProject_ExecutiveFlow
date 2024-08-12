@@ -1,7 +1,10 @@
 package com.example.mysoreprintersproject.network
 
+import com.example.mysoreprintersproject.responses.CheckInRequest
+import com.example.mysoreprintersproject.responses.ChecksResponses
 import com.example.mysoreprintersproject.responses.LoginResponse
 import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
@@ -15,11 +18,12 @@ interface AuthApi {
 
 
     @FormUrlEncoded
-    @POST("/mobile_app/app-login/")
+    @POST("/mobile/login/")
     suspend fun login(
         @Field("email")  username: String,
         @Field("password")  password: String
     ) : LoginResponse
+
 
 
 

@@ -98,7 +98,7 @@
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content">
 
 
 
@@ -108,11 +108,13 @@
                    android:gravity="center"
                     android:layout_gravity="center"
                     android:layout_marginTop="30dp"
-                    style="@style/txtCheckButton"
+                    style="@style/txtCheckButton1"
+                    android:id="@+id/checkIn"
                     android:layout_height="47dp"/>
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:text="Check Out"
+                    android:id="@+id/checkout"
                     android:layout_width="250dp"
                     android:gravity="center"
                     android:layout_gravity="center"

@@ -60,6 +60,7 @@ class ViewPagerAdapter(private val context: Context,
                             progressBar.visibility=View.GONE
                             // Handle success, e.g., navigate to HomeContainerActivity
                             viewModel.saveAccessToken(resource.data.access!!)
+                            sessionManager.saveAuthToken(resource.data.access!!)
                             sessionManager.saveUserId(resource.data.userId.toString())
                             sessionManager.saveUserRole(resource.data.role!!)
                             val intent = Intent(context, HomeContainerActivity::class.java)

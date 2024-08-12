@@ -92,6 +92,7 @@
             style="@style/txtpublicsnas20"/>
 
         <Spinner
+            android:id="@+id/spinnerMonth"
             android:gravity="end"
             android:layout_marginEnd="5dp"
             android:layout_marginStart="27dp"
@@ -137,6 +138,7 @@
                 android:layout_height="wrap_content"/>
 
             <TextView
+                android:id="@+id/mainpagehoursText"
                 android:layout_marginTop="15dp"
                 android:layout_marginBottom="15dp"
                 style="@style/txtpublicsnas22"
@@ -182,6 +184,7 @@
 
 
         <TextView
+            android:id="@+id/totalhours"
             android:text="40 hours"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -207,6 +210,7 @@
 
 
         <TextView
+            android:id="@+id/distancetravelled"
             android:text="250"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -232,6 +236,7 @@
 
 
         <TextView
+            android:id="@+id/totalplacevisitedcount"
             android:text="03"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -251,66 +256,23 @@
 
 
         <TextView
+            android:id="@+id/locationsTextView"
             android:text="1.Raichur:"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/txtpoppinmedium13"/>
 
 
-        <TextView
-            android:text="3 visit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/txtpoppinmedium13"/>
+<!--        <TextView-->
+<!--            android:text="visit"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            style="@style/txtpoppinmedium13"/>-->
+
+
     </LinearLayout>
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="30dp"
-        android:layout_below="@+id/linearText4"
-        android:id="@+id/linearText5"
-        android:orientation="horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
 
 
-
-        <TextView
-            android:text="2.Gulbarga:"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/txtpoppinmedium13"/>
-
-
-        <TextView
-            android:text="5 visit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/txtpoppinmedium13"/>
-    </LinearLayout>
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="30dp"
-        android:layout_below="@+id/linearText5"
-        android:id="@+id/linearText6"
-        android:orientation="horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
-
-
-        <TextView
-            android:text="3.Kolar:"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/txtpoppinmedium13"/>
-
-
-        <TextView
-            android:text="4 visit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/txtpoppinmedium13"/>
-    </LinearLayout>
 
     </RelativeLayout>
 

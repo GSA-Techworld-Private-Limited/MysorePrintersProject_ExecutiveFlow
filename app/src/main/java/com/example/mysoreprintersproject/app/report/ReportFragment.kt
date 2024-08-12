@@ -3,122 +3,184 @@ package com.example.mysoreprintersproject.app.report
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.ImageView
+import android.widget.Spinner
+import android.widget.TextView
+import android.widget.Toast
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
 import com.example.mysoreprintersproject.R
 import com.example.mysoreprintersproject.app.attendance.AttendanceActivity
 import com.example.mysoreprintersproject.app.dailycollections.DailyCollectionActivity
 import com.example.mysoreprintersproject.app.dailyworkingsummryfragment.DailyWorkingSummaryActivity
 import com.example.mysoreprintersproject.app.homecontainer.HomeContainerActivity
-import com.example.mysoreprintersproject.app.homefragment.HomeActivity
 import com.example.mysoreprintersproject.app.netsale.NetSaleActivity
 import com.example.mysoreprintersproject.app.supplyreport.SupplyReportActivity
+import com.example.mysoreprintersproject.network.APIManager
+import com.example.mysoreprintersproject.network.SessionManager
+import com.example.mysoreprintersproject.responses.ExecutiveDashboard
+import com.example.mysoreprintersproject.responses.SummaryReportResponses
 import com.google.android.material.navigation.NavigationView
+import retrofit2.Call
+import retrofit2.Response
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+class ReportFragment : Fragment(R.layout.fragment_report) {
 
-/**
- * A simple [Fragment] subclass.
- * Use the [ReportFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class ReportFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
+    private var selectedPeriod: String = ""
     private lateinit var drawerLayout: DrawerLayout
-
+    private lateinit var sessionManager: SessionManager
     private lateinit var navigationView: NavigationView
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+    private lateinit var periodSpinner: Spinner
+
+    private lateinit var distanceTravelledText:TextView
+    private lateinit var totalplacevisitedCount:TextView
+    private lateinit var mainpageHoursVisited:TextView
+    private lateinit var totalHoursText:TextView
+
+    private lateinit var locationsTextView: TextView
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+
+        sessionManager = SessionManager(requireActivity())
+        drawerLayout = requireView().findViewById(R.id.drawer_layout)
+        periodSpinner = requireView().findViewById(R.id.spinnerMonth)
+        navigationView = requireView().findViewById(R.id.navigationView)
+
+        distanceTravelledText=requireView().findViewById(R.id.distancetravelled)
+        totalplacevisitedCount=requireView().findViewById(R.id.totalplacevisitedcount)
+
+        mainpageHoursVisited=requireView().findViewById(R.id.mainpagehoursText)
+        totalHoursText=requireView().findViewById(R.id.totalhours)
+
+        locationsTextView = requireView().findViewById(R.id.locationsTextView)
+
+        val navigationViewIcon: ImageView = requireView().findViewById(R.id.imageSettings)
+        navigationViewIcon.setOnClickListener {
+            drawerLayout.openDrawer(GravityCompat.START)
         }
+
+        setupSpinner()
+        setupNavigationView()
+
+
+        getSummaryResponses()
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_report, container, false).apply {
+    private fun setupSpinner() {
+        periodSpinner.setSelection(0) // Assuming the first item in the Spinner is "6 months"
 
-            drawerLayout = findViewById(R.id.drawer_layout)
+        periodSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                if (view == null) return
 
-            val navigatioViewIcon: ImageView =findViewById(R.id.imageSettings)
-            navigatioViewIcon.setOnClickListener {
-                drawerLayout.openDrawer(GravityCompat.START)
+                val selectedItem = parent.getItemAtPosition(position).toString()
+                selectedPeriod = selectedItem.filter { it.isDigit() }
+
+              getSummaryResponses()
             }
 
-            navigationView=findViewById(R.id.navigationView)
-
-            navigationView.setNavigationItemSelectedListener { item ->
-                when (item.itemId) {
-
-                    R.id.nav_dashboard->{
-                        startActivity(Intent(requireActivity(), HomeContainerActivity::class.java))
-
-                    }
-
-                    R.id.nav_attendance -> {
-                        startActivity(Intent(requireActivity(), AttendanceActivity::class.java))
-
-                    }
-
-
-                    R.id.nav_daily_work_summary -> {
-                        startActivity(Intent(requireActivity(), DailyWorkingSummaryActivity::class.java))
-                    }
-                    R.id.nav_collections_performance -> {
-                        startActivity(Intent(requireActivity(),DailyCollectionActivity::class.java))
-                    }
-                    R.id.nav_collections_report -> {
-                        startActivity(Intent(requireActivity(), DailyCollectionActivity::class.java))
-                    }
-                    R.id.nav_supply_reports -> {
-                        startActivity(Intent(requireActivity(), SupplyReportActivity::class.java))
-                    }
-                    R.id.nav_net_sales_report -> {
-                        startActivity(Intent(requireActivity(), NetSaleActivity::class.java))
-                    }
-                    // Add other cases for different activities
-                    else -> {
-                        Log.d("NavigationDrawer", "Unhandled item clicked: ${item.itemId}")
-                    }
-                }
-                drawerLayout.closeDrawers()
-                true
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                // Optionally handle this case
             }
         }
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment ReportFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            ReportFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+    private fun setupNavigationView() {
+        navigationView.setNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_dashboard -> startActivity(Intent(requireActivity(), HomeContainerActivity::class.java))
+                R.id.nav_attendance -> startActivity(Intent(requireActivity(), AttendanceActivity::class.java))
+                R.id.nav_daily_work_summary -> startActivity(Intent(requireActivity(), DailyWorkingSummaryActivity::class.java))
+                R.id.nav_collections_performance -> startActivity(Intent(requireActivity(), DailyCollectionActivity::class.java))
+                R.id.nav_collections_report -> startActivity(Intent(requireActivity(), DailyCollectionActivity::class.java))
+                R.id.nav_supply_reports -> startActivity(Intent(requireActivity(), SupplyReportActivity::class.java))
+                R.id.nav_net_sales_report -> startActivity(Intent(requireActivity(), NetSaleActivity::class.java))
+                else -> Log.d("NavigationDrawer", "Unhandled item clicked: ${item.itemId}")
             }
+            drawerLayout.closeDrawers()
+            true
+        }
+    }
+
+    private fun getSummaryResponses() {
+        val serviceGenerator = APIManager.apiInterface
+        val accessToken = sessionManager.fetchAuthToken()
+        val authorization = "Bearer $accessToken"
+        val id = sessionManager.fetchUserId()!!
+
+        serviceGenerator.getSummaryReport(authorization, id, selectedPeriod)
+            .enqueue(object : retrofit2.Callback<SummaryReportResponses> {
+                override fun onResponse(call: Call<SummaryReportResponses>, response: Response<SummaryReportResponses>) {
+                    val summaryResponses = response.body()
+                    // Handle the response as needed
+
+                    if(summaryResponses!=null){
+                        totalplacevisitedCount.text=summaryResponses.locations_visited_count.toString()
+                        distanceTravelledText.text=summaryResponses.total_distance
+
+
+                        val totalHoursWorked = summaryResponses.total_hours_worked
+
+                        // Split the string into hours and minutes
+                        val timeParts = totalHoursWorked.split(":")
+                        val hours = timeParts[0].toInt()
+                        val minutes = timeParts[1].toInt()
+
+                        // Create a string builder to construct the final output
+                        val formattedTime = StringBuilder()
+
+                        if (hours > 0) {
+                            formattedTime.append("$hours hour")
+                            if (hours > 1) {
+                                formattedTime.append("s")
+                            }
+                        }
+
+                        if (minutes > 0) {
+                            if (hours > 0) {
+                                formattedTime.append(" ") // add space between hours and minutes
+                            }
+                            formattedTime.append("$minutes minute")
+                            if (minutes > 1) {
+                                formattedTime.append("s")
+                            }
+                        }
+
+                        // If neither hours nor minutes, handle edge case
+                        if (hours == 0 && minutes == 0) {
+                            formattedTime.append("Less than a minute")
+                        }
+
+
+                        mainpageHoursVisited.text=formattedTime
+
+                        totalHoursText.text=formattedTime
+
+
+                        // Display locations visited details
+                        displayLocations(summaryResponses.locations_visited_details)
+
+                    }
+                }
+
+                override fun onFailure(call: Call<SummaryReportResponses>, t: Throwable) {
+                    Toast.makeText(requireActivity(), "Error fetching data", Toast.LENGTH_SHORT).show()
+                }
+            })
+
+    }
+
+
+    private fun displayLocations(locationsVisitedDetails: Map<String, Int>) {
+        val formattedString = StringBuilder()
+        locationsVisitedDetails.entries.forEachIndexed { index, entry ->
+            formattedString.append("${index + 1}. ${entry.key}: ${entry.value}visits   \n")
+
+        }
+        locationsTextView.text = formattedString.toString()
     }
 }
