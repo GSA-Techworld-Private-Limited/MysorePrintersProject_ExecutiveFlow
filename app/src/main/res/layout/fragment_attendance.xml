@@ -112,6 +112,16 @@
                     android:id="@+id/checkIn"
                     android:layout_height="47dp"/>
 
+
+
+                <ProgressBar
+                    android:progressBackgroundTint="@color/blue"
+                    android:visibility="gone"
+                    android:id="@+id/progressbar"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
                 <androidx.appcompat.widget.AppCompatButton
                     android:text="Check Out"
                     android:id="@+id/checkout"
@@ -155,6 +165,7 @@
                             android:layout_height="wrap_content"/>
 
                         <TextView
+                            android:id="@+id/location"
                             android:layout_marginTop="20dp"
                             style="@style/txtpoppinmedium14"
                             android:text="New cozy PG , 5th Phase , JP Nagar,\n Bangalore, 560078"

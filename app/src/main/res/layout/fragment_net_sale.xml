@@ -42,7 +42,7 @@
                 style="@style/txtpoppinssemibold18"
                 android:layout_marginStart="8dp"
                 android:layout_gravity="center"
-                android:text="Supply Report"
+                android:text="NetSale Report"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
@@ -129,6 +129,9 @@
             android:id="@+id/spinner_from"
             android:layout_width="100dp"
             android:layout_height="30dp"
+            android:textSize="10sp"
+            android:fontFamily="@font/poppins_medium"
+            android:textColor="@color/black"
             android:background="@drawable/spinner_background_ratio"
             android:entries="@array/dateRange" />
 
@@ -137,6 +140,9 @@
             android:layout_width="90dp"
             android:layout_height="30dp"
             android:layout_marginStart="3dp"
+            android:textSize="10sp"
+            android:fontFamily="@font/poppins_medium"
+            android:textColor="@color/black"
             android:background="@drawable/spinner_background_ratio"
             android:entries="@array/tarritoryWise"
              />
@@ -147,6 +153,9 @@
             android:layout_width="80dp"
             android:layout_height="30dp"
             android:layout_marginStart="3dp"
+            android:textSize="10sp"
+            android:fontFamily="@font/poppins_medium"
+            android:textColor="@color/black"
             android:background="@drawable/spinner_background_ratio"
             android:entries="@array/Agents"
             />
@@ -156,6 +165,9 @@
             android:layout_width="100dp"
             android:layout_height="30dp"
             android:layout_marginStart="3dp"
+            android:textSize="10sp"
+            android:fontFamily="@font/poppins_medium"
+            android:textColor="@color/black"
             android:background="@drawable/spinner_background_ratio"
             android:entries="@array/publication" />
     </LinearLayout>

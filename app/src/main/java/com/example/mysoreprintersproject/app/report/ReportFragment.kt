@@ -119,46 +119,49 @@ class ReportFragment : Fragment(R.layout.fragment_report) {
                     // Handle the response as needed
 
                     if(summaryResponses!=null){
+                        val totalHoursWorked = summaryResponses.total_hours_worked
                         totalplacevisitedCount.text=summaryResponses.locations_visited_count.toString()
                         distanceTravelledText.text=summaryResponses.total_distance
 
 
-                        val totalHoursWorked = summaryResponses.total_hours_worked
 
-                        // Split the string into hours and minutes
-                        val timeParts = totalHoursWorked.split(":")
-                        val hours = timeParts[0].toInt()
-                        val minutes = timeParts[1].toInt()
 
-                        // Create a string builder to construct the final output
-                        val formattedTime = StringBuilder()
 
-                        if (hours > 0) {
-                            formattedTime.append("$hours hour")
-                            if (hours > 1) {
-                                formattedTime.append("s")
-                            }
-                        }
+                        if (!totalHoursWorked.isNullOrEmpty()) {
+                            val timeParts = totalHoursWorked.split(":")
+                            val hours = timeParts[0].toInt()
+                            val minutes = timeParts[1].toInt()
 
-                        if (minutes > 0) {
+                            val formattedTime = StringBuilder()
+
                             if (hours > 0) {
-                                formattedTime.append(" ") // add space between hours and minutes
+                                formattedTime.append("$hours hour")
+                                if (hours > 1) {
+                                    formattedTime.append("s")
+                                }
                             }
-                            formattedTime.append("$minutes minute")
-                            if (minutes > 1) {
-                                formattedTime.append("s")
+
+                            if (minutes > 0) {
+                                if (hours > 0) {
+                                    formattedTime.append(" ") // add space between hours and minutes
+                                }
+                                formattedTime.append("$minutes minute")
+                                if (minutes > 1) {
+                                    formattedTime.append("s")
+                                }
                             }
+
+                            if (hours == 0 && minutes == 0) {
+                                formattedTime.append("Less than a minute")
+                            }
+
+                            mainpageHoursVisited.text = formattedTime
+                            totalHoursText.text = formattedTime
+
+                        } else {
+                            mainpageHoursVisited.text = "No Work"
+                            totalHoursText.text = "No Work"
                         }
-
-                        // If neither hours nor minutes, handle edge case
-                        if (hours == 0 && minutes == 0) {
-                            formattedTime.append("Less than a minute")
-                        }
-
-
-                        mainpageHoursVisited.text=formattedTime
-
-                        totalHoursText.text=formattedTime
 
 
                         // Display locations visited details
@@ -168,6 +171,7 @@ class ReportFragment : Fragment(R.layout.fragment_report) {
                 }
 
                 override fun onFailure(call: Call<SummaryReportResponses>, t: Throwable) {
+
                     Toast.makeText(requireActivity(), "Error fetching data", Toast.LENGTH_SHORT).show()
                 }
             })
@@ -175,12 +179,17 @@ class ReportFragment : Fragment(R.layout.fragment_report) {
     }
 
 
-    private fun displayLocations(locationsVisitedDetails: Map<String, Int>) {
-        val formattedString = StringBuilder()
-        locationsVisitedDetails.entries.forEachIndexed { index, entry ->
-            formattedString.append("${index + 1}. ${entry.key}: ${entry.value}visits   \n")
-
+    private fun displayLocations(locationsVisitedDetails: Map<String, Int>?) {
+        if (locationsVisitedDetails != null) {
+            val formattedString = StringBuilder()
+            locationsVisitedDetails.entries.forEachIndexed { index, entry ->
+                formattedString.append("${index + 1}. ${entry.key}: ${entry.value} visits\n")
+            }
+            locationsTextView.text = formattedString.toString()
+        } else {
+            // Handle the case where locationsVisitedDetails is null
+            locationsTextView.text = "No location details available."
         }
-        locationsTextView.text = formattedString.toString()
     }
+
 }

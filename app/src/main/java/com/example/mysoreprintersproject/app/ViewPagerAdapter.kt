@@ -65,7 +65,8 @@ class ViewPagerAdapter(private val context: Context,
                             sessionManager.saveUserRole(resource.data.role!!)
                             val intent = Intent(context, HomeContainerActivity::class.java)
                             context.startActivity(intent)
-
+                            // Finish the SplashScreenActivity
+                            (context as? SplashScreenActivity)?.finish()
                         }
                         is Resource.Failure -> {
                             // Handle failure, e.g., show an error message

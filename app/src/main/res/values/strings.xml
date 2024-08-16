@@ -22,12 +22,14 @@
     <string name="title_activity_navi">Navi</string>
 
     <string-array name="from_dates">
+        <item>From</item>
         <item>06-Jan-2024</item>
         <item>07-Feb-2024</item>
         <item>08-Mar-2024</item>
     </string-array>
 
     <string-array name="to_dates">
+        <item>To</item>
         <item>06-Jan-2024</item>
         <item>07-Feb-2024</item>
         <item>08-Mar-2024</item>
@@ -69,5 +71,15 @@
         <item>Publication</item>
         <item>DH</item>
         <item>PV</item>
+    </string-array>
+
+
+    <string-array name="collection_performance">
+        <item>Select Payment Method:</item>
+        <item>Cheque</item>
+        <item>Cash</item>
+        <item>RTGS</item>
+        <item>NEFT</item>
+        <item>UPI</item>
     </string-array>
 </resources>

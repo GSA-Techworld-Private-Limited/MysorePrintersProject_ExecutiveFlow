@@ -28,6 +28,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             <TextView
+                android:id="@+id/agentName"
                 style="@style/txtpoppinsRegular14"
                 android:gravity="end"
                 android:layout_gravity="end"
@@ -53,6 +54,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             <TextView
+                android:id="@+id/txtterritory"
                 style="@style/txtpoppinsRegular14"
                 android:gravity="end"
                 android:layout_gravity="end"
@@ -79,6 +81,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             <TextView
+                android:id="@+id/txtdropoint"
                 style="@style/txtpoppinsRegular14"
                 android:gravity="end"
                 android:layout_gravity="end"
@@ -105,6 +108,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             <TextView
+                android:id="@+id/txtNetSale"
                 style="@style/txtpoppinsRegular14"
                 android:gravity="end"
                 android:layout_gravity="end"
