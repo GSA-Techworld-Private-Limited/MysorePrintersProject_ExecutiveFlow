@@ -2,10 +2,13 @@ package com.example.mysoreprintersproject.network
 import com.example.mysoreprintersproject.responses.CheckInRequest
 import com.example.mysoreprintersproject.responses.CheckOutRequest
 import com.example.mysoreprintersproject.responses.ChecksResponses
+import com.example.mysoreprintersproject.responses.CollectionReport
 import com.example.mysoreprintersproject.responses.ExecutiveDashboard
 import com.example.mysoreprintersproject.responses.LoginResponse
+import com.example.mysoreprintersproject.responses.NetSalesResponse
 import com.example.mysoreprintersproject.responses.ProfileResponses
 import com.example.mysoreprintersproject.responses.SummaryReportResponses
+import com.example.mysoreprintersproject.responses.SupplyReportResponse
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.Body
@@ -58,6 +61,26 @@ interface DataSource {
         @Query("period")period:String
     ):Call<SummaryReportResponses>
 
+    @POST("/app-executive/collection_report/")
+    fun sendCollectionReport(
+        @Header("Authorization") token: String,
+        @Body  collection_report: CollectionReport
+    ):Call<Void>
+
+
+    @GET("/app-executive/supply-report-list/")
+    fun getSupplyReport(
+        @Header("Authorization") token: String,
+        @Query("id")id:String,
+        @Query("period")period:String
+    ):Call<List<SupplyReportResponse>>
+
+
+    @GET("/app-executive/executive_netsales/")
+    fun getNetSale(
+        @Header("Authorization") token: String,
+        @Query("id")id:String
+    ):Call<NetSalesResponse>
 //    @GET("api/event/create/")
 //    suspend fun getAllEvents(
 //        @Header("Authorization") token: String

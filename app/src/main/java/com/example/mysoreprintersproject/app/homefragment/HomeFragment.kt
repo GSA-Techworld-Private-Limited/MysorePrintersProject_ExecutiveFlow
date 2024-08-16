@@ -13,7 +13,9 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import com.example.mysoreprintersproject.R
+import com.example.mysoreprintersproject.app.SplashScreenActivity
 import com.example.mysoreprintersproject.app.attendance.AttendanceActivity
+import com.example.mysoreprintersproject.app.collection_performance.CollectionPerformanceActivity
 import com.example.mysoreprintersproject.app.dailycollections.DailyCollectionActivity
 import com.example.mysoreprintersproject.app.dailyworkingsummryfragment.DailyWorkingSummaryActivity
 import com.example.mysoreprintersproject.app.homecontainer.HomeContainerActivity
@@ -63,10 +65,11 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         periodSpinner = requireView().findViewById(R.id.spinnerMonth)
 
 
-        txthours=requireActivity().findViewById(R.id.hours)
-        visits=requireActivity().findViewById(R.id.locations)
-        kilomeres=requireActivity().findViewById(R.id.kilometers)
-        totalhoursworked=requireActivity().findViewById(R.id.totalhoursworked)
+        txthours = requireView().findViewById(R.id.hours)
+        visits = requireView().findViewById(R.id.locations)
+        kilomeres = requireView().findViewById(R.id.kilometers)
+        totalhoursworked = requireView().findViewById(R.id.totalhoursworked)
+
         setupNavigationView()
         setupSpinner()
         getExecutiveDashboard() // Initially fetch data
@@ -83,10 +86,16 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 R.id.nav_dashboard -> startActivity(Intent(requireActivity(), HomeContainerActivity::class.java))
                 R.id.nav_attendance -> startActivity(Intent(requireActivity(), AttendanceActivity::class.java))
                 R.id.nav_daily_work_summary -> startActivity(Intent(requireActivity(), DailyWorkingSummaryActivity::class.java))
-                R.id.nav_collections_performance -> startActivity(Intent(requireActivity(), DailyCollectionActivity::class.java))
+                R.id.nav_collections_performance -> startActivity(Intent(requireActivity(), CollectionPerformanceActivity::class.java))
                 R.id.nav_collections_report -> startActivity(Intent(requireActivity(), DailyCollectionActivity::class.java))
                 R.id.nav_supply_reports -> startActivity(Intent(requireActivity(), SupplyReportActivity::class.java))
                 R.id.nav_net_sales_report -> startActivity(Intent(requireActivity(), NetSaleActivity::class.java))
+                R.id.nav_logout ->{
+                    sessionManager.logout()
+                    sessionManager.clearSession()
+                    startActivity(Intent(requireActivity(),SplashScreenActivity::class.java))
+                    requireActivity().finish()
+                }
                 else -> Log.d("NavigationDrawer", "Unhandled item clicked: ${item.itemId}")
             }
             drawerLayout.closeDrawers()
@@ -173,61 +182,68 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         serviceGenerator.getExecutiveDashboard(authorization, id, selectedPeriod)
             .enqueue(object : retrofit2.Callback<ExecutiveDashboard> {
                 override fun onResponse(call: Call<ExecutiveDashboard>, response: Response<ExecutiveDashboard>) {
+
                     val dashboardResponses = response.body()
                     if (dashboardResponses != null) {
-                        val totalHoursWorked = dashboardResponses.totalHoursWorked!!
+                        val totalHoursWorked = dashboardResponses.totalHoursWorked
+                        if (totalHoursWorked != null) {
+                            // Split the string into hours and minutes
+                            val timeParts = totalHoursWorked.split(":")
+                            val hours = timeParts[0].toInt()
+                            val minutes = timeParts[1].toInt()
 
-                        // Split the string into hours and minutes
-                        val timeParts = totalHoursWorked.split(":")
-                        val hours = timeParts[0].toInt()
-                        val minutes = timeParts[1].toInt()
+                            // Create a string builder to construct the final output
+                            val formattedTime = StringBuilder()
 
-                        // Create a string builder to construct the final output
-                        val formattedTime = StringBuilder()
-
-                        if (hours > 0) {
-                            formattedTime.append("$hours hour")
-                            if (hours > 1) {
-                                formattedTime.append("s")
-                            }
-                        }
-
-                        if (minutes > 0) {
                             if (hours > 0) {
-                                formattedTime.append(" ") // add space between hours and minutes
+                                formattedTime.append("$hours hour")
+                                if (hours > 1) {
+                                    formattedTime.append("s")
+                                }
                             }
-                            formattedTime.append("$minutes minute")
-                            if (minutes > 1) {
-                                formattedTime.append("s")
+
+                            if (minutes > 0) {
+                                if (hours > 0) {
+                                    formattedTime.append(" ") // add space between hours and minutes
+                                }
+                                formattedTime.append("$minutes minute")
+                                if (minutes > 1) {
+                                    formattedTime.append("s")
+                                }
                             }
+
+                            // If neither hours nor minutes, handle edge case
+                            if (hours == 0 && minutes == 0) {
+                                formattedTime.append("Less than a minute")
+                            }
+
+                            // Display the formatted time in the TextView
+                            txthours.text = formattedTime.toString()
+
+                            kilomeres.text = dashboardResponses.totalDistance
+                            visits.text = dashboardResponses.locationsVisitedCount.toString()
+                            totalhoursworked.text = formattedTime.toString()
+
+                            // Calculate total possible hours for the selected period
+                            val monthsSelected = selectedPeriod.toIntOrNull() ?: 0
+                            val totalPossibleHours = monthsSelected * 24 * 30 // Assuming 24 hours a day and 30 days a month
+
+                            // Calculate worked hours as a float
+                            val workedHours = hours + (minutes / 60.0) // Convert minutes to fractional hours
+
+                            // Calculate the percentage of worked hours
+                            val possibleHours = totalPossibleHours.toFloat()
+                            val workedPercentage = (workedHours / possibleHours) * 100
+
+                            // Update the donut chart with the calculated percentage
+                            val donutChartView = requireView().findViewById<DonutChartView>(R.id.donutChart)
+                            donutChartView.setCompletedPercentage(workedPercentage.toFloat())
+                        } else {
+                            // Handle the null case appropriately
+                            txthours.text = "No Work"
+                            totalhoursworked.text = "No Work"
                         }
 
-                        // If neither hours nor minutes, handle edge case
-                        if (hours == 0 && minutes == 0) {
-                            formattedTime.append("Less than a minute")
-                        }
-
-                        // Display the formatted time in the TextView
-                        txthours.text = formattedTime.toString()
-
-                        kilomeres.text = dashboardResponses.totalDistance
-                        visits.text = dashboardResponses.locationsVisitedCount.toString()
-                        totalhoursworked.text = formattedTime.toString()
-
-                        // Calculate total possible hours for the selected period
-                        val monthsSelected = selectedPeriod.toIntOrNull() ?: 0
-                        val totalPossibleHours = monthsSelected * 24 * 30 // Assuming 24 hours a day and 30 days a month
-
-                        // Calculate worked hours as a float
-                        val workedHours = hours + (minutes / 60.0) // Convert minutes to fractional hours
-
-                        // Calculate the percentage of worked hours
-                        val possibleHours = totalPossibleHours.toFloat()
-                        val workedPercentage = (workedHours / possibleHours) * 100
-
-                        // Update the donut chart with the calculated percentage
-                        val donutChartView = requireView().findViewById<DonutChartView>(R.id.donutChart)
-                        donutChartView.setCompletedPercentage(workedPercentage.toFloat())
 
                         // Update the bar chart with the attendance graph
                         val attendanceGraph = dashboardResponses.attendanceGraph

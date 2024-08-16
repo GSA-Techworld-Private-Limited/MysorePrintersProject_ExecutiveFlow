@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import com.example.mysoreprintersproject.R
+import java.util.concurrent.Phaser
 
 /**
  * Session manager to save and fetch data from SharedPreferences
@@ -23,7 +24,14 @@ class SessionManager (context: Context) {
         const val COUNTRY_CODE="country_code"
         private const val KEY_LATITUDE = "latitude"
         private const val KEY_LONGITUDE = "longitude"
+        private const val PLACE_NAME="PLACE_NAME"
+        private const val AREA="AREA"
+        private const val PHASE="PHASE"
+        private const val CITY="CITY"
+        private const val STATE="STATE"
+        private const val PINCODE="PINCODE"
     }
+
 
 
 
@@ -68,7 +76,15 @@ class SessionManager (context: Context) {
     fun clearSession() {
         sharedPreferences.edit().remove("access_token").apply()
         sharedPreferences.edit().remove("role").apply()
+        sharedPreferences.edit().remove("latitude").apply()
+        sharedPreferences.edit().remove("longitude").apply()
+        sharedPreferences.edit().remove("PLACE_NAME").apply()
+        sharedPreferences.edit().remove("AREA").apply()
+        sharedPreferences.edit().remove("PHASE").apply()
+        sharedPreferences.edit().remove("STATE").apply()
+        sharedPreferences.edit().remove("PINCODE").apply()
     }
+
 
     fun saveUserId(userId:String){
         val editor=prefs.edit()
@@ -121,4 +137,75 @@ class SessionManager (context: Context) {
         val longitude = prefs.getFloat(KEY_LONGITUDE, Float.NaN)
         return if (!longitude.isNaN()) longitude.toDouble() else null
     }
+
+
+
+
+    fun storePlaceName(placeName: String) {
+        val editor = prefs.edit()
+        editor.putString(PLACE_NAME, placeName)
+        editor.apply()
+    }
+
+    fun storePhase(phase: String) {
+        val editor = prefs.edit()
+        editor.putString(PHASE, phase)
+        editor.apply()
+    }
+
+    fun storeArea(area: String) {
+         val editor = prefs.edit()
+        editor.putString(AREA, area)
+        editor.apply()
+    }
+
+    fun storePincode(pincode: String) {
+        val editor = prefs.edit()
+        editor.putString(PINCODE, pincode)
+        editor.apply()
+    }
+
+    fun storeCity(city: String) {
+        val editor = prefs.edit()
+        editor.putString(CITY, city)
+        editor.apply()
+    }
+
+    fun storeState(state: String) {
+        val editor = prefs.edit()
+        editor.putString(STATE, state)
+        editor.apply()
+    }
+
+    fun fetchCity():String?{
+        return prefs.getString(CITY,null)
+    }
+    fun fetchPhase():String?{
+        return prefs.getString(PHASE,null)
+    }
+    fun fetchPlace():String?{
+        return prefs.getString(PLACE_NAME,null)
+    }
+    fun fetchArea():String?{
+        return prefs.getString(AREA,null)
+    }
+    fun fetchPincode():String?{
+        return prefs.getString(PINCODE,null)
+    }
+    fun fetchState():String?{
+        return prefs.getString(STATE,null)
+    }
+
+
+
+    fun saveCheckInState(isCheckedIn: Boolean) {
+        val editor = prefs.edit()
+        editor.putBoolean("IS_CHECKED_IN", isCheckedIn)
+        editor.apply()
+    }
+
+    fun isCheckedIn(): Boolean {
+        return prefs.getBoolean("IS_CHECKED_IN", false)
+    }
+
 }

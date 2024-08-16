@@ -50,9 +50,9 @@ class AttendanceFragment :
 
     private lateinit var navigationView: NavigationView
 
-
     private var isCheckedIn = false // To track the check-in state
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         sessionManager = SessionManager(requireActivity())
         super.onActivityCreated(savedInstanceState)
@@ -113,6 +113,17 @@ class AttendanceFragment :
             true
         }
 
+
+        val place=sessionManager.fetchPlace()
+        val phase=sessionManager.fetchPhase()
+        val city=sessionManager.fetchCity()
+        val state=sessionManager.fetchState()
+        val pinode=sessionManager.fetchPincode()
+
+        binding.location.text="$phase, $place  \n $city, $state, $pinode"
+
+        setInitialButtonStyles()
+
         val token = sessionManager.fetchAuthToken()
         val authorization = "Bearer $token"
         val id = sessionManager.fetchUserId()!!
@@ -123,8 +134,12 @@ class AttendanceFragment :
                 is Resource.Success -> {
                     Toast.makeText(requireActivity(), "Checked In Successfully", Toast.LENGTH_SHORT).show()
                     toggleButtons(true)
+                    binding.progressbar.visibility=View.GONE
                 }
-                is Resource.Failure -> Toast.makeText(requireActivity(), "Check-In failed!", Toast.LENGTH_SHORT).show()
+                is Resource.Failure -> {
+                    Toast.makeText(requireActivity(), "Check-In failed!", Toast.LENGTH_SHORT).show()
+                    binding.progressbar.visibility=View.GONE
+                }
                 else -> { /* Handle other cases if needed */ }
             }
         })
@@ -135,34 +150,71 @@ class AttendanceFragment :
                 is Resource.Success -> {
                     Toast.makeText(requireActivity(), "Checked Out Successfully", Toast.LENGTH_SHORT).show()
                     toggleButtons(false)
+                    binding.progressbar.visibility=View.GONE
                 }
-                is Resource.Failure -> Toast.makeText(requireActivity(), "Check-Out failed!", Toast.LENGTH_SHORT).show()
+                is Resource.Failure -> {
+                    Toast.makeText(requireActivity(), "Check-Out failed!", Toast.LENGTH_SHORT)
+                        .show()
+                    binding.progressbar.visibility=View.GONE
+                }
                 else -> { /* Handle other cases if needed */ }
             }
         })
 
         // Set initial button styles based on check-in state
-        if (isCheckedIn) {
-            toggleButtons(true)
-        } else {
-            toggleButtons(false)
-        }
+      //  toggleButtons(isCheckedIn)
 
 
         binding.checkIn.setOnClickListener {
-
+            binding.progressbar.visibility=View.VISIBLE
+            if (!isCheckedIn) {
                 val sendingRequest = CheckInRequest(id.toInt(), sessionManager.getLatitude()!!, sessionManager.getLongitude()!!)
                 viewModel.checkIn(authorization, sendingRequest)
-
+                sessionManager.saveCheckInState(true) // Save check-in state
+            } else {
+                Toast.makeText(requireActivity(), "You are already checked in!", Toast.LENGTH_SHORT).show()
+                binding.progressbar.visibility=View.GONE
+            }
         }
-
 
         binding.checkout.setOnClickListener {
-            val sendingCheckOutRequest=CheckOutRequest(id.toInt())
-            viewModel.checkOut(authorization,sendingCheckOutRequest)
+            binding.progressbar.visibility=View.VISIBLE
+            if (isCheckedIn) {
+                val sendingCheckOutRequest = CheckOutRequest(id.toInt())
+                viewModel.checkOut(authorization, sendingCheckOutRequest)
+                sessionManager.saveCheckInState(false) // Save check-out state
+            } else {
+                Toast.makeText(requireActivity(), "You need to check in first!", Toast.LENGTH_SHORT).show()
+                binding.progressbar.visibility=View.GONE
+            }
         }
+
     }
 
+
+
+    private fun setInitialButtonStyles() {
+        // Retrieve the check-in state from the SessionManager or ViewModel
+        isCheckedIn = sessionManager.isCheckedIn()
+
+        if (isCheckedIn) {
+            binding.checkIn.isEnabled = false // Disable check-in button
+            binding.checkout.isEnabled = true  // Enable check-out button
+
+            binding.checkIn.setBackgroundResource(R.drawable.rectangle_for_chack_button)
+            binding.checkIn.setTextAppearance(R.style.txtCheckButton)
+            binding.checkout.setTextAppearance(R.style.txtCheckButton1)
+            binding.checkout.setBackgroundResource(R.drawable.rectangle_bg_white_check_button)
+        } else {
+            binding.checkIn.isEnabled = true // Enable check-in button
+            binding.checkout.isEnabled = false // Disable check-out button
+
+            binding.checkIn.setBackgroundResource(R.drawable.rectangle_bg_white_check_button)
+            binding.checkout.setBackgroundResource(R.drawable.rectangle_for_chack_button)
+            binding.checkIn.setTextAppearance(R.style.txtCheckButton1)
+            binding.checkout.setTextAppearance(R.style.txtCheckButton)
+        }
+    }
 
 
 
@@ -170,16 +222,18 @@ class AttendanceFragment :
     private fun toggleButtons(isCheckedIn: Boolean) {
         this.isCheckedIn = isCheckedIn
         if (isCheckedIn) {
-            // Change the background of the "Check In" button when checked in
+            binding.checkIn.isEnabled = false // Disable the check-in button after successful check-in
+            binding.checkout.isEnabled = true  // Enable the check-out button
+
             binding.checkIn.setBackgroundResource(R.drawable.rectangle_for_chack_button)
             binding.checkIn.setTextAppearance(R.style.txtCheckButton)
             binding.checkout.setTextAppearance(R.style.txtCheckButton1)
-            // Change the background of the "Check Out" button to default when checked in
             binding.checkout.setBackgroundResource(R.drawable.rectangle_bg_white_check_button)
         } else {
-            // Change the background of the "Check In" button to default when checked out
+            binding.checkIn.isEnabled = true // Enable the check-in button after check-out
+            binding.checkout.isEnabled = false // Disable the check-out button
+
             binding.checkIn.setBackgroundResource(R.drawable.rectangle_bg_white_check_button)
-            // Change the background of the "Check Out" button when checked out
             binding.checkout.setBackgroundResource(R.drawable.rectangle_for_chack_button)
             binding.checkIn.setTextAppearance(R.style.txtCheckButton1)
             binding.checkout.setTextAppearance(R.style.txtCheckButton)

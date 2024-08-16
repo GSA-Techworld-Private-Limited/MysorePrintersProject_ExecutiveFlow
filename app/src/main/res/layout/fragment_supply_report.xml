@@ -129,6 +129,10 @@
             android:id="@+id/spinner_from"
             android:layout_width="100dp"
             android:layout_height="40dp"
+            android:textSize="10sp"
+            android:fontFamily="@font/poppins_medium"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
             android:background="@drawable/spinner_background_ratio"
             android:entries="@array/from_dates" />
 
@@ -136,18 +140,26 @@
             android:id="@+id/spinner_to"
             android:layout_width="100dp"
             android:layout_height="40dp"
+            android:textSize="10sp"
+            android:fontFamily="@font/poppins_medium"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
             android:background="@drawable/spinner_background_ratio"
             android:entries="@array/to_dates"
-            android:layout_marginStart="28dp" />
+            android:layout_marginStart="22dp" />
 
 
         <Spinner
             android:id="@+id/spinner_three"
             android:layout_width="100dp"
             android:layout_height="40dp"
+            android:textSize="10sp"
+            android:fontFamily="@font/poppins_medium"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
             android:background="@drawable/spinner_background_ratio"
             android:entries="@array/segments"
-            android:layout_marginStart="28dp" />
+            android:layout_marginStart="22dp" />
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView

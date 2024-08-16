@@ -3,11 +3,15 @@ package com.example.mysoreprintersproject.app.supplyreport
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mysoreprintersproject.R
 import com.example.mysoreprintersproject.app.dailycollections.DayCollectionAdapter
+import com.example.mysoreprintersproject.responses.SupplyReportResponse
 
-class SupplyReportAdapter:
+class SupplyReportAdapter(
+    private val list:List<SupplyReportResponse>
+):
     RecyclerView.Adapter<SupplyReportAdapter.CardViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardViewHolder {
@@ -19,13 +23,25 @@ class SupplyReportAdapter:
     override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
         // Bind your data here
         //holder.cardTitle.text = items[position]
+        holder.bindview(list[position])
     }
 
-    override fun getItemCount(): Int = 2
+    override fun getItemCount(): Int {
+        return list.size
+    }
 
     class CardViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-//        val cardTitle: TextView = itemView.findViewById(R.id.card_title)
-//        val cardTime: TextView = itemView.findViewById(R.id.card_time)
-//        val cardStatus: TextView = itemView.findViewById(R.id.card_status)
+        val seName: TextView = itemView.findViewById(R.id.sename)
+        val bpcode: TextView = itemView.findViewById(R.id.bpcode)
+        val datetxt: TextView = itemView.findViewById(R.id.date)
+        val sopv:TextView=itemView.findViewById(R.id.sopv)
+
+        fun bindview(postmodel:SupplyReportResponse){
+            seName.text=postmodel.SEname
+            bpcode.text=postmodel.BPcode.toString()
+            datetxt.text=postmodel.Date
+            sopv.text=postmodel.SumofPv
+        }
+
     }
 }

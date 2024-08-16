@@ -45,6 +45,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.common.api.ResolvableApiException
 import java.io.IOException
+import java.util.Locale
 
 
 class HomeContainerActivity : AppCompatActivity() {
@@ -96,22 +97,28 @@ class HomeContainerActivity : AppCompatActivity() {
 
         replaceFragment(HomeFragment())
 
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.navHostFagment) as NavHostFragment?
-
+        // No need to call replaceFragment directly, let the NavHostFragment handle navigation
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.navHostFagment) as NavHostFragment?
         val navController = navHostFragment!!.navController
+
+        frameBottomBar = findViewById(R.id.frameBottombar)
+// Setup navigation for bottom navigation and drawer
+        NavigationUI.setupWithNavController(frameBottomBar, navController)
+        NavigationUI.setupWithNavController(navigationView, navController)
+
+       // val navController = navHostFragment!!.navController
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             Log.d("NavController", "Navigated to ${destination.label}")
         }
 
 
-        frameBottomBar = findViewById(R.id.frameBottombar)
-
-        NavigationUI.setupWithNavController(navigationView,navController)
 
 
-        NavigationUI.setupWithNavController(frameBottomBar, navController)
+//        NavigationUI.setupWithNavController(navigationView,navController)
+//
+//
+//        NavigationUI.setupWithNavController(frameBottomBar, navController)
 
         frameBottomBar.setOnNavigationItemSelectedListener {it ->
             when(it.itemId){
@@ -223,10 +230,11 @@ class HomeContainerActivity : AppCompatActivity() {
 
     private fun checkLocationSettingsAndStartUpdates() {
         val locationRequest = LocationRequest.create().apply {
-            interval = 150000
-            fastestInterval = 5000
+            interval = 900000 // 15 minutes in milliseconds
+            fastestInterval = 5000 // 5 seconds in milliseconds (you can adjust this as needed)
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
+
 
         val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
         val client = LocationServices.getSettingsClient(this)
@@ -262,6 +270,9 @@ class HomeContainerActivity : AppCompatActivity() {
 
                 // Send location to Firebase
                 sendLocationToFirebase(location.latitude, location.longitude)
+
+                // Get address details using Geocoder
+                getAddressDetails(location.latitude, location.longitude)
             }
         }
 
@@ -313,6 +324,38 @@ class HomeContainerActivity : AppCompatActivity() {
                 .addOnFailureListener { e ->
                     Log.e("Firebase", "Failed to send location data.", e)
                 }
+        }
+    }
+
+
+    private fun getAddressDetails(latitude: Double, longitude: Double) {
+        val geocoder = Geocoder(this, Locale.getDefault())
+        try {
+            val addresses: MutableList<Address>? = geocoder.getFromLocation(latitude, longitude, 1)
+            if (addresses!!.isNotEmpty()) {
+                val address: Address = addresses[0]
+                val placeName = address.featureName ?: "Unknown"
+                val phase = address.subLocality ?: "Unknown"
+                val area = address.thoroughfare ?: "Unknown"
+                val pincode = address.postalCode ?: "Unknown"
+                val city = address.locality ?: "Unknown"
+                val state = address.adminArea ?: "Unknown"
+
+                // Store in SessionManager
+                sessionManager.storePlaceName(placeName)
+                sessionManager.storePhase(phase)
+                sessionManager.storeArea(area)
+                sessionManager.storePincode(pincode)
+                sessionManager.storeCity(city)
+                sessionManager.storeState(state)
+
+                Log.d("Geocoder", "PlaceName: $placeName, Phase: $phase, Area: $area, Pincode: $pincode, City: $city, State: $state")
+            } else {
+                Log.d("Geocoder", "No address found for the given coordinates.")
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+            Log.e("Geocoder", "Failed to get address details.", e)
         }
     }
 

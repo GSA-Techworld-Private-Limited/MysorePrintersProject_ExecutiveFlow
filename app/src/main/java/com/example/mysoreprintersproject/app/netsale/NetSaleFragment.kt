@@ -7,7 +7,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.ImageView
+import android.widget.Spinner
+import android.widget.Toast
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,9 +21,11 @@ import com.example.mysoreprintersproject.app.attendance.AttendanceActivity
 import com.example.mysoreprintersproject.app.dailycollections.DailyCollectionActivity
 import com.example.mysoreprintersproject.app.dailyworkingsummryfragment.DailyWorkingSummaryActivity
 import com.example.mysoreprintersproject.app.homecontainer.HomeContainerActivity
-import com.example.mysoreprintersproject.app.homefragment.HomeActivity
 import com.example.mysoreprintersproject.app.supplyreport.SupplyReportActivity
-import com.example.mysoreprintersproject.app.supplyreport.SupplyReportAdapter
+import com.example.mysoreprintersproject.network.APIManager
+import com.example.mysoreprintersproject.network.SessionManager
+import com.example.mysoreprintersproject.responses.NetSalesResponse
+import com.example.mysoreprintersproject.responses.SupplyReportResponse
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
@@ -28,169 +33,200 @@ import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.google.android.material.navigation.NavigationView
+import retrofit2.Call
+import retrofit2.Response
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [NetSaleFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class NetSaleFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
     private lateinit var barChart: BarChart
-
     private lateinit var drawerLayout: DrawerLayout
-
     private lateinit var navigationView: NavigationView
+    private lateinit var sessionManager: SessionManager
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_net_sale, container, false).apply {
+        return inflater.inflate(R.layout.fragment_net_sale, container, false)
+    }
 
-            drawerLayout = findViewById(R.id.drawer_layout)
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
 
-            val navigatioViewIcon: ImageView =findViewById(R.id.imageSettings)
-            navigatioViewIcon.setOnClickListener {
-                drawerLayout.openDrawer(GravityCompat.START)
-            }
+        sessionManager=SessionManager(requireActivity())
+        // Initialize views
+        drawerLayout = requireView().findViewById(R.id.drawer_layout)
+        val navigationViewIcon: ImageView = requireView().findViewById(R.id.imageSettings)
 
-            navigationView=findViewById(R.id.navigationView)
+        // Set up navigation drawer
+        navigationViewIcon.setOnClickListener {
+            drawerLayout.openDrawer(GravityCompat.START)
+        }
 
-            navigationView.setNavigationItemSelectedListener { item ->
-                when (item.itemId) {
-
-                    R.id.nav_dashboard->{
-                        startActivity(Intent(requireActivity(), HomeContainerActivity::class.java))
-
-                    }
-
-                    R.id.nav_attendance -> {
-                        startActivity(Intent(requireActivity(), AttendanceActivity::class.java))
-
-                    }
+        navigationView = requireView().findViewById(R.id.navigationView)
+        setupNavigationDrawer()
 
 
-                    R.id.nav_daily_work_summary -> {
-                        startActivity(Intent(requireActivity(), DailyWorkingSummaryActivity::class.java))
-                    }
-                    R.id.nav_collections_performance -> {
-                        startActivity(
-                            Intent(requireActivity(),
-                                DailyCollectionActivity::class.java)
-                        )
-                    }
-                    R.id.nav_collections_report -> {
-                        startActivity(Intent(requireActivity(), DailyCollectionActivity::class.java))
-                    }
-                    R.id.nav_supply_reports -> {
-                        startActivity(Intent(requireActivity(), SupplyReportActivity::class.java))
-                    }
-                    R.id.nav_net_sales_report -> {
-                        startActivity(Intent(requireActivity(), NetSaleActivity::class.java))
-                    }
-                    // Add other cases for different activities
-                    else -> {
-                        Log.d("NavigationDrawer", "Unhandled item clicked: ${item.itemId}")
-                    }
+        getNetSaleReport()
+
+        // Setup RecyclerView
+
+
+        // Setting up spinners with custom layout
+        val fromSpinner: Spinner = requireView().findViewById(R.id.spinner_from)
+        val toSpinner: Spinner = requireView().findViewById(R.id.spinner_to)
+        val segmentSpinner: Spinner = requireView().findViewById(R.id.spinner_three)
+        val spinnerFour:Spinner=requireView().findViewById(R.id.spinner_four)
+
+        val fromAdapter = ArrayAdapter.createFromResource(
+            requireContext(),
+            R.array.from_dates,
+            R.layout.spinner_item
+        )
+        fromAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        fromSpinner.adapter = fromAdapter
+
+        val toAdapter = ArrayAdapter.createFromResource(
+            requireContext(),
+            R.array.to_dates,
+            R.layout.spinner_item
+        )
+        toAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        toSpinner.adapter = toAdapter
+
+        val segmentAdapter = ArrayAdapter.createFromResource(
+            requireContext(),
+            R.array.Agents,
+            R.layout.spinner_item
+        )
+        segmentAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        segmentSpinner.adapter = segmentAdapter
+
+
+        val publicAdapter=ArrayAdapter.createFromResource(
+            requireActivity(),
+            R.array.publication,
+            R.layout.spinner_item
+        )
+
+        publicAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinnerFour.adapter = publicAdapter
+        // Setup BarChart
+        barChart = requireView().findViewById(R.id.bar_chart)
+        setupBarChart()
+    }
+
+    private fun setupNavigationDrawer() {
+        navigationView.setNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_dashboard -> {
+                    startActivity(Intent(requireActivity(), HomeContainerActivity::class.java))
                 }
-                drawerLayout.closeDrawers()
-                true
+                R.id.nav_attendance -> {
+                    startActivity(Intent(requireActivity(), AttendanceActivity::class.java))
+                }
+                R.id.nav_daily_work_summary -> {
+                    startActivity(Intent(requireActivity(), DailyWorkingSummaryActivity::class.java))
+                }
+                R.id.nav_collections_performance -> {
+                    startActivity(Intent(requireActivity(), DailyCollectionActivity::class.java))
+                }
+                R.id.nav_supply_reports -> {
+                    startActivity(Intent(requireActivity(), SupplyReportActivity::class.java))
+                }
+                R.id.nav_net_sales_report -> {
+                    startActivity(Intent(requireActivity(), NetSaleActivity::class.java))
+                }
+                else -> {
+                    Log.d("NavigationDrawer", "Unhandled item clicked: ${item.itemId}")
+                }
             }
-
-
-            barChart=findViewById(R.id.bar_chart)
-            setupBarChart()
-
-            val recyclerView: RecyclerView = findViewById(R.id.recyclerview)
-            recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
-            recyclerView.adapter = NetSaleAdapter()
-
-
-            // Attach LinearSnapHelper
-            val snapHelper = LinearSnapHelper()
-            snapHelper.attachToRecyclerView(recyclerView)
+            drawerLayout.closeDrawers()
+            true
         }
     }
 
     private fun setupBarChart() {
-        val entries = ArrayList<BarEntry>()
-        entries.add(BarEntry(0f, 80f))
-        entries.add(BarEntry(1f, 60f))
-        entries.add(BarEntry(2f, 30f))
-        entries.add(BarEntry(3f, 50f))
-        entries.add(BarEntry(4f, 70f))
-        entries.add(BarEntry(5f, 90f))
-        entries.add(BarEntry(6f, 50f))
+        val entries = ArrayList<BarEntry>().apply {
+            add(BarEntry(0f, 80f))
+            add(BarEntry(1f, 60f))
+            add(BarEntry(2f, 30f))
+            add(BarEntry(3f, 50f))
+            add(BarEntry(4f, 70f))
+            add(BarEntry(5f, 90f))
+            add(BarEntry(6f, 50f))
+        }
 
-        val barDataSet = BarDataSet(entries, "Net Sale Amount")
-        barDataSet.color = resources.getColor(R.color.netshadecolor, null)
-        barDataSet.valueTextColor = android.graphics.Color.BLACK
-        barDataSet.valueTextSize = 16f
+        val barDataSet = BarDataSet(entries, "Net Sale Amount").apply {
+            color = resources.getColor(R.color.netshadecolor, null)
+            valueTextColor = android.graphics.Color.BLACK
+            valueTextSize = 16f
+        }
 
-        val barData = BarData(barDataSet)
-        // Set the width of the bars
-        barData.barWidth = 0.1f
-        barChart.data = barData
-        barChart.description.isEnabled = false
-        barChart.setDrawGridBackground(false) // Remove grid background
-        barChart.setDrawBorders(false)
+        val barData = BarData(barDataSet).apply {
+            barWidth = 0.1f
+        }
 
-        // Customize X-axis labels
-        val xAxis = barChart.xAxis
-        xAxis.valueFormatter = IndexAxisValueFormatter(arrayOf("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"))
-        xAxis.position = XAxis.XAxisPosition.BOTTOM
-        xAxis.granularity = 1f
-        xAxis.setDrawGridLines(false)
+        barChart.apply {
+            data = barData
+            description.isEnabled = false
+            setDrawGridBackground(false)
+            setDrawBorders(false)
+            animateY(1000)
+            invalidate()
 
-        // Customize Y-axis
-        val leftAxis = barChart.axisLeft
-        leftAxis.axisMinimum = 0f // Minimum value for the Y-axis
-        leftAxis.axisMaximum = 100f // Maximum value for the Y-axis
-        leftAxis.setDrawGridLines(false)
-        leftAxis.setDrawAxisLine(false)
+            xAxis.apply {
+                valueFormatter = IndexAxisValueFormatter(arrayOf("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"))
+                position = XAxis.XAxisPosition.BOTTOM
+                granularity = 1f
+                setDrawGridLines(false)
+            }
 
-        val rightAxis = barChart.axisRight
-        rightAxis.isEnabled = false
+            axisLeft.apply {
+                axisMinimum = 0f
+                axisMaximum = 100f
+                setDrawGridLines(false)
+                setDrawAxisLine(false)
+            }
 
-        barChart.animateY(1000)
-        barChart.invalidate()
+            axisRight.isEnabled = false
+        }
     }
 
 
+    private fun getNetSaleReport() {
+        val serviceGenerator = APIManager.apiInterface
+        val accessToken = sessionManager.fetchAuthToken()
+        val authorization = "Bearer $accessToken"
+        val id = sessionManager.fetchUserId()!!
+
+        serviceGenerator.getNetSale(authorization, id)
+            .enqueue(object : retrofit2.Callback<NetSalesResponse> {
+                override fun onResponse(call: Call<NetSalesResponse>, response: Response<NetSalesResponse>) {
+                    val netSaleResponses = response.body()!!
+                    //setupRecyclerView(summaryResponses.reversed())
+
+                    val recyclerView: RecyclerView = requireView().findViewById(R.id.recyclerview)
+                    recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
+                    recyclerView.adapter = NetSaleAdapter(netSaleResponses.net_sale_data)
+                }
+
+                override fun onFailure(call: Call<NetSalesResponse>, t: Throwable) {
+                    Log.e("SupplyReportFragment", "Error fetching data: ${t.message}", t)
+                    Toast.makeText(requireActivity(), "Error fetching data: ${t.message}", Toast.LENGTH_SHORT).show()
+                }
+
+            })
+    }
+
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment NetSaleFragment.
-         */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
             NetSaleFragment().apply {
                 arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+                    putString("param1", param1)
+                    putString("param2", param2)
                 }
             }
     }

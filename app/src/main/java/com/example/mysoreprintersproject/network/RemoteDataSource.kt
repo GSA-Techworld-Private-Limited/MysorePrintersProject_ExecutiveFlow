@@ -9,7 +9,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class RemoteDataSource {
     companion object{
-        private const val BASE_URL = "https://np3bx41m-8002.inc1.devtunnels.ms"
+        private const val BASE_URL = "https://jqtf8plh-8000.inc1.devtunnels.ms/"
       // private const val BASE_URL="https://4439-152-58-82-203.ngrok-free.app"
     }
     fun getImageUrl(imagePath: String): String {
