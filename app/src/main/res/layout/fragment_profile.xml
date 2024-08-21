@@ -118,7 +118,7 @@
                     android:layout_below="@id/profile_image"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="8dp"
-                    android:text="Ahansh Kumar"
+                    android:text=""
                     android:textSize="18sp"
                     android:textColor="@color/black" />
             </RelativeLayout>

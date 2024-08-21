@@ -43,6 +43,7 @@ import android.location.Location
 import android.os.Looper
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.Observer
 import com.google.android.gms.common.api.ResolvableApiException
 import java.io.IOException
 import java.util.Locale
@@ -256,8 +257,8 @@ class HomeContainerActivity : AppCompatActivity() {
     @SuppressLint("MissingPermission")
     private fun startLocationUpdates() {
         val locationRequest = LocationRequest.create().apply {
-            interval = 20000
-            fastestInterval = 5000
+            interval = 900000 // 15 minutes in milliseconds
+            fastestInterval = 900000 // 15 minutes in milliseconds
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
 
@@ -268,8 +269,17 @@ class HomeContainerActivity : AppCompatActivity() {
                 sessionManager.storeLongitude(location.longitude)
                 Log.d("Location", "Lat: ${location.latitude}, Lng: ${location.longitude}")
 
+
+                val isCheckedIn:Boolean=sessionManager.isCheckedIn()
+
+                    if (isCheckedIn) {
+                        sendLocationToFirebase(location.latitude, location.longitude)
+                    } else {
+                        stopSendingDataToFirebase()
+                    }
+
                 // Send location to Firebase
-                sendLocationToFirebase(location.latitude, location.longitude)
+
 
                 // Get address details using Geocoder
                 getAddressDetails(location.latitude, location.longitude)
@@ -325,6 +335,13 @@ class HomeContainerActivity : AppCompatActivity() {
                     Log.e("Firebase", "Failed to send location data.", e)
                 }
         }
+    }
+
+
+    private fun stopSendingDataToFirebase() {
+        // Remove location updates to stop sending data to Firebase
+        fusedLocationClient.removeLocationUpdates(locationCallback)
+        Log.d("Firebase", "Stopped sending location data to Firebase.")
     }
 
 

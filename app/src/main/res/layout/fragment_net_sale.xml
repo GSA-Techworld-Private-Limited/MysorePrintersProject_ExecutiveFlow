@@ -8,7 +8,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".app.homefragment.HomeFragment">
 
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -122,13 +121,14 @@
         android:id="@+id/spinner_items"
         android:orientation="horizontal"
         android:layout_marginEnd="20dp"
+        android:layout_marginStart="20dp"
         android:layout_marginTop="16dp">
 
         <Spinner
             android:layout_marginStart="5dp"
             android:id="@+id/spinner_from"
-            android:layout_width="100dp"
-            android:layout_height="30dp"
+            android:layout_width="80dp"
+            android:layout_height="40dp"
             android:textSize="10sp"
             android:fontFamily="@font/poppins_medium"
             android:textColor="@color/black"
@@ -137,8 +137,8 @@
 
         <Spinner
             android:id="@+id/spinner_to"
-            android:layout_width="90dp"
-            android:layout_height="30dp"
+            android:layout_width="80dp"
+            android:layout_height="40dp"
             android:layout_marginStart="3dp"
             android:textSize="10sp"
             android:fontFamily="@font/poppins_medium"
@@ -151,7 +151,7 @@
         <Spinner
             android:id="@+id/spinner_three"
             android:layout_width="80dp"
-            android:layout_height="30dp"
+            android:layout_height="40dp"
             android:layout_marginStart="3dp"
             android:textSize="10sp"
             android:fontFamily="@font/poppins_medium"
@@ -162,8 +162,8 @@
 
         <Spinner
             android:id="@+id/spinner_four"
-            android:layout_width="100dp"
-            android:layout_height="30dp"
+            android:layout_width="80dp"
+            android:layout_height="40dp"
             android:layout_marginStart="3dp"
             android:textSize="10sp"
             android:fontFamily="@font/poppins_medium"
@@ -199,7 +199,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Average Month-wise Trend-Net Sale"
-            android:textSize="13sp"
+            android:textSize="11sp"
             android:textColor="@android:color/black"
             android:layout_marginTop="16dp" />
 
@@ -217,6 +217,9 @@
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="16dp"
             android:layout_marginTop="16dp"
+            android:fontFamily="@font/poppins_medium"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
             android:entries="@array/last_six_months"
             android:spinnerMode="dropdown"
             android:background="@drawable/spinner_background"/>
@@ -246,4 +249,5 @@
         app:headerLayout="@layout/nav_header"
         android:background="@color/shade_blue"
         app:menu="@menu/nav_menu_gation"/>
+
 </androidx.drawerlayout.widget.DrawerLayout>

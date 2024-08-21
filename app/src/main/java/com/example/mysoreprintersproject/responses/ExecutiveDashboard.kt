@@ -23,6 +23,6 @@ data class MonthlyReport (
 data class AttendanceGraph (
 
     @SerializedName("month"                 ) var month                : String? = null,
-    @SerializedName("attendance_percentage" ) var attendancePercentage : Int?    = null
+    @SerializedName("attendance_percentage" ) var attendancePercentage : Double?    = null
 
 )

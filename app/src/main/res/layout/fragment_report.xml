@@ -142,7 +142,7 @@
                 android:layout_marginTop="15dp"
                 android:layout_marginBottom="15dp"
                 style="@style/txtpublicsnas22"
-                android:text="250 Hours "
+                android:text="00 Hours "
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
         </LinearLayout>
@@ -185,7 +185,7 @@
 
         <TextView
             android:id="@+id/totalhours"
-            android:text="40 hours"
+            android:text="00 hours"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/txtpoppinmedium16"/>
@@ -211,7 +211,7 @@
 
         <TextView
             android:id="@+id/distancetravelled"
-            android:text="250"
+            android:text="00"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/txtpoppinmedium16"/>
@@ -237,7 +237,7 @@
 
         <TextView
             android:id="@+id/totalplacevisitedcount"
-            android:text="03"
+            android:text="00"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/txtpoppinmedium16"/>
@@ -257,7 +257,7 @@
 
         <TextView
             android:id="@+id/locationsTextView"
-            android:text="1.Raichur:"
+            android:text=""
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/txtpoppinmedium13"/>

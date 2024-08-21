@@ -127,15 +127,21 @@
 
         <Spinner
             android:id="@+id/spinner_from"
-            android:layout_width="150dp"
+            android:layout_width="125dp"
             android:layout_height="40dp"
+            android:fontFamily="@font/poppins_medium"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
             android:background="@drawable/spinner_background_ratio"
             android:entries="@array/from_dates" />
 
         <Spinner
             android:id="@+id/spinner_to"
-            android:layout_width="150dp"
+            android:layout_width="125dp"
             android:layout_height="40dp"
+            android:fontFamily="@font/poppins_medium"
+            android:textColor="@color/black"
+            android:gravity="center_vertical"
             android:background="@drawable/spinner_background_ratio"
             android:entries="@array/to_dates"
             android:layout_marginStart="48dp" />

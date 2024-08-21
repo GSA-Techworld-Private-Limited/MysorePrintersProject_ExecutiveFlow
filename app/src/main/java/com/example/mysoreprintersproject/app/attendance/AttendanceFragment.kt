@@ -16,7 +16,11 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
+import com.bumptech.glide.Glide
 import com.example.mysoreprintersproject.R
+import com.example.mysoreprintersproject.app.CollectionSummaryReport.CollectionSummaryReportActivity
+import com.example.mysoreprintersproject.app.SplashScreenActivity
+import com.example.mysoreprintersproject.app.collection_performance.CollectionPerformanceActivity
 import com.example.mysoreprintersproject.app.dailycollections.DailyCollectionActivity
 import com.example.mysoreprintersproject.app.dailyworkingsummryfragment.DailyWorkingSummaryActivity
 import com.example.mysoreprintersproject.app.homecontainer.HomeContainerActivity
@@ -24,6 +28,7 @@ import com.example.mysoreprintersproject.app.homefragment.HomeActivity
 import com.example.mysoreprintersproject.app.netsale.NetSaleActivity
 import com.example.mysoreprintersproject.app.supplyreport.SupplyReportActivity
 import com.example.mysoreprintersproject.databinding.FragmentAttendanceBinding
+import com.example.mysoreprintersproject.network.APIManager
 import com.example.mysoreprintersproject.network.BaseFragment
 import com.example.mysoreprintersproject.network.CheckInViewModel
 import com.example.mysoreprintersproject.network.DataSource
@@ -32,6 +37,7 @@ import com.example.mysoreprintersproject.network.SessionManager
 import com.example.mysoreprintersproject.repository.AuthRepository
 import com.example.mysoreprintersproject.responses.CheckInRequest
 import com.example.mysoreprintersproject.responses.CheckOutRequest
+import com.example.mysoreprintersproject.responses.ProfileResponses
 import com.example.mysoreprintersproject.responses.UserRepository
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
@@ -40,6 +46,8 @@ import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.material.navigation.NavigationView
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import retrofit2.Call
+import retrofit2.Response
 
 class AttendanceFragment :
     BaseFragment<CheckInViewModel, FragmentAttendanceBinding, UserRepository>() {
@@ -51,6 +59,8 @@ class AttendanceFragment :
     private lateinit var navigationView: NavigationView
 
     private var isCheckedIn = false // To track the check-in state
+
+
 
     @Deprecated("Deprecated in Java")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -68,50 +78,30 @@ class AttendanceFragment :
 
         navigationView.setNavigationItemSelectedListener { item ->
             when (item.itemId) {
-
-                R.id.nav_dashboard -> {
-                    startActivity(Intent(requireActivity(), HomeContainerActivity::class.java))
-
+                R.id.nav_dashboard -> startActivity(Intent(requireActivity(), HomeContainerActivity::class.java))
+                R.id.nav_attendance -> startActivity(Intent(requireActivity(), AttendanceActivity::class.java))
+                R.id.nav_work_summary -> startActivity(Intent(requireActivity(), DailyWorkingSummaryActivity::class.java))
+                R.id.nav_collections_performance -> startActivity(Intent(requireActivity(), CollectionPerformanceActivity::class.java))
+                R.id.nav_collection_summary -> startActivity(
+                    Intent(requireActivity(),
+                        CollectionSummaryReportActivity::class.java)
+                )
+                R.id.nav_collections_report -> startActivity(Intent(requireActivity(), DailyCollectionActivity::class.java))
+                R.id.nav_supply_reports -> startActivity(Intent(requireActivity(), SupplyReportActivity::class.java))
+                R.id.nav_net_sales_report -> startActivity(Intent(requireActivity(), NetSaleActivity::class.java))
+                R.id.nav_logout ->{
+                    sessionManager.logout()
+                    sessionManager.clearSession()
+                    startActivity(Intent(requireActivity(), SplashScreenActivity::class.java))
+                    requireActivity().finish()
                 }
-
-                R.id.nav_attendance -> {
-                    startActivity(Intent(requireActivity(), AttendanceActivity::class.java))
-
-                }
-
-
-                R.id.nav_daily_work_summary -> {
-                    startActivity(
-                        Intent(
-                            requireActivity(),
-                            DailyWorkingSummaryActivity::class.java
-                        )
-                    )
-                }
-
-                R.id.nav_collections_performance -> {
-                    startActivity(Intent(requireActivity(), DailyCollectionActivity::class.java))
-                }
-
-                R.id.nav_collections_report -> {
-                    startActivity(Intent(requireActivity(), DailyCollectionActivity::class.java))
-                }
-
-                R.id.nav_supply_reports -> {
-                    startActivity(Intent(requireActivity(), SupplyReportActivity::class.java))
-                }
-
-                R.id.nav_net_sales_report -> {
-                    startActivity(Intent(requireActivity(), NetSaleActivity::class.java))
-                }
-                // Add other cases for different activities
-                else -> {
-                    Log.d("NavigationDrawer", "Unhandled item clicked: ${item.itemId}")
-                }
+                else -> Log.d("NavigationDrawer", "Unhandled item clicked: ${item.itemId}")
             }
             drawerLayout.closeDrawers()
             true
         }
+
+        getExecutiveProfile()
 
 
         val place=sessionManager.fetchPlace()
@@ -241,6 +231,31 @@ class AttendanceFragment :
     }
 
 
+    private fun getExecutiveProfile() {
+        val serviceGenerator = APIManager.apiInterface
+        val accessToken = sessionManager.fetchAuthToken()
+        val authorization = "Bearer $accessToken"
+        val id = sessionManager.fetchUserId()!!
+
+        serviceGenerator.getProfileOfExecutive(authorization, id.toInt())
+            .enqueue(object : retrofit2.Callback<ProfileResponses> {
+                override fun onResponse(call: Call<ProfileResponses>, response: Response<ProfileResponses>) {
+                    val profileResponses = response.body()
+
+                    if(profileResponses!=null){
+
+                        val profileImage:ImageView=binding.imageSettings2
+                        val image=profileResponses.profileImage
+                        val file= APIManager.getImageUrl(image!!)
+                        Glide.with(requireActivity()).load(file).into(profileImage)
+                    }
+                }
+
+                override fun onFailure(call: Call<ProfileResponses>, t: Throwable) {
+                    Toast.makeText(requireActivity(), "Error fetching data", Toast.LENGTH_SHORT).show()
+                }
+            })
+    }
 
 
 

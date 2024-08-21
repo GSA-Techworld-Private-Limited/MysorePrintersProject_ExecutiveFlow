@@ -3,6 +3,9 @@ import com.example.mysoreprintersproject.responses.CheckInRequest
 import com.example.mysoreprintersproject.responses.CheckOutRequest
 import com.example.mysoreprintersproject.responses.ChecksResponses
 import com.example.mysoreprintersproject.responses.CollectionReport
+import com.example.mysoreprintersproject.responses.CollectionResponses
+import com.example.mysoreprintersproject.responses.CollectionSummaryReportResponses
+import com.example.mysoreprintersproject.responses.DailyWorkingSummaryResponses
 import com.example.mysoreprintersproject.responses.ExecutiveDashboard
 import com.example.mysoreprintersproject.responses.LoginResponse
 import com.example.mysoreprintersproject.responses.NetSalesResponse
@@ -81,6 +84,28 @@ interface DataSource {
         @Header("Authorization") token: String,
         @Query("id")id:String
     ):Call<NetSalesResponse>
+
+
+    @GET("/app-executive/collection-data-web/")
+    fun getCollectionReport(
+        @Header("Authorization") token: String,
+        @Query("id")id:String,
+        @Query("period")period:String
+    ):Call<List<CollectionResponses>>
+
+
+    @GET("/app-executive/dailyworkingsummary/")
+    fun getDailyWorkingSumary(
+        @Header("Authorization") token: String,
+        @Query("id")id:String
+    ):Call<List<DailyWorkingSummaryResponses>>
+
+
+    @GET("/app-executive/collection-list/")
+    fun getCollectionSummary(
+        @Header("Authorization") token: String,
+        @Query("id")id:String
+    ):Call<List<CollectionSummaryReportResponses>>
 //    @GET("api/event/create/")
 //    suspend fun getAllEvents(
 //        @Header("Authorization") token: String
