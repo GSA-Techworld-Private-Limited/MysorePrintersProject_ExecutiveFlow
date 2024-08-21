@@ -16,8 +16,12 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.mysoreprintersproject.R
+import com.example.mysoreprintersproject.app.CollectionSummaryReport.CollectionSummaryReportActivity
+import com.example.mysoreprintersproject.app.SplashScreenActivity
 import com.example.mysoreprintersproject.app.attendance.AttendanceActivity
+import com.example.mysoreprintersproject.app.collection_performance.CollectionPerformanceActivity
 import com.example.mysoreprintersproject.app.dailycollections.DailyCollectionActivity
 import com.example.mysoreprintersproject.app.dailyworkingsummryfragment.DailyWorkingSummaryActivity
 import com.example.mysoreprintersproject.app.homecontainer.HomeContainerActivity
@@ -25,6 +29,7 @@ import com.example.mysoreprintersproject.app.supplyreport.SupplyReportActivity
 import com.example.mysoreprintersproject.network.APIManager
 import com.example.mysoreprintersproject.network.SessionManager
 import com.example.mysoreprintersproject.responses.NetSalesResponse
+import com.example.mysoreprintersproject.responses.ProfileResponses
 import com.example.mysoreprintersproject.responses.SupplyReportResponse
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.components.XAxis
@@ -72,12 +77,15 @@ class NetSaleFragment : Fragment() {
 
         // Setup RecyclerView
 
+        getExecutiveProfile()
 
         // Setting up spinners with custom layout
         val fromSpinner: Spinner = requireView().findViewById(R.id.spinner_from)
         val toSpinner: Spinner = requireView().findViewById(R.id.spinner_to)
         val segmentSpinner: Spinner = requireView().findViewById(R.id.spinner_three)
         val spinnerFour:Spinner=requireView().findViewById(R.id.spinner_four)
+
+        val monthSpinner:Spinner=requireView().findViewById(R.id.spinner)
 
         val fromAdapter = ArrayAdapter.createFromResource(
             requireContext(),
@@ -112,6 +120,17 @@ class NetSaleFragment : Fragment() {
 
         publicAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerFour.adapter = publicAdapter
+
+
+
+        val monthAdapter=ArrayAdapter.createFromResource(
+            requireActivity(),
+            R.array.last_six_months,
+            R.layout.spinner_item
+        )
+
+        monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        monthSpinner.adapter = monthAdapter
         // Setup BarChart
         barChart = requireView().findViewById(R.id.bar_chart)
         setupBarChart()
@@ -120,27 +139,22 @@ class NetSaleFragment : Fragment() {
     private fun setupNavigationDrawer() {
         navigationView.setNavigationItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.nav_dashboard -> {
-                    startActivity(Intent(requireActivity(), HomeContainerActivity::class.java))
+                R.id.nav_dashboard -> startActivity(Intent(requireActivity(), HomeContainerActivity::class.java))
+                R.id.nav_attendance -> startActivity(Intent(requireActivity(), AttendanceActivity::class.java))
+                R.id.nav_work_summary -> startActivity(Intent(requireActivity(), DailyWorkingSummaryActivity::class.java))
+                R.id.nav_collections_performance -> startActivity(Intent(requireActivity(), CollectionPerformanceActivity::class.java))
+                R.id.nav_collection_summary -> startActivity(Intent(requireActivity(),
+                    CollectionSummaryReportActivity::class.java))
+                R.id.nav_collections_report -> startActivity(Intent(requireActivity(), DailyCollectionActivity::class.java))
+                R.id.nav_supply_reports -> startActivity(Intent(requireActivity(), SupplyReportActivity::class.java))
+                R.id.nav_net_sales_report -> startActivity(Intent(requireActivity(), NetSaleActivity::class.java))
+                R.id.nav_logout ->{
+                    sessionManager.logout()
+                    sessionManager.clearSession()
+                    startActivity(Intent(requireActivity(), SplashScreenActivity::class.java))
+                    requireActivity().finish()
                 }
-                R.id.nav_attendance -> {
-                    startActivity(Intent(requireActivity(), AttendanceActivity::class.java))
-                }
-                R.id.nav_daily_work_summary -> {
-                    startActivity(Intent(requireActivity(), DailyWorkingSummaryActivity::class.java))
-                }
-                R.id.nav_collections_performance -> {
-                    startActivity(Intent(requireActivity(), DailyCollectionActivity::class.java))
-                }
-                R.id.nav_supply_reports -> {
-                    startActivity(Intent(requireActivity(), SupplyReportActivity::class.java))
-                }
-                R.id.nav_net_sales_report -> {
-                    startActivity(Intent(requireActivity(), NetSaleActivity::class.java))
-                }
-                else -> {
-                    Log.d("NavigationDrawer", "Unhandled item clicked: ${item.itemId}")
-                }
+                else -> Log.d("NavigationDrawer", "Unhandled item clicked: ${item.itemId}")
             }
             drawerLayout.closeDrawers()
             true
@@ -217,6 +231,34 @@ class NetSaleFragment : Fragment() {
                     Toast.makeText(requireActivity(), "Error fetching data: ${t.message}", Toast.LENGTH_SHORT).show()
                 }
 
+            })
+    }
+
+
+
+    private fun getExecutiveProfile() {
+        val serviceGenerator = APIManager.apiInterface
+        val accessToken = sessionManager.fetchAuthToken()
+        val authorization = "Bearer $accessToken"
+        val id = sessionManager.fetchUserId()!!
+
+        serviceGenerator.getProfileOfExecutive(authorization, id.toInt())
+            .enqueue(object : retrofit2.Callback<ProfileResponses> {
+                override fun onResponse(call: Call<ProfileResponses>, response: Response<ProfileResponses>) {
+                    val profileResponses = response.body()
+
+                    if(profileResponses!=null){
+
+                        val profileImage:ImageView=requireView().findViewById(R.id.imageSettings2)
+                        val image=profileResponses.profileImage
+                        val file=APIManager.getImageUrl(image!!)
+                        Glide.with(requireActivity()).load(file).into(profileImage)
+                    }
+                }
+
+                override fun onFailure(call: Call<ProfileResponses>, t: Throwable) {
+                    Toast.makeText(requireActivity(), "Error fetching data", Toast.LENGTH_SHORT).show()
+                }
             })
     }
 

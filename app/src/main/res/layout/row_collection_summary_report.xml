@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_marginTop="4dp"
     app:cardCornerRadius="4dp"
-    android:layout_height="215dp">
+    android:layout_height="175dp">
     <LinearLayout
         android:layout_gravity="center"
         android:orientation="vertical"
@@ -24,11 +24,11 @@
                 style="@style/txtpoppinsRegular14"
                 android:gravity="start"
                 android:layout_gravity="start"
-                android:text="Agent Name:"
+                android:text="Date:"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             <TextView
-                android:id="@+id/agentName"
+                android:id="@+id/txtDate"
                 style="@style/txtpoppinsRegular14"
                 android:gravity="end"
                 android:layout_gravity="end"
@@ -50,11 +50,11 @@
                 style="@style/txtpoppinsRegular14"
                 android:gravity="start"
                 android:layout_gravity="start"
-                android:text="Month"
+                android:text="AgentCode"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             <TextView
-                android:id="@+id/txtMonth"
+                android:id="@+id/agentCode"
                 style="@style/txtpoppinsRegular14"
                 android:gravity="end"
                 android:layout_gravity="end"
@@ -77,11 +77,11 @@
                 style="@style/txtpoppinsRegular14"
                 android:gravity="start"
                 android:layout_gravity="start"
-                android:text="Bill Amount"
+                android:text="Payment Method:"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             <TextView
-                android:id="@+id/txtBillAmount"
+                android:id="@+id/txtPaymentMethod"
                 style="@style/txtpoppinsRegular14"
                 android:gravity="end"
                 android:layout_gravity="end"
@@ -104,11 +104,11 @@
                 style="@style/txtpoppinsRegular14"
                 android:gravity="start"
                 android:layout_gravity="start"
-                android:text="Other Adjustments"
+                android:text="Instrument Number:"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             <TextView
-                android:id="@+id/txtOtherAdujesument"
+                android:id="@+id/txtInstrumentNumber"
                 style="@style/txtpoppinsRegular14"
                 android:gravity="end"
                 android:layout_gravity="end"
@@ -136,60 +136,6 @@
                 android:layout_height="wrap_content"/>
             <TextView
                 android:id="@+id/txtAmountCollected"
-                style="@style/txtpoppinsRegular14"
-                android:gravity="end"
-                android:layout_gravity="end"
-                android:text="100"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
-        </LinearLayout>
-        <LinearLayout
-            android:layout_marginTop="5dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-
-            <TextView
-                style="@style/txtpoppinsRegular14"
-                android:gravity="start"
-                android:layout_gravity="start"
-                android:text="Total Dues:"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-            <TextView
-                style="@style/txtpoppinsRegular14"
-                android:gravity="end"
-                android:layout_gravity="end"
-                android:text="100"
-                android:id="@+id/txtTolalDues"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_marginTop="5dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="10dp"
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-
-            <TextView
-                style="@style/txtpoppinsRegular14"
-                android:gravity="start"
-                android:layout_gravity="start"
-                android:text="Balance Amount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-            <TextView
-                android:id="@+id/txtbalanceAmount"
                 style="@style/txtpoppinsRegular14"
                 android:gravity="end"
                 android:layout_gravity="end"

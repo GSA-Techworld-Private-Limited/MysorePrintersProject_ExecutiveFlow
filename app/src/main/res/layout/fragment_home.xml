@@ -120,12 +120,14 @@
             <Spinner
                 android:id="@+id/spinnerMonth"
                 android:gravity="end"
-                android:layout_marginEnd="5dp"
-                android:layout_marginStart="27dp"
+                android:layout_marginEnd="0dp"
+                android:layout_marginStart="17dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:entries="@array/last_six_months"
                 android:spinnerMode="dropdown"
+                android:fontFamily="@font/poppins_medium"
+                android:textColor="@color/black"
                 android:background="@drawable/spinner_background"/>
 
         </LinearLayout>
@@ -162,7 +164,7 @@
                     <TextView
                         android:id="@+id/hours"
                         style="@style/txtpublicsnas14"
-                        android:text="40 Hours"
+                        android:text="00 Hours"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
 
@@ -197,7 +199,7 @@
                     <TextView
                         android:id="@+id/locations"
                         style="@style/txtpublicsnas14"
-                        android:text="5"
+                        android:text="0"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
 
@@ -243,7 +245,7 @@
                 <TextView
                     android:id="@+id/kilometers"
                     style="@style/txtpublicsnas14"
-                    android:text="120 Km"
+                    android:text="00 Km"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
 
@@ -296,7 +298,7 @@
                     android:layout_marginTop="15dp"
                     android:layout_marginBottom="15dp"
                     style="@style/txtpublicsnas22"
-                    android:text="250 Hours "
+                    android:text="00 Hours "
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
             </LinearLayout>
@@ -351,6 +353,9 @@
                 android:layout_alignParentEnd="true"
                 android:layout_marginEnd="16dp"
                 android:layout_marginTop="16dp"
+                android:fontFamily="@font/poppins_medium"
+                android:textColor="@color/black"
+                android:gravity="center_vertical"
                 android:entries="@array/last_six_months"
                 android:spinnerMode="dropdown"
                 android:background="@drawable/spinner_background"/>

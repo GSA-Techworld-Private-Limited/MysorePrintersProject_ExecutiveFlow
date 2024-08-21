@@ -114,5 +114,9 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
 
     implementation ("com.google.android.gms:play-services-location:18.0.0")
+
+
+    implementation ("com.itextpdf:itext7-core:7.1.15")
+
 }
 

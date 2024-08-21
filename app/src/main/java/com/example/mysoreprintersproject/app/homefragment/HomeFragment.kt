@@ -12,7 +12,9 @@ import android.widget.Toast
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
 import com.example.mysoreprintersproject.R
+import com.example.mysoreprintersproject.app.CollectionSummaryReport.CollectionSummaryReportActivity
 import com.example.mysoreprintersproject.app.SplashScreenActivity
 import com.example.mysoreprintersproject.app.attendance.AttendanceActivity
 import com.example.mysoreprintersproject.app.collection_performance.CollectionPerformanceActivity
@@ -25,6 +27,7 @@ import com.example.mysoreprintersproject.network.APIManager
 import com.example.mysoreprintersproject.network.SessionManager
 import com.example.mysoreprintersproject.responses.AttendanceGraph
 import com.example.mysoreprintersproject.responses.ExecutiveDashboard
+import com.example.mysoreprintersproject.responses.ProfileResponses
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
@@ -49,7 +52,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private lateinit var kilomeres:TextView
     private lateinit var totalhoursworked:TextView
 
+    private lateinit var profileImage:ImageView
 
+    private lateinit var donutChartView:DonutChartView
 
     @Deprecated("Deprecated in Java")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -60,10 +65,12 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         barChart = requireView().findViewById(R.id.bar_chart)
         //setupBarChart()
 
+         donutChartView = requireView().findViewById(R.id.donutChart)
         drawerLayout = requireView().findViewById(R.id.drawer_layout)
         navigationView = requireView().findViewById(R.id.navigationView)
         periodSpinner = requireView().findViewById(R.id.spinnerMonth)
 
+        profileImage= requireView().findViewById(R.id.imageSettings2)
 
         txthours = requireView().findViewById(R.id.hours)
         visits = requireView().findViewById(R.id.locations)
@@ -73,6 +80,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         setupNavigationView()
         setupSpinner()
         getExecutiveDashboard() // Initially fetch data
+
+        getExecutiveProfile()
     }
 
     private fun setupNavigationView() {
@@ -85,8 +94,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             when (item.itemId) {
                 R.id.nav_dashboard -> startActivity(Intent(requireActivity(), HomeContainerActivity::class.java))
                 R.id.nav_attendance -> startActivity(Intent(requireActivity(), AttendanceActivity::class.java))
-                R.id.nav_daily_work_summary -> startActivity(Intent(requireActivity(), DailyWorkingSummaryActivity::class.java))
+                R.id.nav_work_summary -> startActivity(Intent(requireActivity(), DailyWorkingSummaryActivity::class.java))
                 R.id.nav_collections_performance -> startActivity(Intent(requireActivity(), CollectionPerformanceActivity::class.java))
+                R.id.nav_collection_summary -> startActivity(Intent(requireActivity(),CollectionSummaryReportActivity::class.java))
                 R.id.nav_collections_report -> startActivity(Intent(requireActivity(), DailyCollectionActivity::class.java))
                 R.id.nav_supply_reports -> startActivity(Intent(requireActivity(), SupplyReportActivity::class.java))
                 R.id.nav_net_sales_report -> startActivity(Intent(requireActivity(), NetSaleActivity::class.java))
@@ -236,7 +246,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                             val workedPercentage = (workedHours / possibleHours) * 100
 
                             // Update the donut chart with the calculated percentage
-                            val donutChartView = requireView().findViewById<DonutChartView>(R.id.donutChart)
+
                             donutChartView.setCompletedPercentage(workedPercentage.toFloat())
                         } else {
                             // Handle the null case appropriately
@@ -261,4 +271,32 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             })
     }
 
+
+
+
+    private fun getExecutiveProfile() {
+        val serviceGenerator = APIManager.apiInterface
+        val accessToken = sessionManager.fetchAuthToken()
+        val authorization = "Bearer $accessToken"
+        val id = sessionManager.fetchUserId()!!
+
+        serviceGenerator.getProfileOfExecutive(authorization, id.toInt())
+            .enqueue(object : retrofit2.Callback<ProfileResponses> {
+                override fun onResponse(call: Call<ProfileResponses>, response: Response<ProfileResponses>) {
+                    val profileResponses = response.body()
+
+                    if(profileResponses!=null){
+
+
+                        val image=profileResponses.profileImage
+                        val file=APIManager.getImageUrl(image!!)
+                        Glide.with(requireActivity()).load(file).into(profileImage)
+                    }
+                }
+
+                override fun onFailure(call: Call<ProfileResponses>, t: Throwable) {
+                    Toast.makeText(requireActivity(), "Error fetching data", Toast.LENGTH_SHORT).show()
+                }
+            })
+    }
 }

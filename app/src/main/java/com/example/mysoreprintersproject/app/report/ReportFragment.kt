@@ -12,8 +12,12 @@ import android.widget.Toast
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
 import com.example.mysoreprintersproject.R
+import com.example.mysoreprintersproject.app.CollectionSummaryReport.CollectionSummaryReportActivity
+import com.example.mysoreprintersproject.app.SplashScreenActivity
 import com.example.mysoreprintersproject.app.attendance.AttendanceActivity
+import com.example.mysoreprintersproject.app.collection_performance.CollectionPerformanceActivity
 import com.example.mysoreprintersproject.app.dailycollections.DailyCollectionActivity
 import com.example.mysoreprintersproject.app.dailyworkingsummryfragment.DailyWorkingSummaryActivity
 import com.example.mysoreprintersproject.app.homecontainer.HomeContainerActivity
@@ -22,6 +26,7 @@ import com.example.mysoreprintersproject.app.supplyreport.SupplyReportActivity
 import com.example.mysoreprintersproject.network.APIManager
 import com.example.mysoreprintersproject.network.SessionManager
 import com.example.mysoreprintersproject.responses.ExecutiveDashboard
+import com.example.mysoreprintersproject.responses.ProfileResponses
 import com.example.mysoreprintersproject.responses.SummaryReportResponses
 import com.google.android.material.navigation.NavigationView
 import retrofit2.Call
@@ -42,6 +47,8 @@ class ReportFragment : Fragment(R.layout.fragment_report) {
 
     private lateinit var locationsTextView: TextView
 
+
+    private lateinit var profileImage:ImageView
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
@@ -56,6 +63,8 @@ class ReportFragment : Fragment(R.layout.fragment_report) {
         mainpageHoursVisited=requireView().findViewById(R.id.mainpagehoursText)
         totalHoursText=requireView().findViewById(R.id.totalhours)
 
+
+        profileImage= requireView().findViewById(R.id.imageSettings2)
         locationsTextView = requireView().findViewById(R.id.locationsTextView)
 
         val navigationViewIcon: ImageView = requireView().findViewById(R.id.imageSettings)
@@ -68,6 +77,9 @@ class ReportFragment : Fragment(R.layout.fragment_report) {
 
 
         getSummaryResponses()
+
+
+        getExecutiveProfile()
     }
 
     private fun setupSpinner() {
@@ -94,11 +106,19 @@ class ReportFragment : Fragment(R.layout.fragment_report) {
             when (item.itemId) {
                 R.id.nav_dashboard -> startActivity(Intent(requireActivity(), HomeContainerActivity::class.java))
                 R.id.nav_attendance -> startActivity(Intent(requireActivity(), AttendanceActivity::class.java))
-                R.id.nav_daily_work_summary -> startActivity(Intent(requireActivity(), DailyWorkingSummaryActivity::class.java))
-                R.id.nav_collections_performance -> startActivity(Intent(requireActivity(), DailyCollectionActivity::class.java))
+                R.id.nav_work_summary -> startActivity(Intent(requireActivity(), DailyWorkingSummaryActivity::class.java))
+                R.id.nav_collections_performance -> startActivity(Intent(requireActivity(), CollectionPerformanceActivity::class.java))
+                R.id.nav_collection_summary -> startActivity(Intent(requireActivity(),
+                    CollectionSummaryReportActivity::class.java))
                 R.id.nav_collections_report -> startActivity(Intent(requireActivity(), DailyCollectionActivity::class.java))
                 R.id.nav_supply_reports -> startActivity(Intent(requireActivity(), SupplyReportActivity::class.java))
                 R.id.nav_net_sales_report -> startActivity(Intent(requireActivity(), NetSaleActivity::class.java))
+                R.id.nav_logout ->{
+                    sessionManager.logout()
+                    sessionManager.clearSession()
+                    startActivity(Intent(requireActivity(), SplashScreenActivity::class.java))
+                    requireActivity().finish()
+                }
                 else -> Log.d("NavigationDrawer", "Unhandled item clicked: ${item.itemId}")
             }
             drawerLayout.closeDrawers()
@@ -119,9 +139,9 @@ class ReportFragment : Fragment(R.layout.fragment_report) {
                     // Handle the response as needed
 
                     if(summaryResponses!=null){
-                        val totalHoursWorked = summaryResponses.total_hours_worked
-                        totalplacevisitedCount.text=summaryResponses.locations_visited_count.toString()
-                        distanceTravelledText.text=summaryResponses.total_distance
+                        val totalHoursWorked = summaryResponses.totalHoursWorked
+                        totalplacevisitedCount.text=summaryResponses.locationsVisitedCount.toString()
+                        distanceTravelledText.text=summaryResponses.totalDistance
 
 
 
@@ -165,7 +185,7 @@ class ReportFragment : Fragment(R.layout.fragment_report) {
 
 
                         // Display locations visited details
-                        displayLocations(summaryResponses.locations_visited_details)
+                        displayLocations(summaryResponses.locationsVisited)
 
                     }
                 }
@@ -179,17 +199,54 @@ class ReportFragment : Fragment(R.layout.fragment_report) {
     }
 
 
-    private fun displayLocations(locationsVisitedDetails: Map<String, Int>?) {
-        if (locationsVisitedDetails != null) {
+    private fun displayLocations(locationsVisited: ArrayList<String>?) {
+        if (locationsVisited != null && locationsVisited.isNotEmpty()) {
             val formattedString = StringBuilder()
-            locationsVisitedDetails.entries.forEachIndexed { index, entry ->
-                formattedString.append("${index + 1}. ${entry.key}: ${entry.value} visits\n")
+            locationsVisited.forEachIndexed { index, location ->
+                // Adding each location to the formatted string
+                formattedString.append("${index + 1}. $location\n")
             }
-            locationsTextView.text = formattedString.toString()
+            // Display the formatted locations in the TextView
+            locationsTextView.text = formattedString.toString().trim()
         } else {
-            // Handle the case where locationsVisitedDetails is null
+            // Handle the case where locationsVisited is null or empty
             locationsTextView.text = "No location details available."
         }
+    }
+
+
+
+
+    private fun getExecutiveProfile() {
+        val serviceGenerator = APIManager.apiInterface
+        val accessToken = sessionManager.fetchAuthToken()
+        val authorization = "Bearer $accessToken"
+        val id = sessionManager.fetchUserId()!!
+
+        serviceGenerator.getProfileOfExecutive(authorization, id.toInt())
+            .enqueue(object : retrofit2.Callback<ProfileResponses> {
+                override fun onResponse(call: Call<ProfileResponses>, response: Response<ProfileResponses>) {
+                    val profileResponses = response.body()
+
+                    if (profileResponses != null && isAdded) { // Check if fragment is added
+                        val image = profileResponses.profileImage
+                        val file = APIManager.getImageUrl(image!!)
+
+                        // Make sure the fragment is still attached to an activity
+                        if (isAdded && activity != null) {
+                            Glide.with(requireActivity())
+                                .load(file)
+                                .into(profileImage)
+                        }
+                    }
+                }
+
+                override fun onFailure(call: Call<ProfileResponses>, t: Throwable) {
+                    if (isAdded && activity != null) {
+                        Toast.makeText(requireActivity(), "Error fetching data", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            })
     }
 
 }
