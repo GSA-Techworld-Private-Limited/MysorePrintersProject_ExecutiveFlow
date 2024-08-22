@@ -6,12 +6,18 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mysoreprintersproject.R
+import com.example.mysoreprintersproject.responses.CollectionSummaryReportResponses
 import com.example.mysoreprintersproject.responses.DailyWorkingSummaryResponses
 
 class DailyWorkingSummaryAdapter(
     private val list:List<DailyWorkingSummaryResponses>
 ):
     RecyclerView.Adapter<DailyWorkingSummaryAdapter.CardViewHolder>() {
+
+
+    fun getWorkingSummaryList(): List<DailyWorkingSummaryResponses> {
+        return list
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardViewHolder {
         val view = LayoutInflater.from(parent.context)

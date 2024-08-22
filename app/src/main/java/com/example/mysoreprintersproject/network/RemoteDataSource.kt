@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit
 
 class RemoteDataSource {
     companion object {
-        private const val BASE_URL = "https://np3bx41m-8002.inc1.devtunnels.ms/"
+        private const val BASE_URL = "https://7nljc5nf-8002.inc1.devtunnels.ms/"
         // private const val BASE_URL="https://4439-152-58-82-203.ngrok-free.app"
     }
 

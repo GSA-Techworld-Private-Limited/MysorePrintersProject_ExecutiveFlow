@@ -9,11 +9,17 @@ import com.example.mysoreprintersproject.R
 import com.example.mysoreprintersproject.app.dailyworkingsummryfragment.DailyWorkingSummaryAdapter
 import com.example.mysoreprintersproject.responses.CollectionReport
 import com.example.mysoreprintersproject.responses.CollectionResponses
+import com.example.mysoreprintersproject.responses.NetSaleDataItem
 
 class DayCollectionAdapter(
     private val list:List<CollectionResponses>
 ):
     RecyclerView.Adapter<DayCollectionAdapter.CardViewHolder>() {
+
+
+    fun getCollectionList(): List<CollectionResponses> {
+        return list
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardViewHolder {
         val view = LayoutInflater.from(parent.context)

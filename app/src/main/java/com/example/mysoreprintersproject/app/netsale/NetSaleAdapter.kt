@@ -7,6 +7,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mysoreprintersproject.R
 import com.example.mysoreprintersproject.app.supplyreport.SupplyReportAdapter
+import com.example.mysoreprintersproject.responses.DailyWorkingSummaryResponses
 import com.example.mysoreprintersproject.responses.NetSaleDataItem
 
 class NetSaleAdapter(
@@ -14,6 +15,10 @@ class NetSaleAdapter(
 ):
     RecyclerView.Adapter<NetSaleAdapter.CardViewHolder>() {
 
+
+    fun getNetSaleList(): List<NetSaleDataItem> {
+        return list
+    }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.row_net_sale, parent, false)
