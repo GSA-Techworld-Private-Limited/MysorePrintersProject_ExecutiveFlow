@@ -7,6 +7,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mysoreprintersproject.R
 import com.example.mysoreprintersproject.app.dailycollections.DayCollectionAdapter
+import com.example.mysoreprintersproject.responses.DailyWorkingSummaryResponses
 import com.example.mysoreprintersproject.responses.SupplyReportResponse
 
 class SupplyReportAdapter(
@@ -14,6 +15,9 @@ class SupplyReportAdapter(
 ):
     RecyclerView.Adapter<SupplyReportAdapter.CardViewHolder>() {
 
+    fun getSupplyReportList(): List<SupplyReportResponse> {
+        return list
+    }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.row_supply_report, parent, false)

@@ -16,6 +16,7 @@ class CollectionSummaryReportAdapter(
 ):
     RecyclerView.Adapter<CollectionSummaryReportAdapter.CardViewHolder>() {
 
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.row_collection_summary_report, parent, false)
@@ -32,6 +33,9 @@ class CollectionSummaryReportAdapter(
 
         holder.bindView(list[position])
     }
+
+
+
 
     override fun getItemCount(): Int {
         return list.size

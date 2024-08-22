@@ -1,6 +1,7 @@
 package com.example.mysoreprintersproject.app.CollectionSummaryReport
 
 import android.Manifest
+import android.app.AlertDialog
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -13,6 +14,9 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.provider.Settings
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -20,6 +24,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.Spinner
@@ -51,6 +56,7 @@ import com.example.mysoreprintersproject.responses.ProfileResponses
 import com.google.android.material.navigation.NavigationView
 import com.itextpdf.io.font.constants.StandardFonts
 import com.itextpdf.kernel.font.PdfFontFactory
+import com.itextpdf.layout.element.Cell
 import com.itextpdf.layout.element.Paragraph
 import com.itextpdf.layout.property.TextAlignment
 import retrofit2.Call
@@ -69,6 +75,14 @@ class Collection_Report_Summary_Fragment : Fragment(R.layout.fragment_collection
     private lateinit var navigationView: NavigationView
 
     private lateinit var progressBar: ProgressBar
+
+    private lateinit var searchBar:EditText
+
+    private lateinit var summaryResponses: List<CollectionSummaryReportResponses>
+
+    companion object {
+        const val REQUEST_CODE_NOTIFICATION_PERMISSION = 101
+    }
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -80,6 +94,21 @@ class Collection_Report_Summary_Fragment : Fragment(R.layout.fragment_collection
         recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
 
         progressBar=requireView().findViewById(R.id.progressBar)
+
+        searchBar=requireView().findViewById(R.id.search_bar)
+
+
+        searchBar.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                searchCollectionSummary(s.toString())
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
+
         setupNavigationView()
         getCollectionSummary()
 
@@ -88,8 +117,8 @@ class Collection_Report_Summary_Fragment : Fragment(R.layout.fragment_collection
 
         val exportButton: Button = requireView().findViewById(R.id.export_button)
         exportButton.setOnClickListener {
-            generatePdf()
-            progressBar.visibility = View.VISIBLE
+           exportToPdf()
+           // progressBar.visibility = View.VISIBLE
         }
 
 
@@ -115,6 +144,13 @@ class Collection_Report_Summary_Fragment : Fragment(R.layout.fragment_collection
         toSpinner.adapter = toAdapter
     }
 
+    override fun onResume() {
+        super.onResume()
+        searchBar.text.clear()  // Clears the search field when returning to the fragment
+        searchCollectionSummary("")  // Resets the list to show all items
+    }
+
+
 
     private fun setupNavigationView() {
         val navigationViewIcon: ImageView = requireView().findViewById(R.id.imageSettings)
@@ -139,7 +175,7 @@ class Collection_Report_Summary_Fragment : Fragment(R.layout.fragment_collection
                     sessionManager.logout()
                     sessionManager.clearSession()
                     startActivity(Intent(requireActivity(), SplashScreenActivity::class.java))
-                    requireActivity().finish()
+                    requireActivity().finishAffinity()
                 }
                 else -> Log.d("NavigationDrawer", "Unhandled item clicked: ${item.itemId}")
             }
@@ -150,25 +186,37 @@ class Collection_Report_Summary_Fragment : Fragment(R.layout.fragment_collection
 
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun exportToPdf() {
-        if (ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // Request permission
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                100
-            )
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestNotificationPermission()
         } else {
-            // Permission already granted, generate PDF
             generatePdf()
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private fun requestNotificationPermission() {
+        if (!isNotificationPermissionGranted()) {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                REQUEST_CODE_NOTIFICATION_PERMISSION
+            )
+        } else {
+            generatePdf() // Permission is already granted, proceed with PDF generation
+        }
+    }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
+
+    private fun isNotificationPermissionGranted(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+        } else {
+            true // Notification permission is not required below Android 13
+        }
+    }
+
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @Deprecated("Deprecated in Java")
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -176,13 +224,34 @@ class Collection_Report_Summary_Fragment : Fragment(R.layout.fragment_collection
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 100 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            // Permission granted
-            generatePdf()
-        } else {
-            // Permission denied
-            Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show()
+        if (requestCode == REQUEST_CODE_NOTIFICATION_PERMISSION) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                generatePdf() // Permission granted, generate the PDF
+            } else {
+                showNotificationPermissionDeniedDialog() // Permission denied, show dialog
+            }
         }
+    }
+
+    private fun showNotificationPermissionDeniedDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Notification Permission Required")
+            .setMessage("This app needs notification permission to notify you when the PDF is generated. Please enable it in settings.")
+            .setPositiveButton("OK") { dialog, _ ->
+                dialog.dismiss()
+                openAppSettings()
+            }
+            .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
+            .create()
+            .show()
+    }
+
+
+    private fun openAppSettings() {
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+            data = Uri.fromParts("package", requireContext().packageName, null)
+        }
+        startActivity(intent)
     }
 
 
@@ -200,7 +269,7 @@ class Collection_Report_Summary_Fragment : Fragment(R.layout.fragment_collection
                     response: Response<List<CollectionSummaryReportResponses>>
                 ) {
                     if (response.isSuccessful) {
-                        val summaryResponses = response.body()!!
+                        summaryResponses = response.body()!!
                         recyclerView.adapter = CollectionSummaryReportAdapter(summaryResponses)
                     } else {
                         Toast.makeText(requireActivity(), "Failed to retrieve data", Toast.LENGTH_SHORT).show()
@@ -214,6 +283,22 @@ class Collection_Report_Summary_Fragment : Fragment(R.layout.fragment_collection
             })
     }
 
+    private fun searchCollectionSummary(query: String) {
+        if (!::summaryResponses.isInitialized) {
+           // Toast.makeText(requireActivity(), "", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val filteredList = summaryResponses.filter { summary ->
+            summary.Date!!.contains(query, ignoreCase = true) ||
+                    summary.agentCode!!.contains(query, ignoreCase = true) ||
+                    summary.paymentmethod!!.contains(query, ignoreCase = true) ||
+                    summary.InstrumentNumber.toString().contains(query, ignoreCase = true) ||
+                    summary.AmountCollected.toString().contains(query, ignoreCase = true)
+        }
+
+        recyclerView.adapter = CollectionSummaryReportAdapter(filteredList)
+    }
 
 
     private fun getExecutiveProfile() {
@@ -246,8 +331,6 @@ class Collection_Report_Summary_Fragment : Fragment(R.layout.fragment_collection
 
 
 
-
-
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun generatePdf() {
         val resolver = requireContext().contentResolver
@@ -259,8 +342,10 @@ class Collection_Report_Summary_Fragment : Fragment(R.layout.fragment_collection
 
         val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
         if (uri == null) {
-            progressBar.visibility = View.GONE
-            Toast.makeText(requireContext(), "Error creating file", Toast.LENGTH_SHORT).show()
+            requireActivity().runOnUiThread {
+                progressBar.visibility = View.GONE
+                Toast.makeText(requireContext(), "Error creating file", Toast.LENGTH_SHORT).show()
+            }
             return
         }
 
@@ -280,33 +365,49 @@ class Collection_Report_Summary_Fragment : Fragment(R.layout.fragment_collection
             val adapter = recyclerView.adapter as CollectionSummaryReportAdapter
             val summaryList = adapter.getSummaryList()
 
-            summaryList.forEach { summary ->
-                val content = Paragraph(
-                    "Date: ${summary.Date}\n" +
-                            "Agent Code: ${summary.agentCode}\n" +
-                            "Payment Method: ${summary.paymentmethod}\n" +
-                            "Instrument Number: ${summary.InstrumentNumber}\n" +
-                            "Amount Collected: ${summary.AmountCollected}"
-                ).setFont(font)
-                document.add(content)
-                document.add(Paragraph("\n").setFont(font))
+            // Define a table with the number of columns matching the fields
+            val table = com.itextpdf.layout.element.Table(floatArrayOf(1f, 2f, 2f, 2f, 2f)).apply {
+                setWidth(com.itextpdf.layout.property.UnitValue.createPercentValue(100f))
             }
+
+            // Add table headers
+            table.addHeaderCell(Cell().add(Paragraph("Date").setFont(font)))
+            table.addHeaderCell(Cell().add(Paragraph("Agent Code").setFont(font)))
+            table.addHeaderCell(Cell().add(Paragraph("Payment Method").setFont(font)))
+            table.addHeaderCell(Cell().add(Paragraph("Instrument Number").setFont(font)))
+            table.addHeaderCell(Cell().add(Paragraph("Amount Collected").setFont(font)))
+
+            // Add the summary data to the table
+            summaryList.forEach { summary ->
+                table.addCell(Cell().add(Paragraph(summary.Date).setFont(font)))
+                table.addCell(Cell().add(Paragraph(summary.agentCode).setFont(font)))
+                table.addCell(Cell().add(Paragraph(summary.paymentmethod).setFont(font)))
+                table.addCell(Cell().add(Paragraph(summary.InstrumentNumber.toString()).setFont(font)))
+                table.addCell(Cell().add(Paragraph(summary.AmountCollected.toString()).setFont(font)))
+            }
+
+            document.add(table) // Add the table to the document
 
             document.close()
             outputStream?.close()
 
-
-            Toast.makeText(requireContext(), "PDF generated successfully", Toast.LENGTH_SHORT).show()
-            showNotification(uri)
-            progressBar.visibility = View.GONE
+            requireActivity().runOnUiThread {
+                Toast.makeText(requireContext(), "PDF generated successfully", Toast.LENGTH_SHORT).show()
+                showNotification(uri)
+                progressBar.visibility = View.GONE
+            }
 
         } catch (e: Exception) {
             e.printStackTrace()
-
-            Toast.makeText(requireContext(), "Error generating PDF: ${e.message}", Toast.LENGTH_SHORT).show()
-            progressBar.visibility = View.GONE
+            requireActivity().runOnUiThread {
+                Toast.makeText(requireContext(), "Error generating PDF: ${e.message}", Toast.LENGTH_SHORT).show()
+                progressBar.visibility = View.GONE
+            }
         }
     }
+
+
+
 
 
 
@@ -318,27 +419,42 @@ class Collection_Report_Summary_Fragment : Fragment(R.layout.fragment_collection
         val channelId = "pdf_download_channel"
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(channelId, "PDF Downloads", NotificationManager.IMPORTANCE_HIGH)
+            val channel = NotificationChannel(
+                channelId,
+                "PDF Downloads",
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = "Notifications for PDF downloads"
+            }
             notificationManager.createNotificationChannel(channel)
         }
 
         val intent = Intent(Intent.ACTION_VIEW).apply {
             setDataAndType(uri, "application/pdf")
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
         }
 
-        val pendingIntent = PendingIntent.getActivity(requireContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        val pendingIntent = PendingIntent.getActivity(
+            requireContext(),
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
 
         val notification = NotificationCompat.Builder(requireContext(), channelId)
-            .setSmallIcon(R.drawable.logo)
+            .setSmallIcon(R.drawable.logo) // Ensure this icon resource exists
             .setContentTitle("PDF Downloaded")
             .setContentText("Tap to open")
             .setAutoCancel(true)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(pendingIntent)
             .build()
 
         notificationManager.notify(notificationId, notification)
+
+        Log.d("Collection_Report", "Notification displayed for PDF: $uri")
     }
+
 
 
 

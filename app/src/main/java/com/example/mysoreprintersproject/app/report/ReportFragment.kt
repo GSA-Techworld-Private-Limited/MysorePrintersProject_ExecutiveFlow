@@ -117,7 +117,7 @@ class ReportFragment : Fragment(R.layout.fragment_report) {
                     sessionManager.logout()
                     sessionManager.clearSession()
                     startActivity(Intent(requireActivity(), SplashScreenActivity::class.java))
-                    requireActivity().finish()
+                    requireActivity().finishAffinity()
                 }
                 else -> Log.d("NavigationDrawer", "Unhandled item clicked: ${item.itemId}")
             }

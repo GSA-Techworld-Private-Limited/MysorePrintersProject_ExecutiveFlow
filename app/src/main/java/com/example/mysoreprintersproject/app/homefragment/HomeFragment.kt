@@ -104,7 +104,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     sessionManager.logout()
                     sessionManager.clearSession()
                     startActivity(Intent(requireActivity(),SplashScreenActivity::class.java))
-                    requireActivity().finish()
+                    requireActivity().finishAffinity()
                 }
                 else -> Log.d("NavigationDrawer", "Unhandled item clicked: ${item.itemId}")
             }
@@ -236,10 +236,12 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
                             // Calculate total possible hours for the selected period
                             val monthsSelected = selectedPeriod.toIntOrNull() ?: 0
-                            val totalPossibleHours = monthsSelected * 24 * 30 // Assuming 24 hours a day and 30 days a month
+                            val totalPossibleHours =
+                                monthsSelected * 24 * 30 // Assuming 24 hours a day and 30 days a month
 
                             // Calculate worked hours as a float
-                            val workedHours = hours + (minutes / 60.0) // Convert minutes to fractional hours
+                            val workedHours =
+                                hours + (minutes / 60.0) // Convert minutes to fractional hours
 
                             // Calculate the percentage of worked hours
                             val possibleHours = totalPossibleHours.toFloat()
@@ -259,10 +261,18 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                         val attendanceGraph = dashboardResponses.attendanceGraph
                         if (attendanceGraph.isNotEmpty()) {
                             setupBarChart(attendanceGraph)
+                        } else {
+                            Toast.makeText(
+                                requireContext(),
+                                "No Attendance Data, Available",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
-                    } else {
-                        Toast.makeText(requireActivity(), "No data available", Toast.LENGTH_SHORT).show()
                     }
+//                    else{
+//                        Toast.makeText(requireContext(),"No Data, Available",Toast.LENGTH_SHORT).show()
+//                    }
+
                 }
 
                 override fun onFailure(call: Call<ExecutiveDashboard>, t: Throwable) {
