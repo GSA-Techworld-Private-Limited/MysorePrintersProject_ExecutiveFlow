@@ -40,10 +40,12 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.android.gms.location.*
 import android.location.Location
+import android.os.Build
 import android.os.Looper
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
+import com.example.mysoreprintersproject.network.LocationService
 import com.google.android.gms.common.api.ResolvableApiException
 import java.io.IOException
 import java.util.Locale
@@ -82,7 +84,7 @@ class HomeContainerActivity : AppCompatActivity() {
         database = FirebaseDatabase.getInstance().reference.child("coordinate")
 
         if (isLocationPermissionGranted()) {
-            checkLocationSettingsAndStartUpdates()
+           getCurrentLocationAndStartUpdates()
         } else {
             requestLocationPermission()
         }
@@ -200,6 +202,14 @@ class HomeContainerActivity : AppCompatActivity() {
         }
 
 
+//        Intent(this, LocationService::class.java).also { intent ->
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                startForegroundService(intent)
+//            } else {
+//                startService(intent)
+//            }
+//        }
+
         //startLocationUpdates()
         window.statusBarColor= ContextCompat.getColor(this,R.color.shade_blue)
     }
@@ -222,37 +232,37 @@ class HomeContainerActivity : AppCompatActivity() {
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
-                checkLocationSettingsAndStartUpdates()
+                getCurrentLocationAndStartUpdates()
             } else {
                 Toast.makeText(this, "Location permission is required.", Toast.LENGTH_SHORT).show()
             }
         }
 
 
-    private fun checkLocationSettingsAndStartUpdates() {
-        val locationRequest = LocationRequest.create().apply {
-            interval = 900000 // 15 minutes in milliseconds
-            fastestInterval = 5000 // 5 seconds in milliseconds (you can adjust this as needed)
-            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        }
+    @SuppressLint("MissingPermission")
+    private fun getCurrentLocationAndStartUpdates() {
+        // Fetch the current location immediately
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            location?.let {
+                // Store location in SessionManager
+                sessionManager.storeLatitude(it.latitude)
+                sessionManager.storeLongitude(it.longitude)
 
+                // Get address details and store them
+                getAddressDetails(it.latitude, it.longitude)
 
-        val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
-        val client = LocationServices.getSettingsClient(this)
-
-        client.checkLocationSettings(builder.build()).addOnSuccessListener {
-            startLocationUpdates()
-        }.addOnFailureListener { e ->
-            if (e is ResolvableApiException) {
-                try {
-                    e.startResolutionForResult(this, REQUEST_CHECK_SETTINGS)
-                } catch (sendEx: IntentSender.SendIntentException) {
-                    // Ignore the error.
-                }
+                // Log the initial location
+                Log.d("Initial Location", "Lat: ${it.latitude}, Lng: ${it.longitude}")
+            } ?: run {
+                Log.d("Location", "Last known location is null.")
             }
+        }.addOnFailureListener { e ->
+            Log.e("Location Error", "Failed to get initial location", e)
         }
-    }
 
+        // Start periodic location updates every 15 minutes
+        startLocationUpdates()
+    }
 
     @SuppressLint("MissingPermission")
     private fun startLocationUpdates() {
@@ -265,23 +275,18 @@ class HomeContainerActivity : AppCompatActivity() {
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
                 val location = locationResult.lastLocation ?: return
-                sessionManager.storeLatitude(location.latitude )
+                sessionManager.storeLatitude(location.latitude)
                 sessionManager.storeLongitude(location.longitude)
-                Log.d("Location", "Lat: ${location.latitude}, Lng: ${location.longitude}")
+                Log.d("Location Lat and Log", "Lat: ${location.latitude}, Lng: ${location.longitude}")
 
+                val isCheckedIn = sessionManager.isCheckedIn()
+                if (isCheckedIn) {
+                    sendLocationToFirebase(location.latitude, location.longitude)
+                } else {
+                    stopSendingDataToFirebase()
+                }
 
-                val isCheckedIn:Boolean=sessionManager.isCheckedIn()
-
-                    if (isCheckedIn) {
-                        sendLocationToFirebase(location.latitude, location.longitude)
-                    } else {
-                        stopSendingDataToFirebase()
-                    }
-
-                // Send location to Firebase
-
-
-                // Get address details using Geocoder
+                // Send location to Firebase and get address details
                 getAddressDetails(location.latitude, location.longitude)
             }
         }
