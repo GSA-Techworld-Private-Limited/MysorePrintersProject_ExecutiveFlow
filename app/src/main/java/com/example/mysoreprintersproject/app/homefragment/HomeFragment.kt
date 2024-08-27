@@ -196,6 +196,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     val dashboardResponses = response.body()
                     if (dashboardResponses != null) {
                         val totalHoursWorked = dashboardResponses.totalHoursWorked
+                        sessionManager.saveKm(dashboardResponses.totalDistance!!)
                         if (totalHoursWorked != null) {
                             // Split the string into hours and minutes
                             val timeParts = totalHoursWorked.split(":")

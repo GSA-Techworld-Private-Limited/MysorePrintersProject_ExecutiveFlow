@@ -74,6 +74,8 @@ class AttendanceFragment :
             drawerLayout.openDrawer(GravityCompat.START)
         }
 
+        val km=sessionManager.fetchKm()
+        binding.totalkmtravelled.text="Kilometer Travelled :$km"
         navigationView = binding.navigationView
 
         navigationView.setNavigationItemSelectedListener { item ->
@@ -143,9 +145,17 @@ class AttendanceFragment :
                     binding.progressbar.visibility=View.GONE
                 }
                 is Resource.Failure -> {
-                    Toast.makeText(requireActivity(), "Check-Out failed!", Toast.LENGTH_SHORT)
-                        .show()
-                    binding.progressbar.visibility=View.GONE
+                   if (checkOutResult.errorCode == 404) {
+                        Toast.makeText(requireActivity(),  "No coordination found, but checked out successfully", Toast.LENGTH_SHORT).show()
+                        sessionManager.saveCheckInState(false)
+                       toggleButtons(false)
+                       binding.progressbar.visibility = View.GONE
+                    } else {
+
+                       Toast.makeText(requireActivity(), "Check-Out failed!", Toast.LENGTH_SHORT).show()
+                       binding.progressbar.visibility = View.GONE
+                    }
+
                 }
                 else -> { /* Handle other cases if needed */ }
             }
@@ -240,22 +250,26 @@ class AttendanceFragment :
         serviceGenerator.getProfileOfExecutive(authorization, id.toInt())
             .enqueue(object : retrofit2.Callback<ProfileResponses> {
                 override fun onResponse(call: Call<ProfileResponses>, response: Response<ProfileResponses>) {
-                    val profileResponses = response.body()
+                    if (isAdded) {  // Check if fragment is attached
+                        val profileResponses = response.body()
 
-                    if(profileResponses!=null){
-
-                        val profileImage:ImageView=binding.imageSettings2
-                        val image=profileResponses.profileImage
-                        val file= APIManager.getImageUrl(image!!)
-                        Glide.with(requireActivity()).load(file).into(profileImage)
+                        if (profileResponses != null) {
+                            val profileImage: ImageView = binding.imageSettings2
+                            val image = profileResponses.profileImage
+                            val file = APIManager.getImageUrl(image!!)
+                            Glide.with(requireActivity()).load(file).into(profileImage)
+                        }
                     }
                 }
 
                 override fun onFailure(call: Call<ProfileResponses>, t: Throwable) {
-                    Toast.makeText(requireActivity(), "Error fetching data", Toast.LENGTH_SHORT).show()
+                    if (isAdded) {  // Check if fragment is attached
+                        Toast.makeText(requireActivity(), "Error fetching data", Toast.LENGTH_SHORT).show()
+                    }
                 }
             })
     }
+
 
 
 

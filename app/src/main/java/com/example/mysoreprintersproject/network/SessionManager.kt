@@ -30,6 +30,7 @@ class SessionManager (context: Context) {
         private const val CITY="CITY"
         private const val STATE="STATE"
         private const val PINCODE="PINCODE"
+        private const val KM="km"
     }
 
 
@@ -54,6 +55,13 @@ class SessionManager (context: Context) {
         editor.apply()
     }
 
+
+    fun saveKm(km:String){
+        val editor=prefs.edit()
+        editor.putString(KM,km)
+        editor.apply()
+    }
+
     /**
      * Function to fetch auth token
      */
@@ -64,6 +72,10 @@ class SessionManager (context: Context) {
         return prefs.getString(REFRESH_TOKEN,null)
     }
 
+
+    fun fetchKm():String?{
+        return prefs.getString(KM,null)
+    }
 
     fun logout() {
         prefs.edit().apply {
