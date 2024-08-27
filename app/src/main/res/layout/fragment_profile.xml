@@ -40,7 +40,7 @@
 
             <LinearLayout
                 android:orientation="horizontal"
-                android:layout_marginStart="219dp"
+                android:layout_marginStart="279dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
                 <ImageView android:id="@+id/imageSettings1"
@@ -54,16 +54,16 @@
                     tools:src="@drawable/notification_icon"/>
 
 
-                <ImageView android:id="@+id/imageSettings2"
-                    android:layout_height="30dp"
-                    android:layout_marginStart="13dp"
-                    android:layout_marginBottom="1dp"
-                    android:layout_marginTop="1dp"
-                    android:layout_width="35dp"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/profile_image"
-                    tools:ignore="ContentDescription"
-                    tools:src="@drawable/profile_image"/>
+<!--                <ImageView android:id="@+id/imageSettings2"-->
+<!--                    android:layout_height="30dp"-->
+<!--                    android:layout_marginStart="13dp"-->
+<!--                    android:layout_marginBottom="1dp"-->
+<!--                    android:layout_marginTop="1dp"-->
+<!--                    android:layout_width="35dp"-->
+<!--                    android:scaleType="fitXY"-->
+<!--                    android:src="@drawable/profile_image"-->
+<!--                    tools:ignore="ContentDescription"-->
+<!--                    tools:src="@drawable/profile_image"/>-->
             </LinearLayout>
 
         </LinearLayout>
@@ -101,15 +101,15 @@
                     android:layout_centerHorizontal="true"
                     android:src="@drawable/ic_profile" />
 
-                <ImageView
-                    android:id="@+id/edit_profile_image"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_alignEnd="@id/profile_image"
-                    android:layout_alignBottom="@id/profile_image"
-                    android:src="@drawable/ic_edit"
-                    android:background="@drawable/rounded_corner_background"
-                    android:padding="4dp" />
+<!--                <ImageView-->
+<!--                    android:id="@+id/edit_profile_image"-->
+<!--                    android:layout_width="24dp"-->
+<!--                    android:layout_height="24dp"-->
+<!--                    android:layout_alignEnd="@id/profile_image"-->
+<!--                    android:layout_alignBottom="@id/profile_image"-->
+<!--                    android:src="@drawable/ic_edit"-->
+<!--                    android:background="@drawable/rounded_corner_background"-->
+<!--                    android:padding="4dp" />-->
 
                 <TextView
                     android:id="@+id/profile_name"
@@ -146,6 +146,9 @@
                     android:hint=""
                     android:text=""
                     android:padding="8dp"
+                    android:inputType="none"
+                    android:focusable="false"
+                    android:clickable="true"
                     android:layout_marginTop="10dp"
                     style="@style/txtinterbold17"
                     android:background="@drawable/edit_text_background" />
@@ -173,10 +176,12 @@
                     android:layout_height="wrap_content"
                     android:hint=""
                     android:text=""
+                    android:inputType="none"
+                    android:focusable="false"
+                    android:clickable="true"
                     style="@style/txtinterbold17"
                     android:padding="8dp"
-                    android:background="@drawable/edit_text_background"
-                    android:inputType="phone" />
+                    android:background="@drawable/edit_text_background" />
             </LinearLayout>
 
 
@@ -202,10 +207,12 @@
                     android:layout_height="wrap_content"
                     android:hint=""
                     android:text=""
+                    android:inputType="none"
+                    android:focusable="false"
+                    android:clickable="true"
                     style="@style/txtinterbold17"
                     android:padding="8dp"
-                    android:background="@drawable/edit_text_background"
-                    android:inputType="textEmailAddress" />
+                    android:background="@drawable/edit_text_background" />
             </LinearLayout>
 
 
@@ -233,6 +240,9 @@
                     android:hint=""
                     android:text=""
                     android:padding="8dp"
+                    android:inputType="none"
+                    android:focusable="false"
+                    android:clickable="true"
                     android:id="@+id/editLocation"
                     android:layout_marginTop="10dp"
                     style="@style/txtinterbold17"
