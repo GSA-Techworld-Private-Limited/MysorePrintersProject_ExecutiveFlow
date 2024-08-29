@@ -41,6 +41,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.mysoreprintersproject.R
+import com.example.mysoreprintersproject.app.DailyWorkSummaryActivity
 import com.example.mysoreprintersproject.app.SplashScreenActivity
 import com.example.mysoreprintersproject.app.attendance.AttendanceActivity
 import com.example.mysoreprintersproject.app.collection_performance.CollectionPerformanceActivity
@@ -168,6 +169,8 @@ class Collection_Report_Summary_Fragment : Fragment(R.layout.fragment_collection
                     Intent(requireActivity(),
                         CollectionSummaryReportActivity::class.java)
                 )
+                R.id.nav_daily_work_summary -> startActivity(Intent(requireActivity(),
+                    DailyWorkSummaryActivity::class.java))
                 R.id.nav_collections_report -> startActivity(Intent(requireActivity(), DailyCollectionActivity::class.java))
                 R.id.nav_supply_reports -> startActivity(Intent(requireActivity(), SupplyReportActivity::class.java))
                 R.id.nav_net_sales_report -> startActivity(Intent(requireActivity(), NetSaleActivity::class.java))

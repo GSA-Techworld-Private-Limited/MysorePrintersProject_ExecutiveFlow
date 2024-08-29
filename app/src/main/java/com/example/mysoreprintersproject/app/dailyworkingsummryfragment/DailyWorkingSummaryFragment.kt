@@ -42,6 +42,7 @@ import com.example.mysoreprintersproject.app.CollectionSummaryReport.CollectionS
 import com.example.mysoreprintersproject.app.CollectionSummaryReport.CollectionSummaryReportAdapter
 import com.example.mysoreprintersproject.app.CollectionSummaryReport.Collection_Report_Summary_Fragment
 import com.example.mysoreprintersproject.app.CollectionSummaryReport.Collection_Report_Summary_Fragment.Companion
+import com.example.mysoreprintersproject.app.DailyWorkSummaryActivity
 import com.example.mysoreprintersproject.app.SplashScreenActivity
 import com.example.mysoreprintersproject.app.attendance.AttendanceActivity
 import com.example.mysoreprintersproject.app.collection_performance.CollectionPerformanceActivity
@@ -136,6 +137,8 @@ class DailyWorkingSummaryFragment : Fragment() {
                     Intent(requireActivity(),
                         CollectionSummaryReportActivity::class.java)
                 )
+                R.id.nav_daily_work_summary -> startActivity(Intent(requireActivity(),
+                    DailyWorkSummaryActivity::class.java))
                 R.id.nav_collections_report -> startActivity(Intent(requireActivity(), DailyCollectionActivity::class.java))
                 R.id.nav_supply_reports -> startActivity(Intent(requireActivity(), SupplyReportActivity::class.java))
                 R.id.nav_net_sales_report -> startActivity(Intent(requireActivity(), NetSaleActivity::class.java))
@@ -210,10 +213,13 @@ class DailyWorkingSummaryFragment : Fragment() {
 
         val filteredList = summaryResponses.filter { summary ->
             summary.Date!!.contains(query, ignoreCase = true) ||
-                    summary.totalDistance!!.contains(query, ignoreCase = true) ||
-                    summary.agentVisited!!.contains(query, ignoreCase = true) ||
-                    summary.Date.toString().contains(query, ignoreCase = true) ||
-                    summary.userName.toString().contains(query, ignoreCase = true)
+                    summary.MarketVisited!!.contains(query, ignoreCase = true) ||
+                    summary.AgentsVisited!!.contains(query, ignoreCase = true) ||
+                    summary.InstitutionVisited.toString().contains(query, ignoreCase = true) ||
+                    summary.TasksAccomplished.toString().contains(query, ignoreCase = true) ||
+                    summary.WhatsappNumber.toString().contains(query, ignoreCase = true) ||
+                    summary.emailID.toString().contains(query, ignoreCase = true) ||
+                    summary.Executive.toString().contains(query, ignoreCase = true)
         }
 
         recyclerView.adapter = DailyWorkingSummaryAdapter(filteredList)
@@ -349,7 +355,7 @@ class DailyWorkingSummaryFragment : Fragment() {
             val summaryList = adapter.getWorkingSummaryList()
 
             // Define a table with the number of columns matching the fields
-            val table = com.itextpdf.layout.element.Table(floatArrayOf(1f, 2f, 2f, 2f)).apply {
+            val table = com.itextpdf.layout.element.Table(floatArrayOf(1f, 2f, 2f, 2f, 2f, 2f, 2f)).apply {
                 setWidth(com.itextpdf.layout.property.UnitValue.createPercentValue(100f))
             }
 
@@ -357,14 +363,21 @@ class DailyWorkingSummaryFragment : Fragment() {
             table.addHeaderCell(Cell().add(Paragraph("Date").setFont(font)))
             table.addHeaderCell(Cell().add(Paragraph("Market(s) Worked").setFont(font)))
             table.addHeaderCell(Cell().add(Paragraph("Agent Visited").setFont(font)))
-            table.addHeaderCell(Cell().add(Paragraph("Total Distance").setFont(font)))
+            table.addHeaderCell(Cell().add(Paragraph("Instistution Visited").setFont(font)))
+            table.addHeaderCell(Cell().add(Paragraph("Task Accomplished").setFont(font)))
+            table.addHeaderCell(Cell().add(Paragraph("WhatsApp Number").setFont(font)))
+            table.addHeaderCell(Cell().add(Paragraph("Email Id").setFont(font)))
+
 
             // Add the summary data to the table
             summaryList.forEach { summary ->
                 table.addCell(Cell().add(Paragraph(summary.Date).setFont(font)))
-                table.addCell(Cell().add(Paragraph(summary.agentVisited).setFont(font)))
-                table.addCell(Cell().add(Paragraph(summary.userName).setFont(font)))
-                table.addCell(Cell().add(Paragraph(summary.totalDistance).setFont(font)))
+                table.addCell(Cell().add(Paragraph(summary.MarketVisited).setFont(font)))
+                table.addCell(Cell().add(Paragraph(summary.AgentsVisited).setFont(font)))
+                table.addCell(Cell().add(Paragraph(summary.InstitutionVisited.toString()).setFont(font)))
+                table.addCell(Cell().add(Paragraph(summary.TasksAccomplished.toString()).setFont(font)))
+                table.addCell(Cell().add(Paragraph(summary.WhatsappNumber.toString()).setFont(font)))
+                table.addCell(Cell().add(Paragraph(summary.emailID.toString()).setFont(font)))
             }
 
             document.add(table) // Add the table to the document

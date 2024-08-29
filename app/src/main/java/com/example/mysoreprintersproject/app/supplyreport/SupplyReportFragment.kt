@@ -41,6 +41,7 @@ import com.example.mysoreprintersproject.R
 import com.example.mysoreprintersproject.app.CollectionSummaryReport.CollectionSummaryReportActivity
 import com.example.mysoreprintersproject.app.CollectionSummaryReport.CollectionSummaryReportAdapter
 import com.example.mysoreprintersproject.app.CollectionSummaryReport.Collection_Report_Summary_Fragment
+import com.example.mysoreprintersproject.app.DailyWorkSummaryActivity
 import com.example.mysoreprintersproject.app.SplashScreenActivity
 import com.example.mysoreprintersproject.app.attendance.AttendanceActivity
 import com.example.mysoreprintersproject.app.collection_performance.CollectionPerformanceActivity
@@ -103,6 +104,8 @@ class SupplyReportFragment : Fragment() {
                 R.id.nav_collections_performance -> startActivity(Intent(requireActivity(), CollectionPerformanceActivity::class.java))
                 R.id.nav_collection_summary -> startActivity(Intent(requireActivity(),
                     CollectionSummaryReportActivity::class.java))
+                R.id.nav_daily_work_summary -> startActivity(Intent(requireActivity(),
+                    DailyWorkSummaryActivity::class.java))
                 R.id.nav_collections_report -> startActivity(Intent(requireActivity(), DailyCollectionActivity::class.java))
                 R.id.nav_supply_reports -> startActivity(Intent(requireActivity(), SupplyReportActivity::class.java))
                 R.id.nav_net_sales_report -> startActivity(Intent(requireActivity(), NetSaleActivity::class.java))

@@ -1,6 +1,7 @@
 package com.example.mysoreprintersproject.app
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mysoreprintersproject.R
 import com.example.mysoreprintersproject.app.homecontainer.HomeContainerActivity
 import com.example.mysoreprintersproject.network.AuthViewModel
+import com.example.mysoreprintersproject.network.FirebaseMessageReceiver
 import com.example.mysoreprintersproject.network.Resource
 import com.example.mysoreprintersproject.network.SessionManager
 
@@ -26,6 +28,8 @@ class ViewPagerAdapter(private val context: Context,
         R.layout.fragment_logo,
         R.layout.fragment_login
     )
+
+
 
 
     // Assuming you're passing the ViewModelStoreOwner (e.g., Activity) as the context
@@ -45,11 +49,23 @@ class ViewPagerAdapter(private val context: Context,
                 val username = holder.itemView.findViewById<EditText>(R.id.username).text.toString()
                 val password = holder.itemView.findViewById<EditText>(R.id.password).text.toString()
                 val progressBar=holder.itemView.findViewById<ProgressBar>(R.id.progressBar)
+                var fcmToken:String=""
+
+                // Retrieve the token from shared preferences
+                val sharedPreferences = context.getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
+                val token = sharedPreferences.getString(FirebaseMessageReceiver.FCM_TOKEN, "")
+                Log.d("FCM TOKEN",token!!.toString())
+
+                // Use the token in your API request
+                if (!token.isNullOrEmpty()) {
+                    fcmToken=token
+                    Log.d("FCM TOKEN",fcmToken)
+                }
 
                 if (username.isEmpty() || password.isEmpty()) {
                     Toast.makeText(context, "Please fill in both email and password", Toast.LENGTH_SHORT).show()
                 } else {
-                    viewModel.login(username, password)
+                    viewModel.login(username, password,fcmToken)
                     // To save login status when the user successfully logs in
                     progressBar.visibility=View.VISIBLE
                 }
