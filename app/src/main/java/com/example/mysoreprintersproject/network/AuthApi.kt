@@ -21,7 +21,8 @@ interface AuthApi {
     @POST("/mobile/login/")
     suspend fun login(
         @Field("email")  username: String,
-        @Field("password")  password: String
+        @Field("password")  password: String,
+        @Field("fcm_token")fcmToken:String
     ) : LoginResponse
 
 

@@ -23,10 +23,11 @@ class AuthViewModel(
 
     fun login(
         username: String,
-        password: String
+        password: String,
+        fcmToken:String
     )= viewModelScope.launch {
         _loginResponse.value=Resource.Loading
-        _loginResponse.value =repository.login(username, password)
+        _loginResponse.value =repository.login(username, password,fcmToken)
     }
 
 //    suspend fun saveAccessToken(token: String){

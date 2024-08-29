@@ -443,7 +443,8 @@ class HomeContainerActivity : AppCompatActivity() {
         AlertDialog.Builder(this)
             .setMessage("Are you sure you want to exit?")
             .setCancelable(false)
-            .setPositiveButton("Yes", DialogInterface.OnClickListener { _, _ -> finish() })
+            .setPositiveButton("Yes", DialogInterface.OnClickListener { _, _ ->
+                finishAffinity() })
             .setNegativeButton("No", null)
             .show()
     }

@@ -14,9 +14,10 @@ class AuthRepository(
 
     suspend fun login(
         username : String,
-        password : String
+        password : String,
+        fcmtoken:String
     ) = safeApiCall {
-        api.login(username,password)
+        api.login(username,password,fcmtoken)
     }
 
 

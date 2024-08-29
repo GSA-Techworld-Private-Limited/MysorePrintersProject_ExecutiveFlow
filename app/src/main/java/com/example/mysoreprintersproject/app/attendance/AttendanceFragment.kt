@@ -19,6 +19,7 @@ import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
 import com.example.mysoreprintersproject.R
 import com.example.mysoreprintersproject.app.CollectionSummaryReport.CollectionSummaryReportActivity
+import com.example.mysoreprintersproject.app.DailyWorkSummaryActivity
 import com.example.mysoreprintersproject.app.SplashScreenActivity
 import com.example.mysoreprintersproject.app.collection_performance.CollectionPerformanceActivity
 import com.example.mysoreprintersproject.app.dailycollections.DailyCollectionActivity
@@ -88,6 +89,8 @@ class AttendanceFragment :
                     Intent(requireActivity(),
                         CollectionSummaryReportActivity::class.java)
                 )
+                R.id.nav_daily_work_summary -> startActivity(Intent(requireActivity(),
+                    DailyWorkSummaryActivity::class.java))
                 R.id.nav_collections_report -> startActivity(Intent(requireActivity(), DailyCollectionActivity::class.java))
                 R.id.nav_supply_reports -> startActivity(Intent(requireActivity(), SupplyReportActivity::class.java))
                 R.id.nav_net_sales_report -> startActivity(Intent(requireActivity(), NetSaleActivity::class.java))

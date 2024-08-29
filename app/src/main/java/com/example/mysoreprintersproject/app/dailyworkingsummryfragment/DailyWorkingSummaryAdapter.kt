@@ -41,13 +41,16 @@ class DailyWorkingSummaryAdapter(
         val txtmarketVisited: TextView = itemView.findViewById(R.id.txtmarketVisited)
         val txtagentName: TextView = itemView.findViewById(R.id.txtagentName)
 
+        val inistuitionvisited:TextView=itemView.findViewById(R.id.inistuitionvisited)
+        val taskCompeted:TextView=itemView.findViewById(R.id.taskCompeted)
         fun bindview(postmodel:DailyWorkingSummaryResponses){
             txtDate.text=postmodel.Date
-            txtagentName.text=postmodel.userName
 
 
-            val rawAgentVisited = postmodel.agentVisited!!
 
+            val rawAgentVisited = postmodel.MarketVisited!!
+
+            val rawAgentVisited1=postmodel.AgentsVisited!!
 // Remove square brackets and quotes
             val cleanedAgentVisited = rawAgentVisited
                 .replace("[", "")
@@ -64,6 +67,24 @@ class DailyWorkingSummaryAdapter(
 // Set the formatted string to the TextView
             txtmarketVisited.text = formattedMarketVisited
 
+            // Remove square brackets and quotes
+            val cleanedAgentVisited1 = rawAgentVisited1
+                .replace("[", "")
+                .replace("]", "")
+                .replace("'", "")
+                .replace("\"", "")
+
+// Split the string by commas to get the list of market names
+            val marketNames1 = cleanedAgentVisited1.split(",")
+
+// Join the list into a single string with proper formatting
+            val formattedMarketVisited1 = marketNames1.joinToString(separator = ",") { it.trim() }
+
+            txtagentName.text=formattedMarketVisited1
+
+            inistuitionvisited.text=postmodel.InstitutionVisited.toString()
+
+            taskCompeted.text=postmodel.TasksAccomplished
         }
     }
 }

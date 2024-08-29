@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_daily_work_summary"
+    app:startDestination="@id/dailyWorkSummaryFragment">
+
+    <fragment
+        android:id="@+id/dailyWorkSummaryFragment"
+        android:name="com.example.mysoreprintersproject.app.DailyWorkSummaryFragment"
+        android:label="DailyWorkSummaryFragment"
+        tools:layout="@layout/fragment_daily_work_summary"/>
+</navigation>

@@ -1,4 +1,5 @@
 package com.example.mysoreprintersproject.network
+import com.example.mysoreprintersproject.responses.AgentNameResponses
 import com.example.mysoreprintersproject.responses.CheckInRequest
 import com.example.mysoreprintersproject.responses.CheckOutRequest
 import com.example.mysoreprintersproject.responses.ChecksResponses
@@ -7,9 +8,11 @@ import com.example.mysoreprintersproject.responses.CollectionResponses
 import com.example.mysoreprintersproject.responses.CollectionSummaryReportResponses
 import com.example.mysoreprintersproject.responses.DailyWorkingSummaryResponses
 import com.example.mysoreprintersproject.responses.ExecutiveDashboard
+import com.example.mysoreprintersproject.responses.LocationNameResponse
 import com.example.mysoreprintersproject.responses.LoginResponse
 import com.example.mysoreprintersproject.responses.NetSalesResponse
 import com.example.mysoreprintersproject.responses.ProfileResponses
+import com.example.mysoreprintersproject.responses.SendDailyWorkSummary
 import com.example.mysoreprintersproject.responses.SummaryReportResponses
 import com.example.mysoreprintersproject.responses.SupplyReportResponse
 import okhttp3.ResponseBody
@@ -106,6 +109,30 @@ interface DataSource {
         @Header("Authorization") token: String,
         @Query("id")id:String
     ):Call<List<CollectionSummaryReportResponses>>
+
+
+
+    @GET("/app-executive/agentsapi/")
+    fun getAgentName(
+        @Header("Authorization") token: String
+    ):Call<List<AgentNameResponses>>
+
+
+    @GET("/app-executive/placesvisited/")
+    fun getplacesVisited(
+        @Header("Authorization") token: String,
+        @Query("id")id:String
+    ):Call<LocationNameResponse>
+
+
+
+
+    @POST("/app-executive/dailyworkingsummary/")
+    fun sendDailyWorkSummary(
+        @Header("Authorization") token: String,
+        @Body  sendDailyWorkSummary: SendDailyWorkSummary
+    ):Call<Void>
+
 //    @GET("api/event/create/")
 //    suspend fun getAllEvents(
 //        @Header("Authorization") token: String

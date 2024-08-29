@@ -1,9 +1,11 @@
 package com.example.mysoreprintersproject.app
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -14,11 +16,14 @@ import androidx.viewpager2.widget.ViewPager2
 import com.example.mysoreprintersproject.R
 import com.example.mysoreprintersproject.app.homecontainer.HomeContainerActivity
 import com.example.mysoreprintersproject.network.AuthApi
+import com.example.mysoreprintersproject.network.FirebaseMessageReceiver
 import com.example.mysoreprintersproject.network.RemoteDataSource
 import com.example.mysoreprintersproject.network.SessionManager
 import com.example.mysoreprintersproject.network.ViewModelFactory
 import com.example.mysoreprintersproject.repository.AuthRepository
 import com.example.mysoreprintersproject.responses.UserPreferences
+import com.google.firebase.FirebaseApp
+import com.google.firebase.messaging.FirebaseMessaging
 
 
 class SplashFragment : Fragment(R.layout.fragment_splash) {
@@ -35,6 +40,8 @@ class SplashFragment : Fragment(R.layout.fragment_splash) {
 
         sessionManager=SessionManager(requireActivity())
 
+        FirebaseApp.initializeApp(requireActivity())
+        fetchFCMToken()
         // Check if the user is already logged in
         if (sessionManager.fetchAuthToken() != null) {
             // User is logged in, navigate directly to HomeContainerActivity
@@ -99,5 +106,30 @@ class SplashFragment : Fragment(R.layout.fragment_splash) {
         requireActivity().finish()
     }
 
+
+    private fun fetchFCMToken() {
+        FirebaseMessaging.getInstance().token
+            .addOnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    Log.w("FCM TOKEN", "Fetching FCM token failed", task.exception)
+                    return@addOnCompleteListener
+                }
+
+                // Get new FCM registration token
+                val token = task.result
+
+                // Log and save token
+                Log.d("FCM TOKEN", "Fetched token: $token")
+                saveTokenToSharedPreferences(token)
+            }
+    }
+
+
+    private fun saveTokenToSharedPreferences(token: String?) {
+        val sharedPreferences = requireActivity().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString(FirebaseMessageReceiver.FCM_TOKEN, token)
+        editor.apply()
+    }
 
 }

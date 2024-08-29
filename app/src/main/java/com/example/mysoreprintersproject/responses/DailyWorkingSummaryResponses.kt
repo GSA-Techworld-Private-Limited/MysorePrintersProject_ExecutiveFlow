@@ -3,8 +3,13 @@ package com.example.mysoreprintersproject.responses
 import com.google.gson.annotations.SerializedName
 
 data class DailyWorkingSummaryResponses(
-    @SerializedName("user_name"      ) var userName      : String? = null,
-    @SerializedName("agent_visited"  ) var agentVisited  : String? = null,
-    @SerializedName("total_distance" ) var totalDistance : String? = null,
-    @SerializedName("Date"           ) var Date          : String? = null
+    @SerializedName("id"                  ) var id                 : Int?    = null,
+    @SerializedName("Market_visited"      ) var MarketVisited      : String? = null,
+    @SerializedName("Agents_visited"      ) var AgentsVisited      : String? = null,
+    @SerializedName("Institution_visited" ) var InstitutionVisited : Int?    = null,
+    @SerializedName("Tasks_Accomplished"  ) var TasksAccomplished  : String? = null,
+    @SerializedName("Date"                ) var Date               : String? = null,
+    @SerializedName("Whatsapp_Number"     ) var WhatsappNumber     : String? = null,
+    @SerializedName("emailID"             ) var emailID            : String? = null,
+    @SerializedName("Executive"           ) var Executive          : Int?    = null
 )
