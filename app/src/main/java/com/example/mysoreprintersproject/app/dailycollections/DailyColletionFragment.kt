@@ -49,6 +49,7 @@ import com.example.mysoreprintersproject.app.dailyworkingsummryfragment.DailyWor
 import com.example.mysoreprintersproject.app.homecontainer.HomeContainerActivity
 import com.example.mysoreprintersproject.app.netsale.NetSaleActivity
 import com.example.mysoreprintersproject.app.netsale.NetSaleAdapter
+import com.example.mysoreprintersproject.app.notification.NotificationActivity
 import com.example.mysoreprintersproject.app.supplyreport.SupplyReportActivity
 import com.example.mysoreprintersproject.network.APIManager
 import com.example.mysoreprintersproject.network.SessionManager
@@ -75,6 +76,7 @@ class DailyColletionFragment : Fragment() {
 
     private lateinit var summaryResponses: List<CollectionResponses>
 
+    private lateinit var notificationIcon:ImageView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         sessionManager = SessionManager(requireActivity())
@@ -92,6 +94,7 @@ class DailyColletionFragment : Fragment() {
             }
 
             navigationView = findViewById(R.id.navigationView)
+
             setupNavigationDrawer()
 
             getCollectionReport()
@@ -107,6 +110,7 @@ class DailyColletionFragment : Fragment() {
         val fromSpinner: Spinner = requireView().findViewById(R.id.spinner_from)
         val toSpinner: Spinner = requireView().findViewById(R.id.spinner_to)
         val exportButton: Button = requireView().findViewById(R.id.export_button)
+        notificationIcon=requireView().findViewById(R.id.imageSettings1)
         exportButton.setOnClickListener {
             exportToPdf()
             // progressBar.visibility = View.VISIBLE
@@ -143,6 +147,12 @@ class DailyColletionFragment : Fragment() {
 
             override fun afterTextChanged(s: Editable?) {}
         })
+
+
+        notificationIcon.setOnClickListener {
+            val i=Intent(requireActivity(),NotificationActivity::class.java)
+            startActivity(i)
+        }
     }
 
     private fun setupNavigationDrawer() {
@@ -158,6 +168,8 @@ class DailyColletionFragment : Fragment() {
                     DailyWorkSummaryActivity::class.java))
                 R.id.nav_supply_reports -> startActivity(Intent(requireActivity(), SupplyReportActivity::class.java))
                 R.id.nav_net_sales_report -> startActivity(Intent(requireActivity(), NetSaleActivity::class.java))
+                R.id.nav_notifications -> startActivity(Intent(requireActivity(),
+                    NotificationActivity::class.java))
                 R.id.nav_logout -> {
                     sessionManager.logout()
                     sessionManager.clearSession()

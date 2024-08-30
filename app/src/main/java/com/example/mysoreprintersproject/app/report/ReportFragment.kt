@@ -23,6 +23,7 @@ import com.example.mysoreprintersproject.app.dailycollections.DailyCollectionAct
 import com.example.mysoreprintersproject.app.dailyworkingsummryfragment.DailyWorkingSummaryActivity
 import com.example.mysoreprintersproject.app.homecontainer.HomeContainerActivity
 import com.example.mysoreprintersproject.app.netsale.NetSaleActivity
+import com.example.mysoreprintersproject.app.notification.NotificationActivity
 import com.example.mysoreprintersproject.app.supplyreport.SupplyReportActivity
 import com.example.mysoreprintersproject.network.APIManager
 import com.example.mysoreprintersproject.network.SessionManager
@@ -50,6 +51,7 @@ class ReportFragment : Fragment(R.layout.fragment_report) {
 
 
     private lateinit var profileImage:ImageView
+    private lateinit var notificationIcon:ImageView
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
@@ -67,6 +69,7 @@ class ReportFragment : Fragment(R.layout.fragment_report) {
 
         profileImage= requireView().findViewById(R.id.imageSettings2)
         locationsTextView = requireView().findViewById(R.id.locationsTextView)
+        notificationIcon=requireView().findViewById(R.id.imageSettings1)
 
         val navigationViewIcon: ImageView = requireView().findViewById(R.id.imageSettings)
         navigationViewIcon.setOnClickListener {
@@ -81,6 +84,11 @@ class ReportFragment : Fragment(R.layout.fragment_report) {
 
 
         getExecutiveProfile()
+
+        notificationIcon.setOnClickListener {
+            val i=Intent(requireActivity(),NotificationActivity::class.java)
+            startActivity(i)
+        }
     }
 
     private fun setupSpinner() {
@@ -116,6 +124,8 @@ class ReportFragment : Fragment(R.layout.fragment_report) {
                 R.id.nav_collections_report -> startActivity(Intent(requireActivity(), DailyCollectionActivity::class.java))
                 R.id.nav_supply_reports -> startActivity(Intent(requireActivity(), SupplyReportActivity::class.java))
                 R.id.nav_net_sales_report -> startActivity(Intent(requireActivity(), NetSaleActivity::class.java))
+                R.id.nav_notifications -> startActivity(Intent(requireActivity(),
+                    NotificationActivity::class.java))
                 R.id.nav_logout ->{
                     sessionManager.logout()
                     sessionManager.clearSession()

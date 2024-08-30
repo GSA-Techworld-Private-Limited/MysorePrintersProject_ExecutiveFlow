@@ -49,6 +49,7 @@ import com.example.mysoreprintersproject.app.dailycollections.DailyCollectionAct
 import com.example.mysoreprintersproject.app.dailyworkingsummryfragment.DailyWorkingSummaryActivity
 import com.example.mysoreprintersproject.app.dailyworkingsummryfragment.DailyWorkingSummaryAdapter
 import com.example.mysoreprintersproject.app.homecontainer.HomeContainerActivity
+import com.example.mysoreprintersproject.app.notification.NotificationActivity
 import com.example.mysoreprintersproject.app.supplyreport.SupplyReportActivity
 import com.example.mysoreprintersproject.network.APIManager
 import com.example.mysoreprintersproject.network.SessionManager
@@ -84,6 +85,7 @@ class NetSaleFragment : Fragment() {
     private lateinit var searchBar: EditText
 
     private lateinit var netSaleResponses: NetSalesResponse
+    private lateinit var notificationIcon:ImageView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -101,6 +103,7 @@ class NetSaleFragment : Fragment() {
         drawerLayout = requireView().findViewById(R.id.drawer_layout)
         val navigationViewIcon: ImageView = requireView().findViewById(R.id.imageSettings)
 
+        notificationIcon=requireView().findViewById(R.id.imageSettings1)
         // Set up navigation drawer
         navigationViewIcon.setOnClickListener {
             drawerLayout.openDrawer(GravityCompat.START)
@@ -119,6 +122,10 @@ class NetSaleFragment : Fragment() {
 
         searchBar=requireView().findViewById(R.id.search_bar)
 
+        notificationIcon.setOnClickListener {
+            val i=Intent(requireActivity(),NotificationActivity::class.java)
+            startActivity(i)
+        }
 
         searchBar.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -204,6 +211,8 @@ class NetSaleFragment : Fragment() {
                 R.id.nav_collections_report -> startActivity(Intent(requireActivity(), DailyCollectionActivity::class.java))
                 R.id.nav_supply_reports -> startActivity(Intent(requireActivity(), SupplyReportActivity::class.java))
                 R.id.nav_net_sales_report -> startActivity(Intent(requireActivity(), NetSaleActivity::class.java))
+                R.id.nav_notifications -> startActivity(Intent(requireActivity(),
+                    NotificationActivity::class.java))
                 R.id.nav_logout ->{
                     sessionManager.logout()
                     sessionManager.clearSession()

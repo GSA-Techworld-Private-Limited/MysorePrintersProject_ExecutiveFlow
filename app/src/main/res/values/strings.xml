@@ -20,6 +20,7 @@
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
     <string name="title_activity_navi">Navi</string>
+    <string name="not1234">NOT1234</string>
 
     <string-array name="from_dates">
         <item>From</item>

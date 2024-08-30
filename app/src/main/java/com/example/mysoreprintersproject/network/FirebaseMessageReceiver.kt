@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat
 import androidx.test.core.app.ApplicationProvider
 import com.example.mysoreprintersproject.R
 import com.example.mysoreprintersproject.app.SplashScreenActivity
+import com.example.mysoreprintersproject.app.notification.NotificationActivity
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 
@@ -92,7 +93,7 @@ class FirebaseMessageReceiver: FirebaseMessagingService()  {
         message: String
     ) {
         // Pass the intent to switch to the MainActivity
-        val intent = Intent(this, SplashScreenActivity::class.java)
+        val intent = Intent(this, NotificationActivity::class.java)
         // Assign channel ID
         val channel_id = "notification_channel"
         // Here FLAG_ACTIVITY_CLEAR_TOP flag is set to clear

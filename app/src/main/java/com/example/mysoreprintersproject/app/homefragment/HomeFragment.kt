@@ -23,6 +23,7 @@ import com.example.mysoreprintersproject.app.dailycollections.DailyCollectionAct
 import com.example.mysoreprintersproject.app.dailyworkingsummryfragment.DailyWorkingSummaryActivity
 import com.example.mysoreprintersproject.app.homecontainer.HomeContainerActivity
 import com.example.mysoreprintersproject.app.netsale.NetSaleActivity
+import com.example.mysoreprintersproject.app.notification.NotificationActivity
 import com.example.mysoreprintersproject.app.supplyreport.SupplyReportActivity
 import com.example.mysoreprintersproject.network.APIManager
 import com.example.mysoreprintersproject.network.SessionManager
@@ -56,6 +57,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private lateinit var profileImage:ImageView
 
     private lateinit var donutChartView:DonutChartView
+    private lateinit var notificationIcon:ImageView
 
     @Deprecated("Deprecated in Java")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -78,11 +80,18 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         kilomeres = requireView().findViewById(R.id.kilometers)
         totalhoursworked = requireView().findViewById(R.id.totalhoursworked)
 
+        notificationIcon=requireView().findViewById(R.id.imageSettings1)
+
         setupNavigationView()
         setupSpinner()
         getExecutiveDashboard() // Initially fetch data
 
         getExecutiveProfile()
+
+        notificationIcon.setOnClickListener {
+            val i=Intent(requireActivity(),NotificationActivity::class.java)
+            startActivity(i)
+        }
     }
 
     private fun setupNavigationView() {
@@ -102,6 +111,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 R.id.nav_collections_report -> startActivity(Intent(requireActivity(), DailyCollectionActivity::class.java))
                 R.id.nav_supply_reports -> startActivity(Intent(requireActivity(), SupplyReportActivity::class.java))
                 R.id.nav_net_sales_report -> startActivity(Intent(requireActivity(), NetSaleActivity::class.java))
+                R.id.nav_notifications -> startActivity(Intent(requireActivity(),NotificationActivity::class.java))
                 R.id.nav_logout ->{
                     sessionManager.logout()
                     sessionManager.clearSession()

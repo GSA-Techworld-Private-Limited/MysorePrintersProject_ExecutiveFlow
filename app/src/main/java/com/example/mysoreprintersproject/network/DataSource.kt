@@ -11,6 +11,8 @@ import com.example.mysoreprintersproject.responses.ExecutiveDashboard
 import com.example.mysoreprintersproject.responses.LocationNameResponse
 import com.example.mysoreprintersproject.responses.LoginResponse
 import com.example.mysoreprintersproject.responses.NetSalesResponse
+import com.example.mysoreprintersproject.responses.NotificationRequest
+import com.example.mysoreprintersproject.responses.NotificationResponses
 import com.example.mysoreprintersproject.responses.ProfileResponses
 import com.example.mysoreprintersproject.responses.SendDailyWorkSummary
 import com.example.mysoreprintersproject.responses.SummaryReportResponses
@@ -131,6 +133,18 @@ interface DataSource {
     fun sendDailyWorkSummary(
         @Header("Authorization") token: String,
         @Body  sendDailyWorkSummary: SendDailyWorkSummary
+    ):Call<Void>
+
+
+    @GET("/app-executive/notifications/")
+    fun getNotifications(
+        @Header("Authorization") token: String
+    ):Call<List<NotificationResponses>>
+
+    @POST("/app-executive/deleteNotification/")
+    fun deletNotification(
+        @Header("Authorization") token: String,
+        @Body notificationRequest: NotificationRequest
     ):Call<Void>
 
 //    @GET("api/event/create/")
