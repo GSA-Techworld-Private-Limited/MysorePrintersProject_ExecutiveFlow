@@ -25,6 +25,7 @@ import com.example.mysoreprintersproject.app.dailyworkingsummryfragment.DailyWor
 import com.example.mysoreprintersproject.app.homecontainer.HomeContainerActivity
 import com.example.mysoreprintersproject.app.homefragment.DonutChartView
 import com.example.mysoreprintersproject.app.netsale.NetSaleActivity
+import com.example.mysoreprintersproject.app.notification.NotificationActivity
 import com.example.mysoreprintersproject.app.supplyreport.SupplyReportActivity
 import com.example.mysoreprintersproject.databinding.FragmentProfileBinding
 import com.example.mysoreprintersproject.network.APIManager
@@ -59,6 +60,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     private lateinit var editPhoneNumber:EditText
     private lateinit var editEmail:EditText
     private lateinit var editLocation:EditText
+    private lateinit var notificationIcon:ImageView
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -74,10 +76,16 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         editEmail=requireView().findViewById(R.id.editEmail)
         editLocation=requireView().findViewById(R.id.editLocation)
 
+        notificationIcon=requireView().findViewById(R.id.imageSettings1)
 
         setupNavigationView()
 
         getExecutiveProfile()
+
+        notificationIcon.setOnClickListener {
+            val i=Intent(requireActivity(),NotificationActivity::class.java)
+            startActivity(i)
+        }
     }
 
     private fun setupNavigationView() {
@@ -97,6 +105,8 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                 R.id.nav_collections_report -> startActivity(Intent(requireActivity(), DailyCollectionActivity::class.java))
                 R.id.nav_supply_reports -> startActivity(Intent(requireActivity(), SupplyReportActivity::class.java))
                 R.id.nav_net_sales_report -> startActivity(Intent(requireActivity(), NetSaleActivity::class.java))
+                R.id.nav_notifications -> startActivity(Intent(requireActivity(),
+                    NotificationActivity::class.java))
                 R.id.nav_logout ->{
                     sessionManager.logout()
                     sessionManager.clearSession()

@@ -101,7 +101,7 @@ class HomeContainerActivity : AppCompatActivity() {
         replaceFragment(HomeFragment())
 
         // No need to call replaceFragment directly, let the NavHostFragment handle navigation
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.navHostFagment) as NavHostFragment?
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.navHostFagment) as NavHostFragment
         val navController = navHostFragment!!.navController
 
         frameBottomBar = findViewById(R.id.frameBottombar)

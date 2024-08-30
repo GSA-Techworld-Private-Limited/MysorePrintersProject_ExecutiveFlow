@@ -27,6 +27,7 @@ import com.example.mysoreprintersproject.app.dailyworkingsummryfragment.DailyWor
 import com.example.mysoreprintersproject.app.homecontainer.HomeContainerActivity
 import com.example.mysoreprintersproject.app.homefragment.HomeActivity
 import com.example.mysoreprintersproject.app.netsale.NetSaleActivity
+import com.example.mysoreprintersproject.app.notification.NotificationActivity
 import com.example.mysoreprintersproject.app.supplyreport.SupplyReportActivity
 import com.example.mysoreprintersproject.databinding.FragmentAttendanceBinding
 import com.example.mysoreprintersproject.network.APIManager
@@ -94,6 +95,8 @@ class AttendanceFragment :
                 R.id.nav_collections_report -> startActivity(Intent(requireActivity(), DailyCollectionActivity::class.java))
                 R.id.nav_supply_reports -> startActivity(Intent(requireActivity(), SupplyReportActivity::class.java))
                 R.id.nav_net_sales_report -> startActivity(Intent(requireActivity(), NetSaleActivity::class.java))
+                R.id.nav_notifications -> startActivity(Intent(requireActivity(),
+                    NotificationActivity::class.java))
                 R.id.nav_logout ->{
                     sessionManager.logout()
                     sessionManager.clearSession()
@@ -106,6 +109,10 @@ class AttendanceFragment :
             true
         }
 
+        binding.imageSettings1.setOnClickListener {
+            val i=Intent(requireActivity(),NotificationActivity::class.java)
+            startActivity(i)
+        }
         getExecutiveProfile()
 
 

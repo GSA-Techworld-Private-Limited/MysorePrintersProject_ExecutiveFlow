@@ -31,6 +31,7 @@ import com.example.mysoreprintersproject.app.dailyworkingsummryfragment.DailyWor
 import com.example.mysoreprintersproject.app.homecontainer.HomeContainerActivity
 import com.example.mysoreprintersproject.app.netsale.NetSaleActivity
 import com.example.mysoreprintersproject.app.netsale.NetSaleAdapter
+import com.example.mysoreprintersproject.app.notification.NotificationActivity
 import com.example.mysoreprintersproject.app.supplyreport.SupplyReportActivity
 import com.example.mysoreprintersproject.network.APIManager
 import com.example.mysoreprintersproject.network.DataSource
@@ -84,6 +85,7 @@ class DailyWorkSummaryFragment : Fragment() {
     private lateinit var editTotalAccomplished:EditText
     private lateinit var editWhatAppNumber:EditText
     private lateinit var editEmail:EditText
+    private lateinit var notificationIcon:ImageView
 
     private lateinit var progressBar:ProgressBar
     override fun onCreateView(
@@ -137,6 +139,7 @@ class DailyWorkSummaryFragment : Fragment() {
         drawerLayout = requireView().findViewById(R.id.drawer_layout)
         val navigatioViewIcon: ImageView = requireView().findViewById(R.id.imageSettings)
         navigationView = requireView().findViewById(R.id.navigationView)
+        notificationIcon=requireView().findViewById(R.id.imageSettings1)
 
         navigatioViewIcon.setOnClickListener {
             drawerLayout.openDrawer(GravityCompat.START)
@@ -159,6 +162,8 @@ class DailyWorkSummaryFragment : Fragment() {
                 R.id.nav_collections_report -> startActivity(Intent(requireActivity(), DailyCollectionActivity::class.java))
                 R.id.nav_supply_reports -> startActivity(Intent(requireActivity(), SupplyReportActivity::class.java))
                 R.id.nav_net_sales_report -> startActivity(Intent(requireActivity(), NetSaleActivity::class.java))
+                R.id.nav_notifications -> startActivity(Intent(requireActivity(),
+                    NotificationActivity::class.java))
                 R.id.nav_logout ->{
                     sessionManager.logout()
                     sessionManager.clearSession()
@@ -181,6 +186,10 @@ class DailyWorkSummaryFragment : Fragment() {
             progressBar.visibility=View.VISIBLE
         }
 
+        notificationIcon.setOnClickListener {
+            val i=Intent(requireActivity(),NotificationActivity::class.java)
+            startActivity(i)
+        }
     }
 
     private fun initializeSpinners() {
