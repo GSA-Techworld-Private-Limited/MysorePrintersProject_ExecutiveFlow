@@ -147,6 +147,14 @@ interface DataSource {
         @Body notificationRequest: NotificationRequest
     ):Call<Void>
 
+
+
+    @POST("/lvd/plant_edition/")
+    fun postLVD(
+        @Header("Authorization") token: String,
+        @Body lvdRequest: LVDRequest
+    ):Call<Void>
+
 //    @GET("api/event/create/")
 //    suspend fun getAllEvents(
 //        @Header("Authorization") token: String

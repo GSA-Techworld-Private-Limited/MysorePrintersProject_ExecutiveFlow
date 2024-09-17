@@ -89,6 +89,7 @@ dependencies {
     implementation("androidx.activity:activity:1.9.1")
     implementation("com.google.firebase:firebase-messaging:24.0.1")
     implementation("androidx.test:core-ktx:1.6.1")
+    implementation("androidx.work:work-runtime-ktx:2.9.1")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")

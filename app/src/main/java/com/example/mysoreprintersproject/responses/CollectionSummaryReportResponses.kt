@@ -7,7 +7,7 @@ data class CollectionSummaryReportResponses(
     @SerializedName("executive_name"   ) var executiveName    : String? = null,
     @SerializedName("agent_code"       ) var agentCode        : String? = null,
     @SerializedName("paymentmethod"    ) var paymentmethod    : String? = null,
-    @SerializedName("InstrumentNumber" ) var InstrumentNumber : Int?    = null,
+    @SerializedName("InstrumentNumber" ) var InstrumentNumber : Long?    = null,
     @SerializedName("AmountCollected"  ) var AmountCollected  : Int?    = null,
     @SerializedName("agent"            ) var agent            : String? = null,
     @SerializedName("Date"             ) var Date             : String? = null,

@@ -11,6 +11,7 @@ import android.widget.AdapterView
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Spinner
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.view.GravityCompat
@@ -50,6 +51,7 @@ class Collection_Performance_Fragment : Fragment(R.layout.fragment_collection__p
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
     private lateinit var notificationIcon:ImageView
+    private lateinit var btnCancelled:AppCompatButton
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         sessionManager=SessionManager(requireActivity())
@@ -60,11 +62,38 @@ class Collection_Performance_Fragment : Fragment(R.layout.fragment_collection__p
         periodSpinner = requireView().findViewById(R.id.spinnerCash)
         submitButton=requireView().findViewById(R.id.btnSubmit)
 
+        btnCancelled=requireView().findViewById(R.id.btnCancleed)
         notificationIcon=requireView().findViewById(R.id.imageSettings1)
         setupNavigationView()
 
 
         getExecutiveProfile()
+
+
+        val userType = sessionManager.fetchUserRole() // Fetch user type
+        val headerView = navigationView.getHeaderView(0) // Get the header view
+        val headerTitle: TextView = headerView.findViewById(R.id.nav_header_title) // Assuming you have this TextView in your header layout
+
+// Set the header title based on the user type
+        when (userType) {
+            "RM" -> headerTitle.text = "Regional Manager"
+            "DGM" -> headerTitle.text = "Deputy General Manager"
+            "GM" -> headerTitle.text = "General Manager"
+        }
+
+        val menu = navigationView.menu
+
+// Hide certain menu items based on the user type
+        when (userType) {
+            "RM", "DGM", "GM" -> {
+                menu.findItem(R.id.nav_lprmanagement).isVisible = false
+                menu.findItem(R.id.nav_daily_work_summary).isVisible = false
+                menu.findItem(R.id.nav_collections_performance).isVisible = false
+            }
+        }
+
+
+
         val agentCode:EditText=requireView().findViewById(R.id.editCode)
         val agentName:EditText=requireView().findViewById(R.id.editName)
         val instrumentNumber:EditText=requireView().findViewById(R.id.editinstumental)
@@ -83,6 +112,10 @@ class Collection_Performance_Fragment : Fragment(R.layout.fragment_collection__p
             override fun onNothingSelected(parent: AdapterView<*>) {
                 // Optionally handle this case
             }
+
+
+
+
         }
 
 
@@ -100,6 +133,11 @@ class Collection_Performance_Fragment : Fragment(R.layout.fragment_collection__p
             }
         }
 
+        btnCancelled.setOnClickListener {
+            val i=Intent(requireActivity(),HomeContainerActivity::class.java)
+            startActivity(i)
+            requireActivity().finish()
+        }
 
         notificationIcon.setOnClickListener {
             val i=Intent(requireActivity(),NotificationActivity::class.java)
@@ -162,16 +200,16 @@ class Collection_Performance_Fragment : Fragment(R.layout.fragment_collection__p
                 if (response.isSuccessful) {
 
                     Toast.makeText(requireActivity(),"Collection Report Sent Successfully",Toast.LENGTH_SHORT).show()
-                    submitButton.text="Edit"
+                    moveToHomeContainer()
                 } else {
                     // Handle other HTTP error codes if needed
-                    Toast.makeText(requireActivity(), "SignUp failed: ${response.message()}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireActivity(), "Something Went Wrong!!", Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<Void>, t: Throwable) {
                 // Handle failure (e.g., network failure, timeout)
-                Toast.makeText(requireActivity(), "User Already Registered, Please Login!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireActivity(), "Something Went Wrong!!", Toast.LENGTH_SHORT).show()
             }
         })
     }
@@ -203,4 +241,9 @@ class Collection_Performance_Fragment : Fragment(R.layout.fragment_collection__p
             })
     }
 
+    private fun moveToHomeContainer(){
+        val i=Intent(requireActivity(),HomeContainerActivity::class.java)
+        startActivity(i)
+        requireActivity().finish()
+    }
 }

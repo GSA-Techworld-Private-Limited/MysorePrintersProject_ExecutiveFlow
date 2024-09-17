@@ -15,6 +15,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.Spinner
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.view.GravityCompat
@@ -65,6 +66,7 @@ class DailyWorkSummaryFragment : Fragment() {
     private lateinit var spinnerMarket: Spinner
     private lateinit var editTextSelectedAgents: EditText
     private lateinit var editTextSelectedPlaces: EditText
+    private lateinit var editTextSlectedAgentCode:EditText
     private lateinit var sessionManager: SessionManager
     private lateinit var apiService: DataSource
 
@@ -72,8 +74,9 @@ class DailyWorkSummaryFragment : Fragment() {
     private val selectedAgentNames = mutableListOf<String>()
     private val selectedPlaces = mutableListOf<String>()
 
-    private lateinit var selectedAgentsString: String
-    private lateinit var selectedPlacesString: String
+    private var selectedAgentsString: String = ""
+    private var selectedPlacesString: String = ""
+
 
     private lateinit var profileImage:ImageView
 
@@ -88,6 +91,8 @@ class DailyWorkSummaryFragment : Fragment() {
     private lateinit var notificationIcon:ImageView
 
     private lateinit var progressBar:ProgressBar
+
+    private lateinit var btnCancelled:AppCompatButton
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -104,6 +109,7 @@ class DailyWorkSummaryFragment : Fragment() {
         spinnerMarket = requireView().findViewById(R.id.spinner_market)
         editTextSelectedAgents = requireView().findViewById(R.id.editTextSelectedAgents)
         editTextSelectedPlaces = requireView().findViewById(R.id.editTextSelectedPlaces)
+        editTextSlectedAgentCode=requireView().findViewById(R.id.ediTTextAgentCode)
 
         editInstitutions=requireView().findViewById(R.id.editInstitutions)
         editTotalAccomplished=requireView().findViewById(R.id.editTotalAccomplished)
@@ -113,14 +119,17 @@ class DailyWorkSummaryFragment : Fragment() {
 
         btnSubmit=requireView().findViewById(R.id.btnSubmit)
         dateEditText=requireView().findViewById(R.id.editDate)
+        btnCancelled=requireView().findViewById(R.id.btnCancelled)
         apiService=APIManager.apiInterface
         // Initially hide the EditTexts
-        editTextSelectedAgents.visibility = View.GONE
-        editTextSelectedPlaces.visibility = View.GONE
+//        editTextSelectedAgents.visibility = View.GONE
+//        editTextSelectedPlaces.visibility = View.GONE
 
         profileImage= requireView().findViewById(R.id.imageSettings2)
-        getAgentName()
-        getPlacesVisited()
+//        getAgentName()
+//        getPlacesVisited()
+
+        getExecutiveProfile()
 
         // Set up DatePicker
         dateEditText.setOnClickListener {
@@ -134,7 +143,7 @@ class DailyWorkSummaryFragment : Fragment() {
             DatePickerDialog(requireContext(), dateSetListener, calendar.get(Calendar.YEAR), calendar.get(
                 Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show()
         }
-        initializeSpinners()
+        //initializeSpinners()
 
         drawerLayout = requireView().findViewById(R.id.drawer_layout)
         val navigatioViewIcon: ImageView = requireView().findViewById(R.id.imageSettings)
@@ -144,6 +153,29 @@ class DailyWorkSummaryFragment : Fragment() {
         navigatioViewIcon.setOnClickListener {
             drawerLayout.openDrawer(GravityCompat.START)
         }
+
+        val userType = sessionManager.fetchUserRole() // Fetch user type
+        val headerView = navigationView.getHeaderView(0) // Get the header view
+        val headerTitle: TextView = headerView.findViewById(R.id.nav_header_title) // Assuming you have this TextView in your header layout
+
+// Set the header title based on the user type
+        when (userType) {
+            "RM" -> headerTitle.text = "Regional Manager"
+            "DGM" -> headerTitle.text = "Deputy General Manager"
+            "GM" -> headerTitle.text = "General Manager"
+        }
+
+        val menu = navigationView.menu
+
+// Hide certain menu items based on the user type
+        when (userType) {
+            "RM", "DGM", "GM" -> {
+                menu.findItem(R.id.nav_lprmanagement).isVisible = false
+                menu.findItem(R.id.nav_daily_work_summary).isVisible = false
+                menu.findItem(R.id.nav_collections_performance).isVisible = false
+            }
+        }
+
 
         navigationView.setNavigationItemSelectedListener { item ->
             when (item.itemId) {
@@ -176,14 +208,77 @@ class DailyWorkSummaryFragment : Fragment() {
             true
         }
 
-        btnSubmit.setOnClickListener {
-            val institute_visited=editInstitutions.text.toString().trim()
-            val task_accomplished=editTotalAccomplished.text.toString().trim()
-            val whatsapp_num=editWhatAppNumber.text.toString().trim()
-            val emailID=editEmail.text.toString().trim()
 
-            postDailyWorkSummary(selectedPlacesString,selectedAgentsString,institute_visited,task_accomplished,whatsapp_num,emailID,selectedDate!!)
-            progressBar.visibility=View.VISIBLE
+
+
+
+        btnCancelled.setOnClickListener {
+            val i=Intent(requireActivity(),HomeContainerActivity::class.java)
+            startActivity(i)
+            requireActivity().finish()
+        }
+
+//        btnSubmit.setOnClickListener {
+//            val institute_visited=editInstitutions.text.toString().trim()
+//            val task_accomplished=editTotalAccomplished.text.toString().trim()
+//            val whatsapp_num=editWhatAppNumber.text.toString().trim()
+//            val emailID=editEmail.text.toString().trim()
+//
+//            postDailyWorkSummary(selectedPlacesString,selectedAgentsString,institute_visited,task_accomplished,whatsapp_num,emailID,selectedDate!!)
+//            progressBar.visibility=View.VISIBLE
+//        }
+
+
+        btnSubmit.setOnClickListener {
+            val institute_visited = editInstitutions.text.toString().trim()
+            val task_accomplished = editTotalAccomplished.text.toString().trim()
+            val whatsapp_num = editWhatAppNumber.text.toString().trim()
+            val emailID = editEmail.text.toString().trim()
+            val agentNames=editTextSelectedAgents.text.toString().trim()
+            val agenCodes=editTextSlectedAgentCode.text.toString().trim()
+            val agentPlaces=editTextSelectedPlaces.text.toString().trim()
+            // Validation
+            when {
+                agentNames.isEmpty() -> {
+                    Toast.makeText(requireActivity(), "Please Add agents", Toast.LENGTH_SHORT).show()
+                }
+                agentPlaces.isEmpty() -> {
+                    Toast.makeText(requireActivity(), "Please Add places", Toast.LENGTH_SHORT).show()
+                }
+                agenCodes.isEmpty() -> {
+                    Toast.makeText(requireActivity(), "Please Add AgentCodes", Toast.LENGTH_SHORT).show()
+                }
+
+                institute_visited.isEmpty() -> {
+                    editInstitutions.error = "Please enter institutions visited"
+                }
+                task_accomplished.isEmpty() -> {
+                    editTotalAccomplished.error = "Please enter tasks accomplished"
+                }
+                whatsapp_num.isEmpty() -> {
+                    editWhatAppNumber.error = "Please enter WhatsApp number"
+                }
+                emailID.isEmpty() -> {
+                    editEmail.error = "Please enter email ID"
+                }
+                selectedDate == null -> {
+                    Toast.makeText(requireActivity(), "Please select a date", Toast.LENGTH_SHORT).show()
+                }
+                else -> {
+                    // All fields are valid, proceed with submission
+                    postDailyWorkSummary(
+                        agentNames,
+                        agentPlaces,
+                        institute_visited,
+                        task_accomplished,
+                        whatsapp_num,
+                        emailID,
+                        selectedDate!!,
+                        agenCodes
+                    )
+                    progressBar.visibility = View.VISIBLE
+                }
+            }
         }
 
         notificationIcon.setOnClickListener {
@@ -240,7 +335,7 @@ class DailyWorkSummaryFragment : Fragment() {
                                     selectedAgentNames.add(selectedName)
                                 }
 
-                                if (selectedAgentNames.size > 1) {
+                                if (selectedAgentNames.size > 0) {
                                     editTextSelectedAgents.visibility = View.VISIBLE
                                     selectedAgentsString = selectedAgentNames.joinToString(", ")
                                     editTextSelectedAgents.setText(selectedAgentsString)
@@ -296,7 +391,7 @@ class DailyWorkSummaryFragment : Fragment() {
                                     selectedPlaces.add(selectedPlace)
                                 }
 
-                                if (selectedPlaces.size > 1) {
+                                if (selectedPlaces.size > 0) {
                                     editTextSelectedPlaces.visibility = View.VISIBLE
                                     selectedPlacesString = selectedPlaces.joinToString(", ")
                                     editTextSelectedPlaces.setText(selectedPlacesString)
@@ -324,18 +419,35 @@ class DailyWorkSummaryFragment : Fragment() {
 
 
 
-    private fun postDailyWorkSummary(markets_visited:String,agent_visited:String,institute_visited:String,task_accomplished:String,whatsapp_num:String,emailID:String,Date:String){
+    private fun postDailyWorkSummary(markets_visited:String,agent_visited:String,institute_visited:String,task_accomplished:String,whatsapp_num:String,emailID:String,Date:String,agentCodes:String){
         val id=sessionManager.fetchUserId()!!
         val token=sessionManager.fetchAuthToken()
         val authorization="Bearer $token"
-        val postRequests= SendDailyWorkSummary(id,markets_visited,agent_visited,institute_visited, task_accomplished, whatsapp_num, emailID, Date)
+        val postRequests= SendDailyWorkSummary(id,markets_visited,agent_visited,institute_visited, task_accomplished, whatsapp_num, emailID, Date,agentCodes)
         val call = apiService.sendDailyWorkSummary(authorization,postRequests)
         call.enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 progressBar.visibility=View.GONE
                 if (response.isSuccessful) {
 
-                    Toast.makeText(requireActivity(),"Daily Work Summary Successfully",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireActivity(),"Daily Work Summary Submitted Successfully",Toast.LENGTH_SHORT).show()
+
+                    // Clear the fields after successful submission
+                    dateEditText.text.clear()
+                    selectedDate = null
+                    editInstitutions.text.clear()
+                    editTotalAccomplished.text.clear()
+                    editWhatAppNumber.text.clear()
+                    editEmail.text.clear()
+                    editTextSelectedAgents.text.clear()
+                    //editTextSelectedAgents.visibility=View.GONE
+                    editTextSelectedPlaces.text.clear()
+                   // editTextSelectedPlaces.visibility=View.GONE
+                    editTextSlectedAgentCode.text.clear()
+                    //initializeSpinners()
+//                    getAgentName()
+//                    getPlacesVisited()
+
                 } else {
                     // Handle other HTTP error codes if needed
                     Toast.makeText(requireActivity(), "failed: ${response.message()}", Toast.LENGTH_SHORT).show()

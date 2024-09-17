@@ -39,7 +39,7 @@
 
                 <LinearLayout
                     android:orientation="horizontal"
-                    android:layout_marginStart="239dp"
+                    android:layout_marginStart="219dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
                     <ImageView android:id="@+id/imageSettings1"
@@ -139,6 +139,7 @@
                         android:drawablePadding="8dp" />
 
                     <Spinner
+                        android:visibility="gone"
                         android:id="@+id/spinner_market"
                         android:layout_marginTop="10dp"
                         android:layout_width="match_parent"
@@ -153,7 +154,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text=""
-                        android:inputType="number"
+                        android:hint="Enter Markets Visited"
+                        android:inputType="text"
                         android:padding="8dp"
                         android:layout_marginTop="10dp"
                         style="@style/txtinterbold17"
@@ -175,6 +177,7 @@
                         android:drawablePadding="8dp" />
 
                     <Spinner
+                        android:visibility="gone"
                         android:id="@+id/spinner_agents"
                         android:layout_marginTop="10dp"
                         android:layout_width="match_parent"
@@ -190,12 +193,42 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text=""
-                        android:inputType="number"
+                        android:hint="Enter Agents Visited"
+                        android:inputType="text"
                         android:padding="8dp"
                         android:layout_marginTop="10dp"
                         style="@style/txtinterbold17"
                         android:background="@drawable/edit_text_background" />
                 </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="AgentCode"
+                        style="@style/txtpoppinmedium161"
+                        android:drawablePadding="8dp" />
+
+                    <EditText
+                        android:id="@+id/ediTTextAgentCode"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:hint="Enter Agents Code"
+                        android:inputType="text"
+                        android:padding="8dp"
+                        android:layout_marginTop="10dp"
+                        style="@style/txtinterbold17"
+                        android:background="@drawable/edit_text_background" />
+                </LinearLayout>
+
+
+
 
 
                 <!-- Email Address -->
@@ -332,6 +365,7 @@
                         android:text="Cancel"
                         android:layout_width="150dp"
                         android:gravity="center"
+                        android:id="@+id/btnCancelled"
                         android:layout_gravity="center"
                         style="@style/txtCheckButton1"
                         android:layout_height="47dp"/>

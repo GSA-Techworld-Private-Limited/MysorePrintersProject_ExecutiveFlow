@@ -1,8 +1,10 @@
 package com.example.mysoreprintersproject.app
 import android.content.Context
 import android.content.Intent
+import android.text.InputType
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
@@ -44,60 +46,93 @@ class ViewPagerAdapter(private val context: Context,
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         if (position == 1) {
-            holder.itemView.findViewById<AppCompatButton>(R.id.loginButton).setOnClickListener {
-                // Assuming you have EditText fields for username and password in your fragment_login layout
+            val passwordEditText = holder.itemView.findViewById<EditText>(R.id.password)
+            val loginButton = holder.itemView.findViewById<AppCompatButton>(R.id.loginButton)
+            val progressBar = holder.itemView.findViewById<ProgressBar>(R.id.progressBar)
+
+            // Variables to handle password visibility state
+            var isPasswordVisible = false
+
+            // Set the initial eye icon (closed by default)
+            passwordEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_eye_open, 0)
+
+            // Listener for the login button click
+            loginButton.setOnClickListener {
                 val username = holder.itemView.findViewById<EditText>(R.id.username).text.toString()
-                val password = holder.itemView.findViewById<EditText>(R.id.password).text.toString()
-                val progressBar=holder.itemView.findViewById<ProgressBar>(R.id.progressBar)
-                var fcmToken:String=""
+                val password = passwordEditText.text.toString()
+                var fcmToken = ""
 
                 // Retrieve the token from shared preferences
                 val sharedPreferences = context.getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
                 val token = sharedPreferences.getString(FirebaseMessageReceiver.FCM_TOKEN, "")
-                Log.d("FCM TOKEN",token!!.toString())
+                Log.d("FCM TOKEN", token ?: "")
 
                 // Use the token in your API request
                 if (!token.isNullOrEmpty()) {
-                    fcmToken=token
-                    Log.d("FCM TOKEN",fcmToken)
+                    fcmToken = token
+                    Log.d("FCM TOKEN", fcmToken)
                 }
 
                 if (username.isEmpty() || password.isEmpty()) {
                     Toast.makeText(context, "Please fill in both email and password", Toast.LENGTH_SHORT).show()
                 } else {
-                    viewModel.login(username, password,fcmToken)
-                    // To save login status when the user successfully logs in
-                    progressBar.visibility=View.VISIBLE
+                    viewModel.login(username, password, fcmToken)
+                    progressBar.visibility = View.VISIBLE
                 }
-                // Optionally observe the loginResponse LiveData to react to the result
+
                 viewModel.loginResponse.observe(context as LifecycleOwner, Observer { resource ->
                     when (resource) {
                         is Resource.Success -> {
-                            progressBar.visibility=View.GONE
-                            // Handle success, e.g., navigate to HomeContainerActivity
+                            progressBar.visibility = View.GONE
                             viewModel.saveAccessToken(resource.data.access!!)
                             sessionManager.saveAuthToken(resource.data.access!!)
                             sessionManager.saveUserId(resource.data.userId.toString())
                             sessionManager.saveUserRole(resource.data.role!!)
                             val intent = Intent(context, HomeContainerActivity::class.java)
                             context.startActivity(intent)
-                            // Finish the SplashScreenActivity
                             (context as? SplashScreenActivity)?.finish()
                         }
                         is Resource.Failure -> {
-                            // Handle failure, e.g., show an error message
-                            Toast.makeText(context, "Login failed: ${resource.message}", Toast.LENGTH_SHORT).show()
-                            progressBar.visibility=View.GONE
+                            progressBar.visibility = View.GONE
+                            if (resource.errorCode == 400) {
+                                Toast.makeText(context, "User does not exist", Toast.LENGTH_SHORT).show()
+                            } else {
+                                Toast.makeText(context, "Login failed: ${resource.message}", Toast.LENGTH_SHORT).show()
+                            }
                         }
                         is Resource.Loading -> {
-                            // Show loading state if needed
-                            progressBar.visibility=View.VISIBLE
+                            progressBar.visibility = View.VISIBLE
                         }
                     }
                 })
             }
+
+            // Set up touch listener for the password visibility toggle
+            passwordEditText.setOnTouchListener { _, event ->
+                if (event.action == MotionEvent.ACTION_UP) {
+                    if (event.rawX >= (passwordEditText.right - passwordEditText.compoundDrawables[2].bounds.width())) {
+                        // Toggle password visibility
+                        if (isPasswordVisible) {
+                            // Hide password
+                            passwordEditText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+                            passwordEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_eye_open, 0)
+                        } else {
+                            // Show password
+                            passwordEditText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+                            passwordEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_eye_closed, 0)
+                        }
+                        // Move cursor to the end of the text
+                        passwordEditText.setSelection(passwordEditText.text.length)
+                        // Toggle the visibility state
+                        isPasswordVisible = !isPasswordVisible
+                        return@setOnTouchListener true
+                    }
+                }
+                false
+            }
         }
     }
+
 
 
     override fun getItemCount(): Int {

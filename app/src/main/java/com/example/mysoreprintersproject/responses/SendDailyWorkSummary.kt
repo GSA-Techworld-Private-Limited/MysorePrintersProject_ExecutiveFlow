@@ -8,5 +8,6 @@ data class SendDailyWorkSummary(
     val task_accomplished:String,
     val whatsapp_num:String,
     val emailID:String,
-    val Date:String
+    val Date:String,
+    val agent_code:String
 )

@@ -27,6 +27,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Spinner
+import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
@@ -112,6 +113,28 @@ class NetSaleFragment : Fragment() {
         navigationView = requireView().findViewById(R.id.navigationView)
         setupNavigationDrawer()
 
+
+        val userType = sessionManager.fetchUserRole() // Fetch user type
+        val headerView = navigationView.getHeaderView(0) // Get the header view
+        val headerTitle: TextView = headerView.findViewById(R.id.nav_header_title) // Assuming you have this TextView in your header layout
+
+// Set the header title based on the user type
+        when (userType) {
+            "RM" -> headerTitle.text = "Regional Manager"
+            "DGM" -> headerTitle.text = "Deputy General Manager"
+            "GM" -> headerTitle.text = "General Manager"
+        }
+
+        val menu = navigationView.menu
+
+// Hide certain menu items based on the user type
+        when (userType) {
+            "RM", "DGM", "GM" -> {
+                menu.findItem(R.id.nav_lprmanagement).isVisible = false
+                menu.findItem(R.id.nav_daily_work_summary).isVisible = false
+                menu.findItem(R.id.nav_collections_performance).isVisible = false
+            }
+        }
 
         getNetSaleReport()
 
@@ -283,21 +306,29 @@ class NetSaleFragment : Fragment() {
         serviceGenerator.getNetSale(authorization, id)
             .enqueue(object : retrofit2.Callback<NetSalesResponse> {
                 override fun onResponse(call: Call<NetSalesResponse>, response: Response<NetSalesResponse>) {
-                     netSaleResponses = response.body()!!
-                    //setupRecyclerView(summaryResponses.reversed())
-
-                     recyclerView = requireView().findViewById(R.id.recyclerview)
-                    recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
-                    recyclerView.adapter = NetSaleAdapter(netSaleResponses.net_sale_data)
+                    if (response.isSuccessful) {
+                        val netSaleResponse = response.body()
+                        if (netSaleResponse != null && netSaleResponse.net_sale_data.isNotEmpty()) {
+                            netSaleResponses = netSaleResponse
+                            recyclerView = requireView().findViewById(R.id.recyclerview)
+                            recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
+                            recyclerView.adapter = NetSaleAdapter(netSaleResponses.net_sale_data)
+                        } else {
+                            // Handle empty data
+                            Toast.makeText(requireActivity(), "Data not found", Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        Toast.makeText(requireActivity(), "Failed to retrieve data", Toast.LENGTH_SHORT).show()
+                    }
                 }
 
                 override fun onFailure(call: Call<NetSalesResponse>, t: Throwable) {
                     Log.e("SupplyReportFragment", "Error fetching data: ${t.message}", t)
                     Toast.makeText(requireActivity(), "Error fetching data: ${t.message}", Toast.LENGTH_SHORT).show()
                 }
-
             })
     }
+
 
     private fun searchCollectionSummary(query: String) {
         if (!::netSaleResponses.isInitialized) {

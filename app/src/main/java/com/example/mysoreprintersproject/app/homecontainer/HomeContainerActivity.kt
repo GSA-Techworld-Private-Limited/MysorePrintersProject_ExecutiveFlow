@@ -43,10 +43,12 @@ import android.location.Location
 import android.os.Build
 import android.os.Looper
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
-import com.example.mysoreprintersproject.network.LocationService
-import com.google.android.gms.common.api.ResolvableApiException
+import com.example.mysoreprintersproject.app.CollectionSummaryReport.Collection_Report_Summary_Fragment.Companion.REQUEST_CODE_NOTIFICATION_PERMISSION
+import com.example.mysoreprintersproject.network.LocationUpdateService
+
 import java.io.IOException
 import java.util.Locale
 
@@ -72,6 +74,7 @@ class HomeContainerActivity : AppCompatActivity() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationCallback: LocationCallback
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         sessionManager= SessionManager(this)
         super.onCreate(savedInstanceState)
@@ -83,12 +86,25 @@ class HomeContainerActivity : AppCompatActivity() {
 
         database = FirebaseDatabase.getInstance().reference.child("coordinate")
 
-        if (isLocationPermissionGranted()) {
-           getCurrentLocationAndStartUpdates()
-        } else {
-            requestLocationPermission()
-        }
 
+
+//        if (isLocationPermissionGranted()) {
+//           getCurrentLocationAndStartUpdates()
+//        } else {
+//            requestLocationPermission()
+//        }
+//
+//        requestNotificationPermission()
+
+
+        requestAllPermissions()
+//
+//        // Example usage when checking in or out
+//        if (sessionManager.isCheckedIn()) {
+//            startLocationService()
+//        } else {
+//            stopLocationService()
+//        }
 
         drawerLayout=findViewById(R.id.drawerlayout)
 
@@ -114,7 +130,6 @@ class HomeContainerActivity : AppCompatActivity() {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             Log.d("NavController", "Navigated to ${destination.label}")
         }
-
 
 
 
@@ -211,11 +226,51 @@ class HomeContainerActivity : AppCompatActivity() {
 //        }
 
         //startLocationUpdates()
+
+
+
+
+
         window.statusBarColor= ContextCompat.getColor(this,R.color.shade_blue)
     }
 
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private fun requestAllPermissions() {
+        if (isLocationPermissionGranted()) {
+            getCurrentLocationAndStartUpdates()  // Call immediately if permission is already granted
+        } else {
+            requestLocationPermission()
+        }
 
+        if (!isNotificationPermissionGranted()) {
+            requestNotificationPermission()
+        } else {
+            Log.d("Notification Permission :", "Granted")
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private fun requestNotificationPermission() {
+        if (!isNotificationPermissionGranted()) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                REQUEST_CODE_NOTIFICATION_PERMISSION
+            )
+        } else {
+            Log.d("Notification Permission :","Granted")
+        }
+    }
+
+
+    private fun isNotificationPermissionGranted(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+        } else {
+            true // Notification permission is not required below Android 13
+        }
+    }
 
     private fun isLocationPermissionGranted(): Boolean {
         return ContextCompat.checkSelfPermission(
@@ -225,13 +280,16 @@ class HomeContainerActivity : AppCompatActivity() {
     }
 
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun requestLocationPermission() {
         requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
+                requestAllPermissions()
                 getCurrentLocationAndStartUpdates()
             } else {
                 Toast.makeText(this, "Location permission is required.", Toast.LENGTH_SHORT).show()
@@ -262,6 +320,8 @@ class HomeContainerActivity : AppCompatActivity() {
 
         // Start periodic location updates every 15 minutes
         startLocationUpdates()
+
+
     }
 
     @SuppressLint("MissingPermission")
@@ -271,6 +331,7 @@ class HomeContainerActivity : AppCompatActivity() {
             fastestInterval = 900000 // 15 minutes in milliseconds
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
+
 
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
@@ -448,4 +509,13 @@ class HomeContainerActivity : AppCompatActivity() {
             .setNegativeButton("No", null)
             .show()
     }
+
+
+
+
+
+
+
+
+
 }

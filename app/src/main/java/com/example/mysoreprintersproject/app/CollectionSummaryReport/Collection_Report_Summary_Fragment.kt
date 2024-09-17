@@ -28,6 +28,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.Spinner
+import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatButton
@@ -151,6 +152,29 @@ class Collection_Report_Summary_Fragment : Fragment(R.layout.fragment_collection
         )
         toAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         toSpinner.adapter = toAdapter
+
+
+        val userType = sessionManager.fetchUserRole() // Fetch user type
+        val headerView = navigationView.getHeaderView(0) // Get the header view
+        val headerTitle: TextView = headerView.findViewById(R.id.nav_header_title) // Assuming you have this TextView in your header layout
+
+// Set the header title based on the user type
+        when (userType) {
+            "RM" -> headerTitle.text = "Regional Manager"
+            "DGM" -> headerTitle.text = "Deputy General Manager"
+            "GM" -> headerTitle.text = "General Manager"
+        }
+
+        val menu = navigationView.menu
+
+// Hide certain menu items based on the user type
+        when (userType) {
+            "RM", "DGM", "GM" -> {
+                menu.findItem(R.id.nav_lprmanagement).isVisible = false
+                menu.findItem(R.id.nav_daily_work_summary).isVisible = false
+                menu.findItem(R.id.nav_collections_performance).isVisible = false
+            }
+        }
     }
 
     override fun onResume() {
@@ -282,8 +306,14 @@ class Collection_Report_Summary_Fragment : Fragment(R.layout.fragment_collection
                     response: Response<List<CollectionSummaryReportResponses>>
                 ) {
                     if (response.isSuccessful) {
-                        summaryResponses = response.body()!!
-                        recyclerView.adapter = CollectionSummaryReportAdapter(summaryResponses)
+                        val responseBody = response.body()
+                        if (!responseBody.isNullOrEmpty()) {
+                            summaryResponses = responseBody.reversed()
+                            recyclerView.adapter = CollectionSummaryReportAdapter(summaryResponses)
+                        } else {
+                            // Handle empty response
+                            Toast.makeText(requireActivity(), "Data not found", Toast.LENGTH_SHORT).show()
+                        }
                     } else {
                         Toast.makeText(requireActivity(), "Failed to retrieve data", Toast.LENGTH_SHORT).show()
                     }
@@ -295,6 +325,7 @@ class Collection_Report_Summary_Fragment : Fragment(R.layout.fragment_collection
                 }
             })
     }
+
 
     private fun searchCollectionSummary(query: String) {
         if (!::summaryResponses.isInitialized) {

@@ -27,6 +27,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Spinner
+import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
@@ -132,6 +133,28 @@ class SupplyReportFragment : Fragment() {
         }
 
 
+        val userType = sessionManager.fetchUserRole() // Fetch user type
+        val headerView = navigationView.getHeaderView(0) // Get the header view
+        val headerTitle: TextView = headerView.findViewById(R.id.nav_header_title) // Assuming you have this TextView in your header layout
+
+// Set the header title based on the user type
+        when (userType) {
+            "RM" -> headerTitle.text = "Regional Manager"
+            "DGM" -> headerTitle.text = "Deputy General Manager"
+            "GM" -> headerTitle.text = "General Manager"
+        }
+
+        val menu = navigationView.menu
+
+// Hide certain menu items based on the user type
+        when (userType) {
+            "RM", "DGM", "GM" -> {
+                menu.findItem(R.id.nav_lprmanagement).isVisible = false
+                menu.findItem(R.id.nav_daily_work_summary).isVisible = false
+                menu.findItem(R.id.nav_collections_performance).isVisible = false
+            }
+        }
+
         val exportButton: Button = requireView().findViewById(R.id.export_button)
         exportButton.setOnClickListener {
             exportToPdf()
@@ -192,22 +215,35 @@ class SupplyReportFragment : Fragment() {
         val authorization = "Bearer $accessToken"
         val id = sessionManager.fetchUserId()!!
 
-        val period="6"
+        val period = "6"
 
-        serviceGenerator.getSupplyReport(authorization, id,period)
+        serviceGenerator.getSupplyReport(authorization, id, period)
             .enqueue(object : retrofit2.Callback<List<SupplyReportResponse>> {
-                override fun onResponse(call: Call<List<SupplyReportResponse>>, response: Response<List<SupplyReportResponse>>) {
-                     summaryResponses = response.body()!!
-                    setupRecyclerView(summaryResponses.reversed())
+                override fun onResponse(
+                    call: Call<List<SupplyReportResponse>>,
+                    response: Response<List<SupplyReportResponse>>
+                ) {
+                    if (response.isSuccessful) {
+                        val reports = response.body()
+                        if (!reports.isNullOrEmpty()) {
+                            summaryResponses = reports.reversed()
+                            setupRecyclerView(summaryResponses)
+                        } else {
+                            // Handle empty data
+                            Toast.makeText(requireActivity(), "No data found", Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        Toast.makeText(requireActivity(), "Failed to retrieve data", Toast.LENGTH_SHORT).show()
+                    }
                 }
 
                 override fun onFailure(call: Call<List<SupplyReportResponse>>, t: Throwable) {
                     Log.e("SupplyReportFragment", "Error fetching data: ${t.message}", t)
                     Toast.makeText(requireActivity(), "Error fetching data: ${t.message}", Toast.LENGTH_SHORT).show()
                 }
-
             })
     }
+
 
     private fun setupRecyclerView(summaryResponses: List<SupplyReportResponse>) {
          recyclerView = requireView().findViewById(R.id.recyclerview)

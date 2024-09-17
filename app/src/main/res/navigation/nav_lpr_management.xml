@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_lprmanagement"
+    app:startDestination="@id/lprFragment">
+
+    <fragment
+        android:id="@+id/lprFragment"
+        android:name="com.example.mysoreprintersproject.app.lprmanagement.LPRFragment"
+        android:label="LPRFragment"
+        tools:layout="@layout/fragment_l_p_r"/>
+</navigation>

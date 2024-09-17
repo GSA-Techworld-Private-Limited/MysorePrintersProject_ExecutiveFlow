@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -79,6 +80,30 @@ class NotificationFragment : Fragment() {
 
             override fun afterTextChanged(s: Editable?) {}
         })
+
+
+
+        val userType = sessionManager.fetchUserRole() // Fetch user type
+        val headerView = navigationView.getHeaderView(0) // Get the header view
+        val headerTitle: TextView = headerView.findViewById(R.id.nav_header_title) // Assuming you have this TextView in your header layout
+
+// Set the header title based on the user type
+        when (userType) {
+            "RM" -> headerTitle.text = "Regional Manager"
+            "DGM" -> headerTitle.text = "Deputy General Manager"
+            "GM" -> headerTitle.text = "General Manager"
+        }
+
+        val menu = navigationView.menu
+
+// Hide certain menu items based on the user type
+        when (userType) {
+            "RM", "DGM", "GM" -> {
+                menu.findItem(R.id.nav_lprmanagement).isVisible = false
+                menu.findItem(R.id.nav_daily_work_summary).isVisible = false
+                menu.findItem(R.id.nav_collections_performance).isVisible = false
+            }
+        }
     }
 
 
@@ -131,13 +156,19 @@ class NotificationFragment : Fragment() {
                     response: Response<List<NotificationResponses>>
                 ) {
                     if (response.isSuccessful) {
-                        summaryResponses = response.body()!!
-                        recyclerView.layoutManager = LinearLayoutManager(
-                            requireActivity(),
-                            LinearLayoutManager.VERTICAL,
-                            false
-                        )
-                        recyclerView.adapter = NotificationAdapter(summaryResponses,sessionManager)
+                        val notifications = response.body()
+                        if (!notifications.isNullOrEmpty()) {
+                            summaryResponses = notifications.reversed()
+                            recyclerView.layoutManager = LinearLayoutManager(
+                                requireActivity(),
+                                LinearLayoutManager.VERTICAL,
+                                false
+                            )
+                            recyclerView.adapter = NotificationAdapter(summaryResponses, sessionManager)
+                        } else {
+                            // Handle empty notifications
+                            Toast.makeText(requireActivity(), "No notifications found", Toast.LENGTH_SHORT).show()
+                        }
                     } else {
                         Toast.makeText(requireActivity(), "Failed to retrieve data", Toast.LENGTH_SHORT).show()
                     }
@@ -149,7 +180,6 @@ class NotificationFragment : Fragment() {
                 }
             })
     }
-
 
     private fun searchCollectionSummary(query: String) {
         if (!::summaryResponses.isInitialized) {

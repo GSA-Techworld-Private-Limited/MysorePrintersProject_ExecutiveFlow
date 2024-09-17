@@ -39,7 +39,7 @@
 
                 <LinearLayout
                     android:orientation="horizontal"
-                    android:layout_marginStart="239dp"
+                    android:layout_marginStart="219dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
                     <ImageView android:id="@+id/imageSettings1"
@@ -89,8 +89,8 @@
                 android:orientation="vertical">
 
                 <TextView
-                    style="@style/txtpoppinssemibold181"
-                    android:text="Collection Performance"
+                    style="@style/txtSemiBolpoppinsSemibold28"
+                    android:text="LVD Management"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
@@ -105,21 +105,21 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Agent Code"
-                        style="@style/txtpoppinmedium161"
+                        android:text="Plan Description"
+                        style="@style/txtpublicsnas20"
                         android:drawablePadding="8dp" />
 
-                    <EditText
-                        android:id="@+id/editCode"
+                    <Spinner
+                        android:id="@+id/spinnerPlantDescription"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Enter Code"
-                        android:text=""
+                        android:text="Choose"
                         android:padding="8dp"
                         android:layout_marginTop="10dp"
                         style="@style/txtinterbold17"
+                        android:entries="@array/plant_description"
                         android:spinnerMode="dropdown"
-                        android:background="@drawable/edit_text_background" />
+                        android:background="@drawable/spinner_background" />
                 </LinearLayout>
 
                 <!-- Phone Number -->
@@ -132,21 +132,21 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Agent Name"
-                        style="@style/txtpoppinmedium161"
+                        android:text="Edit Description"
+                        style="@style/txtpublicsnas20"
                         android:drawablePadding="8dp" />
 
-                    <EditText
-                        android:id="@+id/editName"
-                        android:hint="Agent Name"
+                    <Spinner
+                        android:id="@+id/spinnerEditDescription"
                         android:layout_marginTop="10dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         style="@style/txtinterbold17"
                         android:padding="8dp"
+                        android:entries="@array/edition_description"
                         android:spinnerMode="dropdown"
-                        android:background="@drawable/edit_text_background"
-                        android:inputType="text" />
+                        android:background="@drawable/spinner_background"
+                        android:inputType="phone" />
                 </LinearLayout>
 
 
@@ -160,20 +160,25 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Payment Method"
-                        style="@style/txtpoppinmedium161"
+                        android:text="Date"
+                        style="@style/txtpublicsnas20"
                         android:drawablePadding="8dp" />
 
-                    <Spinner
-                        android:id="@+id/spinnerCash"
-                        android:layout_marginTop="10dp"
+                    <EditText
+                        android:id="@+id/editTextDate"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:entries="@array/collection_performance"
+                        android:layout_marginTop="10dp"
+                        android:hint="Click and Select Date"
+                        android:text=""
                         style="@style/txtinterbold17"
                         android:padding="8dp"
-                        android:background="@drawable/spinner_background"
-                        android:inputType="textEmailAddress" />
+                        android:background="@drawable/edit_text_background"
+                        android:inputType="none"
+                        android:focusable="false"
+                        android:clickable="true"
+                        />
+
                 </LinearLayout>
 
 
@@ -182,52 +187,23 @@
 
                 <!-- Location -->
                 <LinearLayout
-                    android:layout_marginBottom="16dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:layout_marginBottom="56dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Instrumental Number"
-                        style="@style/txtpoppinmedium161"
+                        android:text="LPR Enter Time"
+                        style="@style/txtpublicsnas20"
                         android:drawablePadding="8dp" />
 
                     <EditText
-                        android:id="@+id/editinstumental"
+                        android:id="@+id/editTextLPRTime"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Enter Number"
-                        android:text=""
-                        android:inputType="number"
-                        android:padding="8dp"
-                        android:layout_marginTop="10dp"
-                        style="@style/txtinterbold17"
-                        android:background="@drawable/edit_text_background" />
-                </LinearLayout>
-
-
-                <!-- Location -->
-                <LinearLayout
-                    android:layout_marginBottom="36dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Amount Collected"
-                        style="@style/txtpoppinmedium161"
-                        android:drawablePadding="8dp" />
-
-                    <EditText
-                        android:id="@+id/editAmountCollected"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="Enter Amount"
-                        android:inputType="number"
+                        android:hint="HH:MM:SS"
                         android:text=""
                         android:padding="8dp"
                         android:layout_marginTop="10dp"
@@ -236,6 +212,12 @@
                 </LinearLayout>
 
 
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    android:visibility="gone"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
                 <LinearLayout
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
@@ -245,7 +227,6 @@
 
                     <androidx.appcompat.widget.AppCompatButton
                         android:text="Cancel"
-                        android:id="@+id/btnCancleed"
                         android:layout_width="150dp"
                         android:gravity="center"
                         android:layout_gravity="center"
@@ -256,11 +237,11 @@
 
 
                     <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/submitButton"
                         android:text="Submit"
-                        android:id="@+id/btnSubmit"
                         android:layout_width="150dp"
                         android:gravity="center"
-                        android:layout_marginStart="50dp"
+                        android:layout_marginStart="40dp"
                         android:layout_gravity="center"
                         style="@style/txtCheckButton"
                         android:layout_height="47dp"/>

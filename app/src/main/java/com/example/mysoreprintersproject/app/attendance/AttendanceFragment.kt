@@ -3,6 +3,7 @@ package com.example.mysoreprintersproject.app.attendance
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -10,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -34,6 +36,7 @@ import com.example.mysoreprintersproject.network.APIManager
 import com.example.mysoreprintersproject.network.BaseFragment
 import com.example.mysoreprintersproject.network.CheckInViewModel
 import com.example.mysoreprintersproject.network.DataSource
+import com.example.mysoreprintersproject.network.LocationUpdateService
 import com.example.mysoreprintersproject.network.Resource
 import com.example.mysoreprintersproject.network.SessionManager
 import com.example.mysoreprintersproject.repository.AuthRepository
@@ -46,6 +49,8 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import retrofit2.Call
@@ -62,6 +67,9 @@ class AttendanceFragment :
 
     private var isCheckedIn = false // To track the check-in state
 
+    private lateinit var database: DatabaseReference
+
+
 
 
     @Deprecated("Deprecated in Java")
@@ -75,6 +83,8 @@ class AttendanceFragment :
         navigatioViewIcon.setOnClickListener {
             drawerLayout.openDrawer(GravityCompat.START)
         }
+
+        database = FirebaseDatabase.getInstance().reference.child("coordinate")
 
         val km=sessionManager.fetchKm()
         binding.totalkmtravelled.text="Kilometer Travelled :$km"
@@ -109,6 +119,29 @@ class AttendanceFragment :
             true
         }
 
+
+        val userType = sessionManager.fetchUserRole() // Fetch user type
+        val headerView = navigationView.getHeaderView(0) // Get the header view
+        val headerTitle: TextView = headerView.findViewById(R.id.nav_header_title) // Assuming you have this TextView in your header layout
+
+// Set the header title based on the user type
+        when (userType) {
+            "RM" -> headerTitle.text = "Regional Manager"
+            "DGM" -> headerTitle.text = "Deputy General Manager"
+            "GM" -> headerTitle.text = "General Manager"
+        }
+
+        val menu = navigationView.menu
+
+// Hide certain menu items based on the user type
+        when (userType) {
+            "RM", "DGM", "GM" -> {
+                menu.findItem(R.id.nav_lprmanagement).isVisible = false
+                menu.findItem(R.id.nav_daily_work_summary).isVisible = false
+                menu.findItem(R.id.nav_collections_performance).isVisible = false
+            }
+        }
+
         binding.imageSettings1.setOnClickListener {
             val i=Intent(requireActivity(),NotificationActivity::class.java)
             startActivity(i)
@@ -130,12 +163,17 @@ class AttendanceFragment :
         val authorization = "Bearer $token"
         val id = sessionManager.fetchUserId()!!
 
+        val lattitude=sessionManager.getLatitude()
+        val longitude=sessionManager.getLongitude()
         // Observing the Check-In Response
         viewModel.checkInResponse.observe(viewLifecycleOwner, Observer { checkInResult ->
             when (checkInResult) {
                 is Resource.Success -> {
                     Toast.makeText(requireActivity(), "Checked In Successfully", Toast.LENGTH_SHORT).show()
                     toggleButtons(true)
+                    sendLocationToFirebase(lattitude!!,longitude!!)
+                    sessionManager.saveCheckInState(true) // Save check-in state
+                    startLocationService()
                     binding.progressbar.visibility=View.GONE
                 }
                 is Resource.Failure -> {
@@ -152,7 +190,10 @@ class AttendanceFragment :
                 is Resource.Success -> {
                     Toast.makeText(requireActivity(), "Checked Out Successfully", Toast.LENGTH_SHORT).show()
                     toggleButtons(false)
+                    sessionManager.saveCheckInState(false) // Save check-out state
+                    stopLocationService()
                     binding.progressbar.visibility=View.GONE
+
                 }
                 is Resource.Failure -> {
                    if (checkOutResult.errorCode == 404) {
@@ -180,7 +221,7 @@ class AttendanceFragment :
             if (!isCheckedIn) {
                 val sendingRequest = CheckInRequest(id.toInt(), sessionManager.getLatitude()!!, sessionManager.getLongitude()!!)
                 viewModel.checkIn(authorization, sendingRequest)
-                sessionManager.saveCheckInState(true) // Save check-in state
+
             } else {
                 Toast.makeText(requireActivity(), "You are already checked in!", Toast.LENGTH_SHORT).show()
                 binding.progressbar.visibility=View.GONE
@@ -192,7 +233,6 @@ class AttendanceFragment :
             if (isCheckedIn) {
                 val sendingCheckOutRequest = CheckOutRequest(id.toInt())
                 viewModel.checkOut(authorization, sendingCheckOutRequest)
-                sessionManager.saveCheckInState(false) // Save check-out state
             } else {
                 Toast.makeText(requireActivity(), "You need to check in first!", Toast.LENGTH_SHORT).show()
                 binding.progressbar.visibility=View.GONE
@@ -282,7 +322,49 @@ class AttendanceFragment :
 
 
 
+    private fun startLocationService() {
+        val intent = Intent(requireContext(), LocationUpdateService::class.java)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            requireContext().startForegroundService(intent)
+        } else {
+            requireContext().startService(intent)
+        }
+    }
 
+    private fun stopLocationService() {
+        val intent = Intent(requireContext(), LocationUpdateService::class.java)
+        requireContext().stopService(intent)
+    }
+
+
+    private fun sendLocationToFirebase(latitude: Double, longitude: Double) {
+        // Retrieve the user ID
+        val userId = sessionManager.fetchUserId()!!
+
+        // Reference to the user's location data in Firebase
+        val userLocationRef = database.child(userId)
+
+        // Get the current number of children to determine the next location key
+        userLocationRef.get().addOnSuccessListener { snapshot ->
+            val locationCount = snapshot.childrenCount
+            val newLocationKey = "location_${locationCount + 1}"
+
+            val locationData = mapOf(
+                "latitude" to latitude,
+                "longitude" to longitude,
+                "timestamp" to System.currentTimeMillis()
+            )
+
+            // Store the new location data under the new key
+            userLocationRef.child(newLocationKey).setValue(locationData)
+                .addOnSuccessListener {
+                    Log.d("Firebase", "Location data sent successfully.")
+                }
+                .addOnFailureListener { e ->
+                    Log.e("Firebase", "Failed to send location data.", e)
+                }
+        }
+    }
 
 
     override fun getViewModel()=CheckInViewModel::class.java

@@ -23,6 +23,10 @@
         android:id="@+id/nav_collection_summary"
         android:icon="@drawable/ic_collection_summary"
         android:title="Collection Summary" />
+
+    <item android:id="@+id/nav_lprmanagement"
+           android:icon="@drawable/lvd_icon"
+        android:title="LPR Management"/>
     <item
         android:id="@+id/nav_data_reporting"
         android:icon="@drawable/ic_data_reporting"

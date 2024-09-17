@@ -22,6 +22,7 @@ import com.example.mysoreprintersproject.app.collection_performance.CollectionPe
 import com.example.mysoreprintersproject.app.dailycollections.DailyCollectionActivity
 import com.example.mysoreprintersproject.app.dailyworkingsummryfragment.DailyWorkingSummaryActivity
 import com.example.mysoreprintersproject.app.homecontainer.HomeContainerActivity
+import com.example.mysoreprintersproject.app.lprmanagement.LPRManagementActivity
 import com.example.mysoreprintersproject.app.netsale.NetSaleActivity
 import com.example.mysoreprintersproject.app.notification.NotificationActivity
 import com.example.mysoreprintersproject.app.supplyreport.SupplyReportActivity
@@ -46,6 +47,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
     private lateinit var periodSpinner: Spinner
+    private lateinit var chartSpinne: Spinner
     private lateinit var sessionManager: SessionManager
     private var selectedPeriod: String = ""
 
@@ -72,6 +74,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         drawerLayout = requireView().findViewById(R.id.drawer_layout)
         navigationView = requireView().findViewById(R.id.navigationView)
         periodSpinner = requireView().findViewById(R.id.spinnerMonth)
+        chartSpinne= requireView().findViewById(R.id.spinner)
 
         profileImage= requireView().findViewById(R.id.imageSettings2)
 
@@ -92,6 +95,29 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             val i=Intent(requireActivity(),NotificationActivity::class.java)
             startActivity(i)
         }
+
+        val userType = sessionManager.fetchUserRole() // Fetch user type
+        val headerView = navigationView.getHeaderView(0) // Get the header view
+        val headerTitle: TextView = headerView.findViewById(R.id.nav_header_title) // Assuming you have this TextView in your header layout
+
+// Set the header title based on the user type
+        when (userType) {
+            "RM" -> headerTitle.text = "Regional Manager"
+            "DGM" -> headerTitle.text = "Deputy General Manager"
+            "GM" -> headerTitle.text = "General Manager"
+        }
+
+        val menu = navigationView.menu
+
+// Hide certain menu items based on the user type
+        when (userType) {
+            "RM", "DGM", "GM" -> {
+                menu.findItem(R.id.nav_lprmanagement).isVisible = false
+                menu.findItem(R.id.nav_daily_work_summary).isVisible = false
+                menu.findItem(R.id.nav_collections_performance).isVisible = false
+            }
+        }
+
     }
 
     private fun setupNavigationView() {
@@ -107,6 +133,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 R.id.nav_work_summary -> startActivity(Intent(requireActivity(), DailyWorkingSummaryActivity::class.java))
                 R.id.nav_collections_performance -> startActivity(Intent(requireActivity(), CollectionPerformanceActivity::class.java))
                 R.id.nav_collection_summary -> startActivity(Intent(requireActivity(),CollectionSummaryReportActivity::class.java))
+                R.id.nav_lprmanagement -> startActivity(Intent(requireActivity(),LPRManagementActivity::class.java))
                 R.id.nav_daily_work_summary -> startActivity(Intent(requireActivity(),DailyWorkSummaryActivity::class.java))
                 R.id.nav_collections_report -> startActivity(Intent(requireActivity(), DailyCollectionActivity::class.java))
                 R.id.nav_supply_reports -> startActivity(Intent(requireActivity(), SupplyReportActivity::class.java))
@@ -129,7 +156,25 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         // Set the default selection to 6 months
         periodSpinner.setSelection(0) // Assuming the first item in the Spinner is "6 months"
 
+        chartSpinne.setSelection(0)
         periodSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                if (view == null) return // Handle the null case
+
+                val selectedItem = parent.getItemAtPosition(position).toString()
+                selectedPeriod = selectedItem.filter { it.isDigit() }
+
+                // Fetch the dashboard data based on the selected period
+                getExecutiveDashboard()
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                // Optionally handle this case
+            }
+        }
+
+
+        chartSpinne.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 if (view == null) return // Handle the null case
 

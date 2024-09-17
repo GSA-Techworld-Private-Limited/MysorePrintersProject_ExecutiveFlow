@@ -19,8 +19,8 @@
         android:layout_width="match_parent"
         android:orientation="vertical"
         style="@style/groupStylebluegray_9011">
-        <LinearLayout
 
+        <LinearLayout
             android:id="@+id/linearRowsettings"
             android:layout_height="wrap_content"
             android:layout_marginBottom="59dp"

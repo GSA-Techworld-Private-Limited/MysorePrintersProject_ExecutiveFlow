@@ -83,4 +83,32 @@
         <item>NEFT</item>
         <item>UPI</item>
     </string-array>
+
+
+    <string-array name="plant_description">
+        <item>Plant Description</item>
+        <item>Kambargodu (Bangalore)</item>
+        <item>Kalaburgi (Gulbarga)</item>
+        <item>Hospete</item>
+        <item>Dharwad (Hubli)</item>
+        <item>Harihara (Dawangere)</item>
+        <item>Mangaluru</item>
+        <item>Mysore</item>
+    </string-array>
+
+
+    <string-array name="edition_description">
+        <item>Edition Description</item>
+        <item>Bangalore City(BD)</item>
+        <item>Kolar/Chikk/Tum(BD2)</item>
+        <item>Mysore City(YD)</item>
+        <item>Bangalore City Edition(BP)</item>
+        <item>Bangalore Rural Edition(BP1)</item>
+        <item>Kolar Dist Edition(BP2)</item>
+        <item>Tumkur Dist Edition(BP3)</item>
+        <item>Mandya Dist Edition(BP4)</item>
+        <item>CHIKKABALLAPUR Edition(BP5)</item>
+        <item>Ramanagara Edition(BPR)</item>
+    </string-array>
+
 </resources>
