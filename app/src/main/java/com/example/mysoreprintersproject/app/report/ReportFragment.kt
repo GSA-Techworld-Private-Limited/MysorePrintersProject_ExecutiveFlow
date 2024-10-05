@@ -22,6 +22,7 @@ import com.example.mysoreprintersproject.app.collection_performance.CollectionPe
 import com.example.mysoreprintersproject.app.dailycollections.DailyCollectionActivity
 import com.example.mysoreprintersproject.app.dailyworkingsummryfragment.DailyWorkingSummaryActivity
 import com.example.mysoreprintersproject.app.homecontainer.HomeContainerActivity
+import com.example.mysoreprintersproject.app.lprmanagement.LPRManagementActivity
 import com.example.mysoreprintersproject.app.netsale.NetSaleActivity
 import com.example.mysoreprintersproject.app.notification.NotificationActivity
 import com.example.mysoreprintersproject.app.supplyreport.SupplyReportActivity
@@ -143,6 +144,8 @@ class ReportFragment : Fragment(R.layout.fragment_report) {
                     CollectionSummaryReportActivity::class.java))
                 R.id.nav_daily_work_summary -> startActivity(Intent(requireActivity(),
                     DailyWorkSummaryActivity::class.java))
+                R.id.nav_lprmanagement -> startActivity(Intent(requireActivity(),
+                    LPRManagementActivity::class.java))
                 R.id.nav_collections_report -> startActivity(Intent(requireActivity(), DailyCollectionActivity::class.java))
                 R.id.nav_supply_reports -> startActivity(Intent(requireActivity(), SupplyReportActivity::class.java))
                 R.id.nav_net_sales_report -> startActivity(Intent(requireActivity(), NetSaleActivity::class.java))

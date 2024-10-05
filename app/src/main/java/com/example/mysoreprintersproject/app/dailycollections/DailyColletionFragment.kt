@@ -48,6 +48,7 @@ import com.example.mysoreprintersproject.app.attendance.AttendanceActivity
 import com.example.mysoreprintersproject.app.collection_performance.CollectionPerformanceActivity
 import com.example.mysoreprintersproject.app.dailyworkingsummryfragment.DailyWorkingSummaryActivity
 import com.example.mysoreprintersproject.app.homecontainer.HomeContainerActivity
+import com.example.mysoreprintersproject.app.lprmanagement.LPRManagementActivity
 import com.example.mysoreprintersproject.app.netsale.NetSaleActivity
 import com.example.mysoreprintersproject.app.netsale.NetSaleAdapter
 import com.example.mysoreprintersproject.app.notification.NotificationActivity
@@ -59,7 +60,10 @@ import com.example.mysoreprintersproject.responses.CollectionSummaryReportRespon
 import com.example.mysoreprintersproject.responses.ProfileResponses
 import com.google.android.material.navigation.NavigationView
 import com.itextpdf.io.font.constants.StandardFonts
+import com.itextpdf.kernel.colors.ColorConstants
+import com.itextpdf.kernel.font.PdfFont
 import com.itextpdf.kernel.font.PdfFontFactory
+import com.itextpdf.layout.Document
 import com.itextpdf.layout.element.Cell
 import com.itextpdf.layout.element.Paragraph
 import com.itextpdf.layout.property.TextAlignment
@@ -192,6 +196,8 @@ class DailyColletionFragment : Fragment() {
                 R.id.nav_collections_report -> startActivity(Intent(requireActivity(), DailyCollectionActivity::class.java))
                 R.id.nav_daily_work_summary -> startActivity(Intent(requireActivity(),
                     DailyWorkSummaryActivity::class.java))
+                R.id.nav_lprmanagement -> startActivity(Intent(requireActivity(),
+                    LPRManagementActivity::class.java))
                 R.id.nav_supply_reports -> startActivity(Intent(requireActivity(), SupplyReportActivity::class.java))
                 R.id.nav_net_sales_report -> startActivity(Intent(requireActivity(), NetSaleActivity::class.java))
                 R.id.nav_notifications -> startActivity(Intent(requireActivity(),
@@ -254,7 +260,7 @@ class DailyColletionFragment : Fragment() {
         }
 
         val filteredList = summaryResponses.filter { summary ->
-            summary.agent!!.contains(query, ignoreCase = true) ||
+            summary.saleEmployee!!.contains(query, ignoreCase = true) ||
                     summary.month!!.contains(query, ignoreCase = true) ||
                     summary.billAmount!!.contains(query, ignoreCase = true) ||
                     summary.otherAdjustment.toString().contains(query, ignoreCase = true) ||
@@ -371,71 +377,110 @@ class DailyColletionFragment : Fragment() {
 
         val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
         if (uri == null) {
-            requireActivity().runOnUiThread {
-                Toast.makeText(requireContext(), "Error creating file", Toast.LENGTH_SHORT).show()
-            }
+            Toast.makeText(requireContext(), "Error creating file", Toast.LENGTH_SHORT).show()
             return
         }
 
+        val outputStream = resolver.openOutputStream(uri) ?: run {
+            Toast.makeText(requireContext(), "Error creating output stream", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        var document: Document? = null
         try {
-            val outputStream = resolver.openOutputStream(uri)
             val pdfDocument = com.itextpdf.kernel.pdf.PdfDocument(com.itextpdf.kernel.pdf.PdfWriter(outputStream))
-            val document = com.itextpdf.layout.Document(pdfDocument)
+            document = Document(pdfDocument)
+
+            // Set margins
+            document.setMargins(20f, 20f, 20f, 20f) // left, right, top, bottom
 
             val font = PdfFontFactory.createFont(StandardFonts.HELVETICA)
-            val title = Paragraph("Collection Report")
+            document.add(Paragraph("Collection Report")
                 .setFont(font)
                 .setFontSize(20f)
-                .setTextAlignment(TextAlignment.CENTER)
-            document.add(title)
+                .setTextAlignment(TextAlignment.CENTER))
             document.add(Paragraph("\n").setFont(font))
 
             val adapter = recyclerView.adapter as DayCollectionAdapter
             val summaryList = adapter.getCollectionList()
 
-            // Define a table with the number of columns matching the fields
-            val table = com.itextpdf.layout.element.Table(floatArrayOf(1f, 2f, 2f, 2f,2f,2f,2f)).apply {
-                setWidth(com.itextpdf.layout.property.UnitValue.createPercentValue(100f))
+            if (summaryList.isEmpty()) {
+                Toast.makeText(requireContext(), "No data available for PDF", Toast.LENGTH_SHORT).show()
+                return
             }
 
-            // Add table headers
-            table.addHeaderCell(Cell().add(Paragraph("Agent Name").setFont(font)))
-            table.addHeaderCell(Cell().add(Paragraph("Month").setFont(font)))
-            table.addHeaderCell(Cell().add(Paragraph("Bill Amount").setFont(font)))
-            table.addHeaderCell(Cell().add(Paragraph("Other Adjustment").setFont(font)))
-            table.addHeaderCell(Cell().add(Paragraph("Amount Collected").setFont(font)))
-            table.addHeaderCell(Cell().add(Paragraph("Total Dues").setFont(font)))
-            table.addHeaderCell(Cell().add(Paragraph("Balance Amount").setFont(font)))
+            // Define a table with flexible widths
+            val table = com.itextpdf.layout.element.Table(floatArrayOf(1f, 1f, 1.2f, 1f, 1.2f, 1f, 1f)).apply {
+                setWidth(com.itextpdf.layout.property.UnitValue.createPercentValue(90f)) // Use 90% of available width
+                setMarginTop(10f)
+                setMarginBottom(10f)
+            }
+
+            // Add table headers with styling
+            val headerCells = listOf("Agent Name", "Month", "Bill Amount", "Other Adjustment", "Amount Collected", "Total Dues", "Balance Amount")
+            headerCells.forEach { header ->
+                table.addHeaderCell(Cell()
+                    .add(Paragraph(header).setFont(font).setBold())
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setPadding(5f)
+                    .setHeight(30f)
+                    .setBackgroundColor(ColorConstants.LIGHT_GRAY))
+            }
 
             // Add the summary data to the table
             summaryList.forEach { summary ->
-                table.addCell(Cell().add(Paragraph(summary.agent).setFont(font)))
-                table.addCell(Cell().add(Paragraph(summary.month).setFont(font)))
-                table.addCell(Cell().add(Paragraph(summary.billAmount).setFont(font)))
-                table.addCell(Cell().add(Paragraph(summary.otherAdjustment.toString()).setFont(font)))
-                table.addCell(Cell().add(Paragraph(summary.amountCollected).setFont(font)))
-                table.addCell(Cell().add(Paragraph(summary.totalDues).setFont(font)))
-                table.addCell(Cell().add(Paragraph(summary.balanceAmount).setFont(font)))
+                table.addCell(Cell()
+                    .add(getWrappedParagraph(summary.saleEmployee!!, font, 10))
+                    .setPadding(5f)
+                    .setHeight(35f))
+                table.addCell(Cell()
+                    .add(getWrappedParagraph(summary.month!!, font, 10))
+                    .setPadding(5f)
+                    .setHeight(35f))
+                table.addCell(Cell()
+                    .add(getWrappedParagraph(summary.billAmount!!, font, 10))
+                    .setPadding(5f)
+                    .setHeight(25f))
+                table.addCell(Cell()
+                    .add(getWrappedParagraph(summary.otherAdjustment.toString(), font, 10))
+                    .setPadding(5f)
+                    .setHeight(35f))
+                table.addCell(Cell()
+                    .add(getWrappedParagraph(summary.amountCollected!!, font, 10))
+                    .setPadding(5f)
+                    .setHeight(25f))
+                table.addCell(Cell()
+                    .add(getWrappedParagraph(summary.totalDues!!, font, 10))
+                    .setPadding(5f)
+                    .setHeight(25f))
+                table.addCell(Cell()
+                    .add(getWrappedParagraph(summary.balanceAmount!!, font, 10))
+                    .setPadding(5f)
+                    .setHeight(25f))
             }
 
             document.add(table) // Add the table to the document
-
-            document.close()
-            outputStream?.close()
-
             requireActivity().runOnUiThread {
                 Toast.makeText(requireContext(), "PDF generated successfully", Toast.LENGTH_SHORT).show()
                 showNotification(uri)
-
             }
 
         } catch (e: Exception) {
             e.printStackTrace()
-            requireActivity().runOnUiThread {
-                Toast.makeText(requireContext(), "Error generating PDF: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
+            Toast.makeText(requireContext(), "Error generating PDF: ${e.message}", Toast.LENGTH_SHORT).show()
+        } finally {
+            document?.close()
+            outputStream.close()
         }
     }
+
+    // Helper function to wrap text after every 5 characters
+    private fun getWrappedParagraph(text: String, font: PdfFont, maxChars: Int): Paragraph {
+        // Split the text into chunks of maxChars characters
+        val wrappedText = text.chunked(maxChars).joinToString("\n")
+        return Paragraph(wrappedText).setFont(font).setTextAlignment(TextAlignment.LEFT)
+    }
+
 
 
 

@@ -50,11 +50,13 @@ import com.example.mysoreprintersproject.app.dailycollections.DailyCollectionAct
 import com.example.mysoreprintersproject.app.dailyworkingsummryfragment.DailyWorkingSummaryActivity
 import com.example.mysoreprintersproject.app.dailyworkingsummryfragment.DailyWorkingSummaryAdapter
 import com.example.mysoreprintersproject.app.homecontainer.HomeContainerActivity
+import com.example.mysoreprintersproject.app.lprmanagement.LPRManagementActivity
 import com.example.mysoreprintersproject.app.notification.NotificationActivity
 import com.example.mysoreprintersproject.app.supplyreport.SupplyReportActivity
 import com.example.mysoreprintersproject.network.APIManager
 import com.example.mysoreprintersproject.network.SessionManager
 import com.example.mysoreprintersproject.responses.CollectionSummaryReportResponses
+import com.example.mysoreprintersproject.responses.NetSaleDataForOthers
 import com.example.mysoreprintersproject.responses.NetSalesResponse
 import com.example.mysoreprintersproject.responses.ProfileResponses
 import com.example.mysoreprintersproject.responses.SupplyReportResponse
@@ -85,7 +87,7 @@ class NetSaleFragment : Fragment() {
 
     private lateinit var searchBar: EditText
 
-    private lateinit var netSaleResponses: NetSalesResponse
+    private lateinit var netSaleResponses: NetSaleDataForOthers
     private lateinit var notificationIcon:ImageView
 
     override fun onCreateView(
@@ -136,7 +138,17 @@ class NetSaleFragment : Fragment() {
             }
         }
 
-        getNetSaleReport()
+        // Conditionally call getNetSaleReportOthers() or getNetSaleReport()
+        when (userType) {
+            "RM", "DGM", "GM" -> {
+                getNetSaleReportOthers() // Call for RM, DGM, and GM user types
+            }
+            else -> {
+                getNetSaleReportOthers() // Call for other user types
+            }
+        }
+
+
 
         // Setup RecyclerView
 
@@ -231,6 +243,8 @@ class NetSaleFragment : Fragment() {
                 R.id.nav_collections_performance -> startActivity(Intent(requireActivity(), CollectionPerformanceActivity::class.java))
                 R.id.nav_collection_summary -> startActivity(Intent(requireActivity(),
                     CollectionSummaryReportActivity::class.java))
+                R.id.nav_lprmanagement -> startActivity(Intent(requireActivity(),
+                    LPRManagementActivity::class.java))
                 R.id.nav_collections_report -> startActivity(Intent(requireActivity(), DailyCollectionActivity::class.java))
                 R.id.nav_supply_reports -> startActivity(Intent(requireActivity(), SupplyReportActivity::class.java))
                 R.id.nav_net_sales_report -> startActivity(Intent(requireActivity(), NetSaleActivity::class.java))
@@ -297,22 +311,23 @@ class NetSaleFragment : Fragment() {
     }
 
 
-    private fun getNetSaleReport() {
+
+    private fun getNetSaleReportOthers() {
         val serviceGenerator = APIManager.apiInterface
         val accessToken = sessionManager.fetchAuthToken()
         val authorization = "Bearer $accessToken"
         val id = sessionManager.fetchUserId()!!
 
-        serviceGenerator.getNetSale(authorization, id)
-            .enqueue(object : retrofit2.Callback<NetSalesResponse> {
-                override fun onResponse(call: Call<NetSalesResponse>, response: Response<NetSalesResponse>) {
+        serviceGenerator.getNetSaleOthers(authorization, id)
+            .enqueue(object : retrofit2.Callback<NetSaleDataForOthers> {
+                override fun onResponse(call: Call<NetSaleDataForOthers>, response: Response<NetSaleDataForOthers>) {
                     if (response.isSuccessful) {
                         val netSaleResponse = response.body()
-                        if (netSaleResponse != null && netSaleResponse.net_sale_data.isNotEmpty()) {
-                            netSaleResponses = netSaleResponse
+                        if (netSaleResponse != null) {
+                             netSaleResponses = netSaleResponse
                             recyclerView = requireView().findViewById(R.id.recyclerview)
                             recyclerView.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
-                            recyclerView.adapter = NetSaleAdapter(netSaleResponses.net_sale_data)
+                            recyclerView.adapter = NetSaleAdapterForOthers(netSaleResponses.netSaleData)
                         } else {
                             // Handle empty data
                             Toast.makeText(requireActivity(), "Data not found", Toast.LENGTH_SHORT).show()
@@ -322,7 +337,7 @@ class NetSaleFragment : Fragment() {
                     }
                 }
 
-                override fun onFailure(call: Call<NetSalesResponse>, t: Throwable) {
+                override fun onFailure(call: Call<NetSaleDataForOthers>, t: Throwable) {
                     Log.e("SupplyReportFragment", "Error fetching data: ${t.message}", t)
                     Toast.makeText(requireActivity(), "Error fetching data: ${t.message}", Toast.LENGTH_SHORT).show()
                 }
@@ -336,15 +351,18 @@ class NetSaleFragment : Fragment() {
             return
         }
 
-        val filteredList = netSaleResponses.net_sale_data.filter { summary ->
-            summary.Date!!.contains(query, ignoreCase = true) ||
-                    summary.AgentName!!.contains(query, ignoreCase = true) ||
-                    summary.Territory!!.contains(query, ignoreCase = true) ||
-                    summary.DropPoint.toString().contains(query, ignoreCase = true) ||
-                    summary.Total_net_sales.toString().contains(query, ignoreCase = true)
+        val filteredList = netSaleResponses.netSaleData.filter { summary ->
+            summary.Month!!.contains(query, ignoreCase = true) ||
+                    summary.ManagerName!!.contains(query, ignoreCase = true) ||
+                    summary.SEName!!.contains(query, ignoreCase = true) ||
+                    summary.DistrictName.toString().contains(query, ignoreCase = true) ||
+                    summary.SumOfDH.toString().contains(query, ignoreCase = true)||
+                    summary.SumOfPV.toString().contains(query,ignoreCase = true) ||
+                    summary.SumOfMY.toString().contains(query,ignoreCase = true)
+
         }
 
-        recyclerView.adapter = NetSaleAdapter(filteredList)
+        recyclerView.adapter = NetSaleAdapterForOthers(filteredList)
     }
 
 
@@ -469,44 +487,45 @@ class NetSaleFragment : Fragment() {
             val document = com.itextpdf.layout.Document(pdfDocument)
 
             val font = PdfFontFactory.createFont(StandardFonts.HELVETICA)
-            val title = Paragraph("NetSale Report")
+            val title = Paragraph("Net Sale Report")
                 .setFont(font)
                 .setFontSize(20f)
                 .setTextAlignment(TextAlignment.CENTER)
             document.add(title)
             document.add(Paragraph("\n").setFont(font))
 
-            val adapter = recyclerView.adapter as NetSaleAdapter
+            val adapter = recyclerView.adapter as NetSaleAdapterForOthers
             val summaryList = adapter.getNetSaleList()
 
-            // Define a table with the number of columns matching the fields
-            val table = com.itextpdf.layout.element.Table(floatArrayOf(1f, 2f, 2f, 2f)).apply {
-                setWidth(com.itextpdf.layout.property.UnitValue.createPercentValue(100f))
+            // Define a table with 7 columns
+            val table = com.itextpdf.layout.element.Table(floatArrayOf(2f, 2f, 2f, 2f, 2f, 2f, 2f)).apply {
+                setWidth(com.itextpdf.layout.property.UnitValue.createPercentValue(100f)) // Stretch to full width
             }
 
-            // Add table headers
-            table.addHeaderCell(Cell().add(Paragraph("Agent Name").setFont(font)))
-            table.addHeaderCell(Cell().add(Paragraph("Territory").setFont(font)))
-            table.addHeaderCell(Cell().add(Paragraph("Drop Point").setFont(font)))
-            table.addHeaderCell(Cell().add(Paragraph("Total Net Sales").setFont(font)))
+            // Add table headers (7 columns)
+            val headers = listOf("Manager Name", "SE Name", "District Name", "Sum of PV", "Sum of DH", "Sum of MY", "Total Net Sales")
+            headers.forEach { header ->
+                table.addHeaderCell(Cell().add(Paragraph(header).setFont(font).setBold())) // Add bold headers
+            }
 
             // Add the summary data to the table
             summaryList.forEach { summary ->
-                table.addCell(Cell().add(Paragraph(summary.AgentName).setFont(font)))
-                table.addCell(Cell().add(Paragraph(summary.Territory).setFont(font)))
-                table.addCell(Cell().add(Paragraph(summary.DropPoint).setFont(font)))
-                table.addCell(Cell().add(Paragraph(summary.Total_net_sales.toString()).setFont(font)))
+                table.addCell(Cell().add(Paragraph(summary.ManagerName).setFont(font)))
+                table.addCell(Cell().add(Paragraph(summary.SEName).setFont(font)))
+                table.addCell(Cell().add(Paragraph(summary.DistrictName).setFont(font)))
+                table.addCell(Cell().add(Paragraph(summary.SumOfPV.toString()).setFont(font)))
+                table.addCell(Cell().add(Paragraph(summary.SumOfDH.toString()).setFont(font)))
+                table.addCell(Cell().add(Paragraph(summary.SumOfMY.toString()).setFont(font)))
+                table.addCell(Cell().add(Paragraph(summary.totalNetSales.toString()).setFont(font)))
             }
 
             document.add(table) // Add the table to the document
-
             document.close()
             outputStream?.close()
 
             requireActivity().runOnUiThread {
                 Toast.makeText(requireContext(), "PDF generated successfully", Toast.LENGTH_SHORT).show()
                 showNotification(uri)
-
             }
 
         } catch (e: Exception) {
@@ -516,6 +535,7 @@ class NetSaleFragment : Fragment() {
             }
         }
     }
+
 
 
 

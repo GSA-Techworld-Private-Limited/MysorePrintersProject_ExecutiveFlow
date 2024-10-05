@@ -116,20 +116,20 @@ class HomeContainerActivity : AppCompatActivity() {
 
         replaceFragment(HomeFragment())
 
-        // No need to call replaceFragment directly, let the NavHostFragment handle navigation
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.navHostFagment) as NavHostFragment
-        val navController = navHostFragment!!.navController
-
-        frameBottomBar = findViewById(R.id.frameBottombar)
-// Setup navigation for bottom navigation and drawer
-        NavigationUI.setupWithNavController(frameBottomBar, navController)
-        NavigationUI.setupWithNavController(navigationView, navController)
-
-       // val navController = navHostFragment!!.navController
-
-        navController.addOnDestinationChangedListener { _, destination, _ ->
-            Log.d("NavController", "Navigated to ${destination.label}")
-        }
+//        // No need to call replaceFragment directly, let the NavHostFragment handle navigation
+//        val navHostFragment = supportFragmentManager.findFragmentById(R.id.navHostFagment) as NavHostFragment
+//        val navController = navHostFragment!!.navController
+//
+      frameBottomBar = findViewById(R.id.frameBottombar)
+//// Setup navigation for bottom navigation and drawer
+//        NavigationUI.setupWithNavController(frameBottomBar, navController)
+//        NavigationUI.setupWithNavController(navigationView, navController)
+//
+//       // val navController = navHostFragment!!.navController
+//
+//        navController.addOnDestinationChangedListener { _, destination, _ ->
+//            Log.d("NavController", "Navigated to ${destination.label}")
+//        }
 
 
 

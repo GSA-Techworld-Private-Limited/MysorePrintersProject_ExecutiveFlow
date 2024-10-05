@@ -9,9 +9,11 @@
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
+
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
@@ -25,55 +27,69 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MysorePrintersProject"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
+
         <activity
             android:name=".app.lprmanagement.LPRManagementActivity"
             android:exported="false"
             android:theme="@style/Theme.Design.Light.NoActionBar"/>
+
         <activity
             android:name=".app.notification.NotificationActivity"
             android:exported="false"
             android:theme="@style/Theme.Design.Light.NoActionBar" />
+
         <activity
             android:name=".app.DailyWorkSummaryActivity"
             android:exported="false"
             android:theme="@style/Theme.Design.Light.NoActionBar" />
+
         <activity
             android:name=".app.CollectionSummaryReport.CollectionSummaryReportActivity"
             android:exported="false"
             android:theme="@style/Theme.Design.Light.NoActionBar" />
+
         <activity
             android:name=".app.collection_performance.CollectionPerformanceActivity"
             android:exported="false"
             android:theme="@style/Theme.Design.Light.NoActionBar" />
+
         <activity
             android:name=".app.homefragment.HomeActivity"
             android:exported="false"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+
         <activity
             android:name=".app.attendance.AttendanceActivity"
             android:exported="false"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+
         <activity
             android:name=".app.supplyreport.SupplyReportActivity"
             android:exported="false"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+
         <activity
             android:name=".app.netsale.NetSaleActivity"
             android:exported="false"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+
         <activity
             android:name=".app.dailyworkingsummryfragment.DailyWorkingSummaryActivity"
             android:exported="false"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+
         <activity
             android:name=".app.dailycollections.DailyCollectionActivity"
             android:exported="false"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+
         <activity
             android:name=".app.homecontainer.HomeContainerActivity"
             android:exported="false"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+
         <activity
             android:name=".app.SplashScreenActivity"
             android:exported="true"
@@ -84,6 +100,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".MainActivity"
             android:exported="false" />

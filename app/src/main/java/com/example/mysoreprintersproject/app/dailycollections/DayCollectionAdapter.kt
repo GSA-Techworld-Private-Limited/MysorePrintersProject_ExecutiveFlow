@@ -47,7 +47,7 @@ class DayCollectionAdapter(
         val txtbalanceAmount: TextView = itemView.findViewById(R.id.txtbalanceAmount)
 
         fun bindView(postmodel:CollectionResponses){
-            agentName.text=postmodel.agent
+            agentName.text=postmodel.saleEmployee
             txtMonth.text=postmodel.month
             txtBillAmount.text=postmodel.billAmount
             txtOtherAdujesument.text=postmodel.otherAdjustment
