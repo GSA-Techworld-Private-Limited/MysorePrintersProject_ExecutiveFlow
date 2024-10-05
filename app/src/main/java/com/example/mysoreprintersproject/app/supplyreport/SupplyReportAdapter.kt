@@ -11,7 +11,7 @@ import com.example.mysoreprintersproject.responses.DailyWorkingSummaryResponses
 import com.example.mysoreprintersproject.responses.SupplyReportResponse
 
 class SupplyReportAdapter(
-    private val list:List<SupplyReportResponse>
+    private var list:List<SupplyReportResponse>
 ):
     RecyclerView.Adapter<SupplyReportAdapter.CardViewHolder>() {
 
@@ -22,6 +22,12 @@ class SupplyReportAdapter(
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.row_supply_report, parent, false)
         return CardViewHolder(view)
+    }
+
+    // New method to update the data
+    fun updateData(newData: List<SupplyReportResponse>) {
+        list = newData
+        notifyDataSetChanged() // Notify the adapter that the data has changed
     }
 
     override fun onBindViewHolder(holder: CardViewHolder, position: Int) {

@@ -49,6 +49,7 @@ import com.example.mysoreprintersproject.app.attendance.AttendanceActivity
 import com.example.mysoreprintersproject.app.collection_performance.CollectionPerformanceActivity
 import com.example.mysoreprintersproject.app.dailycollections.DailyCollectionActivity
 import com.example.mysoreprintersproject.app.homecontainer.HomeContainerActivity
+import com.example.mysoreprintersproject.app.lprmanagement.LPRManagementActivity
 import com.example.mysoreprintersproject.app.netsale.NetSaleActivity
 import com.example.mysoreprintersproject.app.notification.NotificationActivity
 import com.example.mysoreprintersproject.app.supplyreport.SupplyReportActivity
@@ -172,6 +173,8 @@ class DailyWorkingSummaryFragment : Fragment() {
                 )
                 R.id.nav_daily_work_summary -> startActivity(Intent(requireActivity(),
                     DailyWorkSummaryActivity::class.java))
+                R.id.nav_lprmanagement -> startActivity(Intent(requireActivity(),
+                    LPRManagementActivity::class.java))
                 R.id.nav_collections_report -> startActivity(Intent(requireActivity(), DailyCollectionActivity::class.java))
                 R.id.nav_supply_reports -> startActivity(Intent(requireActivity(), SupplyReportActivity::class.java))
                 R.id.nav_net_sales_report -> startActivity(Intent(requireActivity(), NetSaleActivity::class.java))
@@ -389,41 +392,35 @@ class DailyWorkingSummaryFragment : Fragment() {
             val adapter = recyclerView.adapter as DailyWorkingSummaryAdapter
             val summaryList = adapter.getWorkingSummaryList()
 
-            // Define a table with the number of columns matching the fields
-            val table = com.itextpdf.layout.element.Table(floatArrayOf(1f, 2f, 2f, 2f, 2f, 2f, 2f)).apply {
-                setWidth(com.itextpdf.layout.property.UnitValue.createPercentValue(100f))
+            // Define a table with adjusted column widths (based on expected content size)
+            val table = com.itextpdf.layout.element.Table(floatArrayOf(1.5f, 2.5f, 2f, 2f, 2.5f, 2f, 2.5f)).apply {
+                setWidth(com.itextpdf.layout.property.UnitValue.createPercentValue(100f)) // Stretch to full width
             }
 
             // Add table headers
-            table.addHeaderCell(Cell().add(Paragraph("Date").setFont(font)))
-            table.addHeaderCell(Cell().add(Paragraph("Market(s) Worked").setFont(font)))
-            table.addHeaderCell(Cell().add(Paragraph("Agent Visited").setFont(font)))
-            table.addHeaderCell(Cell().add(Paragraph("Instistution Visited").setFont(font)))
-            table.addHeaderCell(Cell().add(Paragraph("Task Accomplished").setFont(font)))
-            table.addHeaderCell(Cell().add(Paragraph("WhatsApp Number").setFont(font)))
-            table.addHeaderCell(Cell().add(Paragraph("Email Id").setFont(font)))
+            val headers = listOf("Date", "Market(s) Worked", "Agent Visited", "Institution Visited", "Task Accomplished", "WhatsApp Number", "Email Id")
+            headers.forEach { header ->
+                table.addHeaderCell(Cell().add(Paragraph(header).setFont(font).setBold())) // Add bold headers
+            }
 
-
-            // Add the summary data to the table
+            // Add the summary data to the table with validation for non-null values
             summaryList.forEach { summary ->
-                table.addCell(Cell().add(Paragraph(summary.Date).setFont(font)))
-                table.addCell(Cell().add(Paragraph(summary.MarketVisited).setFont(font)))
-                table.addCell(Cell().add(Paragraph(summary.AgentsVisited).setFont(font)))
-                table.addCell(Cell().add(Paragraph(summary.InstitutionVisited.toString()).setFont(font)))
-                table.addCell(Cell().add(Paragraph(summary.TasksAccomplished.toString()).setFont(font)))
-                table.addCell(Cell().add(Paragraph(summary.WhatsappNumber.toString()).setFont(font)))
-                table.addCell(Cell().add(Paragraph(summary.emailID.toString()).setFont(font)))
+                table.addCell(Cell().add(Paragraph(summary.Date ?: "N/A").setFont(font))) // Handle null dates
+                table.addCell(Cell().add(Paragraph(summary.MarketVisited ?: "N/A").setFont(font)))
+                table.addCell(Cell().add(Paragraph(summary.AgentsVisited ?: "N/A").setFont(font)))
+                table.addCell(Cell().add(Paragraph(summary.InstitutionVisited?.toString() ?: "N/A").setFont(font)))
+                table.addCell(Cell().add(Paragraph(summary.TasksAccomplished ?: "N/A").setFont(font)))
+                table.addCell(Cell().add(Paragraph(summary.WhatsappNumber?.toString() ?: "N/A").setFont(font)))
+                table.addCell(Cell().add(Paragraph(summary.emailID?.toString() ?: "N/A").setFont(font)))
             }
 
             document.add(table) // Add the table to the document
-
             document.close()
             outputStream?.close()
 
             requireActivity().runOnUiThread {
                 Toast.makeText(requireContext(), "PDF generated successfully", Toast.LENGTH_SHORT).show()
                 showNotification(uri)
-
             }
 
         } catch (e: Exception) {
@@ -433,6 +430,7 @@ class DailyWorkingSummaryFragment : Fragment() {
             }
         }
     }
+
 
 
 

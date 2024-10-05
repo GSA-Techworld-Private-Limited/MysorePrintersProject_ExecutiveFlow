@@ -10,6 +10,7 @@ import com.example.mysoreprintersproject.responses.DailyWorkingSummaryResponses
 import com.example.mysoreprintersproject.responses.ExecutiveDashboard
 import com.example.mysoreprintersproject.responses.LocationNameResponse
 import com.example.mysoreprintersproject.responses.LoginResponse
+import com.example.mysoreprintersproject.responses.NetSaleDataForOthers
 import com.example.mysoreprintersproject.responses.NetSalesResponse
 import com.example.mysoreprintersproject.responses.NotificationRequest
 import com.example.mysoreprintersproject.responses.NotificationResponses
@@ -89,6 +90,12 @@ interface DataSource {
         @Header("Authorization") token: String,
         @Query("id")id:String
     ):Call<NetSalesResponse>
+
+    @GET("/app-executive/executive_netsales/")
+    fun getNetSaleOthers(
+        @Header("Authorization") token: String,
+        @Query("id")id:String
+    ):Call<NetSaleDataForOthers>
 
 
     @GET("/app-executive/collection-data-web/")

@@ -90,7 +90,7 @@
 
                 <TextView
                     style="@style/txtSemiBolpoppinsSemibold28"
-                    android:text="LVD Management"
+                    android:text="LPR Management"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 

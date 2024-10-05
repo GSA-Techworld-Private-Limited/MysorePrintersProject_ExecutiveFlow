@@ -2,6 +2,7 @@ package com.example.mysoreprintersproject.app.supplyreport
 
 import android.Manifest
 import android.app.AlertDialog
+import android.app.DatePickerDialog
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -22,10 +23,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
@@ -50,6 +53,7 @@ import com.example.mysoreprintersproject.app.dailycollections.DailyCollectionAct
 import com.example.mysoreprintersproject.app.dailyworkingsummryfragment.DailyWorkingSummaryActivity
 import com.example.mysoreprintersproject.app.dailyworkingsummryfragment.DailyWorkingSummaryAdapter
 import com.example.mysoreprintersproject.app.homecontainer.HomeContainerActivity
+import com.example.mysoreprintersproject.app.lprmanagement.LPRManagementActivity
 import com.example.mysoreprintersproject.app.netsale.NetSaleActivity
 import com.example.mysoreprintersproject.app.notification.NotificationActivity
 import com.example.mysoreprintersproject.network.APIManager
@@ -65,6 +69,10 @@ import com.itextpdf.layout.element.Paragraph
 import com.itextpdf.layout.property.TextAlignment
 import retrofit2.Call
 import retrofit2.Response
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 class SupplyReportFragment : Fragment() {
 
@@ -78,6 +86,12 @@ class SupplyReportFragment : Fragment() {
 
     private lateinit var summaryResponses: List<SupplyReportResponse>
     private lateinit var notificationIcon:ImageView
+
+    private var selectedFromDate: String? = null
+    private var selectedToDate: String? = null
+    private var selectedSegment: String? = null
+
+    private lateinit var progressBar: ProgressBar
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -96,6 +110,7 @@ class SupplyReportFragment : Fragment() {
         navigationView = requireView().findViewById(R.id.navigationView)
         notificationIcon=requireView().findViewById(R.id.imageSettings1)
 
+        progressBar=requireView().findViewById(R.id.progressBar)
         navigatioViewIcon.setOnClickListener {
             drawerLayout.openDrawer(GravityCompat.START)
         }
@@ -115,6 +130,8 @@ class SupplyReportFragment : Fragment() {
                     CollectionSummaryReportActivity::class.java))
                 R.id.nav_daily_work_summary -> startActivity(Intent(requireActivity(),
                     DailyWorkSummaryActivity::class.java))
+                R.id.nav_lprmanagement -> startActivity(Intent(requireActivity(),
+                    LPRManagementActivity::class.java))
                 R.id.nav_collections_report -> startActivity(Intent(requireActivity(), DailyCollectionActivity::class.java))
                 R.id.nav_supply_reports -> startActivity(Intent(requireActivity(), SupplyReportActivity::class.java))
                 R.id.nav_net_sales_report -> startActivity(Intent(requireActivity(), NetSaleActivity::class.java))
@@ -175,25 +192,38 @@ class SupplyReportFragment : Fragment() {
             override fun afterTextChanged(s: Editable?) {}
         })
         // Setting up spinners with custom layout
-        val fromSpinner: Spinner = requireView().findViewById(R.id.spinner_from)
-        val toSpinner: Spinner = requireView().findViewById(R.id.spinner_to)
+        val fromSpinner: EditText = requireView().findViewById(R.id.editText_from)
+        val toSpinner: EditText = requireView().findViewById(R.id.editText_to)
         val segmentSpinner: Spinner = requireView().findViewById(R.id.spinner_three)
 
-        val fromAdapter = ArrayAdapter.createFromResource(
-            requireContext(),
-            R.array.from_dates,
-            R.layout.spinner_item
-        )
-        fromAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        fromSpinner.adapter = fromAdapter
 
-        val toAdapter = ArrayAdapter.createFromResource(
-            requireContext(),
-            R.array.to_dates,
-            R.layout.spinner_item
-        )
-        toAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        toSpinner.adapter = toAdapter
+        // Date format and calendar
+        val dateFormat = SimpleDateFormat("dd-MM-yyyy", Locale.US)
+        val calendar = Calendar.getInstance()
+
+
+        // Set up listeners for date pickers and segment spinner
+        fromSpinner.setOnClickListener {
+            DatePickerDialog(requireActivity(), { _, year, month, dayOfMonth ->
+                calendar.set(year, month, dayOfMonth)
+                selectedFromDate = dateFormat.format(calendar.time)
+                fromSpinner.setText(selectedFromDate)
+                filterResponses()
+            }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show()
+        }
+
+        toSpinner.setOnClickListener {
+            DatePickerDialog(requireActivity(), { _, year, month, dayOfMonth ->
+                calendar.set(year, month, dayOfMonth)
+                selectedToDate = dateFormat.format(calendar.time)
+                toSpinner.setText(selectedToDate)
+                filterResponses() // Filter on date selection
+            }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show()
+        }
+
+
+
+
 
         val segmentAdapter = ArrayAdapter.createFromResource(
             requireContext(),
@@ -203,10 +233,25 @@ class SupplyReportFragment : Fragment() {
         segmentAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         segmentSpinner.adapter = segmentAdapter
 
+
+        // Set the OnItemSelectedListener for the spinner
+        segmentSpinner.setOnItemSelectedListener(object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                selectedSegment = segmentSpinner.getItemAtPosition(position).toString()
+                filterResponses() // Call the method to filter responses based on the selected segment
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                // Handle case when nothing is selected, if necessary
+            }
+        })
+
         getSupplyReport()
 
 
         getExecutiveProfile()
+
+        progressBar.visibility=View.VISIBLE
     }
 
     private fun getSupplyReport() {
@@ -223,6 +268,7 @@ class SupplyReportFragment : Fragment() {
                     call: Call<List<SupplyReportResponse>>,
                     response: Response<List<SupplyReportResponse>>
                 ) {
+                    progressBar.visibility=View.GONE
                     if (response.isSuccessful) {
                         val reports = response.body()
                         if (!reports.isNullOrEmpty()) {
@@ -240,6 +286,7 @@ class SupplyReportFragment : Fragment() {
                 override fun onFailure(call: Call<List<SupplyReportResponse>>, t: Throwable) {
                     Log.e("SupplyReportFragment", "Error fetching data: ${t.message}", t)
                     Toast.makeText(requireActivity(), "Error fetching data: ${t.message}", Toast.LENGTH_SHORT).show()
+                    progressBar.visibility=View.GONE
                 }
             })
     }
@@ -263,13 +310,61 @@ class SupplyReportFragment : Fragment() {
         val filteredList = summaryResponses.filter { summary ->
             summary.Date!!.contains(query, ignoreCase = true) ||
                     summary.SEname!!.contains(query, ignoreCase = true) ||
-                    summary.BPcode!!.contains(query, ignoreCase = true) ||
+                    summary.BPcode!!.toString().contains(query, ignoreCase = true) ||
                     summary.Date.toString().contains(query, ignoreCase = true) ||
                     summary.SumofPv.toString().contains(query, ignoreCase = true)
         }
 
         recyclerView.adapter = SupplyReportAdapter(filteredList)
     }
+
+
+    private fun filterResponses() {
+        if (!::summaryResponses.isInitialized) return
+
+        // Log the selected dates for debugging
+        Log.d("FilterResponses", "From Date: $selectedFromDate, To Date: $selectedToDate")
+
+        // Proceed to filter the responses
+        val filteredList = summaryResponses.filter { summary ->
+            val date = summary.Date ?: return@filter false
+
+            // Debugging log to check the summary date
+            Log.d("FilterResponses", "Summary Date: $date")
+
+            // Ensure both from and to dates are not null
+            val isInDateRange = selectedFromDate?.let { from ->
+                selectedToDate?.let { to ->
+                    // Compare using string comparison for "dd-MM-yyyy" format
+                    date in from..to
+                } ?: true // No 'to' date means it doesn't filter by date
+            } ?: true // No 'from' date means it doesn't filter by date
+
+            // Check if the summary's segment matches the selected segment
+            val isSegmentMatch = selectedSegment?.let { segment ->
+                summary.segment.equals(segment, ignoreCase = true) // Case-insensitive comparison
+            } ?: true
+
+            // Return true if both conditions are satisfied
+            isInDateRange || isSegmentMatch
+        }
+
+        // Check if filteredList is empty and log the result
+        Log.d("FilterResponses", "Filtered list size: ${filteredList.size}")
+
+        // Update RecyclerView with the filtered results
+        (recyclerView.adapter as? SupplyReportAdapter)?.updateData(filteredList)
+    }
+
+
+
+
+
+
+
+
+
+
 
     private fun getExecutiveProfile() {
         val serviceGenerator = APIManager.apiInterface
@@ -280,6 +375,7 @@ class SupplyReportFragment : Fragment() {
         serviceGenerator.getProfileOfExecutive(authorization, id.toInt())
             .enqueue(object : retrofit2.Callback<ProfileResponses> {
                 override fun onResponse(call: Call<ProfileResponses>, response: Response<ProfileResponses>) {
+                    progressBar.visibility=View.GONE
                     val profileResponses = response.body()
 
                     if(profileResponses!=null){
@@ -293,6 +389,7 @@ class SupplyReportFragment : Fragment() {
 
                 override fun onFailure(call: Call<ProfileResponses>, t: Throwable) {
                     Toast.makeText(requireActivity(), "Error fetching data", Toast.LENGTH_SHORT).show()
+                    progressBar.visibility=View.GONE
                 }
             })
     }
@@ -417,7 +514,7 @@ class SupplyReportFragment : Fragment() {
             // Add the summary data to the table
             summaryList.forEach { summary ->
                 table.addCell(Cell().add(Paragraph(summary.SEname).setFont(font)))
-                table.addCell(Cell().add(Paragraph(summary.BPcode).setFont(font)))
+                table.addCell(Cell().add(Paragraph(summary.BPcode.toString()).setFont(font)))
                 table.addCell(Cell().add(Paragraph(summary.Date).setFont(font)))
                 table.addCell(Cell().add(Paragraph(summary.SumofPv).setFont(font)))
             }
