@@ -120,6 +120,8 @@ dependencies {
 
 
     implementation ("com.itextpdf:itext7-core:7.1.15")
+    implementation ("org.osmdroid:osmdroid-android:6.1.11")
+
 
 }
 

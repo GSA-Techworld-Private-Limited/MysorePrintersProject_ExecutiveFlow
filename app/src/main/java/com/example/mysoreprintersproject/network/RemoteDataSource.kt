@@ -1,6 +1,7 @@
 package com.example.mysoreprintersproject.network
 
 import okhttp3.OkHttpClient
+import okhttp3.Protocol
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -8,8 +9,8 @@ import java.util.concurrent.TimeUnit
 
 class RemoteDataSource {
     companion object {
-       // private const val BASE_URL = "http://3.111.197.59:8000"
-        private const val BASE_URL="https://jqtf8plh-8000.inc1.devtunnels.ms/"
+        //private const val BASE_URL = "http://3.111.197.59:8000"
+        private const val BASE_URL = "https://jqtf8plh-8000.inc1.devtunnels.ms/"
     }
 
     fun getImageUrl(imagePath: String): String {
@@ -34,9 +35,11 @@ class RemoteDataSource {
                         logging.setLevel(HttpLoggingInterceptor.Level.BODY)
                         client.addInterceptor(logging)
                     }
-                    .connectTimeout(0, TimeUnit.SECONDS) // No timeout
-                    .readTimeout(0, TimeUnit.SECONDS) // No timeout
-                    .writeTimeout(0, TimeUnit.SECONDS) // No timeout
+                    // Set a reasonable timeout duration to avoid SocketTimeoutException
+                    .connectTimeout(60, TimeUnit.SECONDS) // 60 seconds for connection timeout
+                    .readTimeout(60, TimeUnit.SECONDS)    // 60 seconds for read timeout
+                    .writeTimeout(60, TimeUnit.SECONDS)   // 60 seconds for write timeout
+                    .protocols(listOf(Protocol.HTTP_1_1))
                     .build()
             )
             .addConverterFactory(GsonConverterFactory.create())

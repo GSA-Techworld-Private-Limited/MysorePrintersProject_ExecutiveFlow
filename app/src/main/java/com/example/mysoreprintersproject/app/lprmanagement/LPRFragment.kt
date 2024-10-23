@@ -257,8 +257,9 @@ class LPRFragment  : Fragment() {
                 progressBar.visibility=View.GONE
                 if (response.isSuccessful) {
 
-                    Toast.makeText(requireActivity(),"LVD Report Sent Successfully", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireActivity(),"LPR Report Sent Successfully", Toast.LENGTH_SHORT).show()
                     progressBar.visibility=View.GONE
+                    moveToHomeContainer()
                     //submitButton.text="Edit"
                 } else {
                     // Handle other HTTP error codes if needed
@@ -269,7 +270,7 @@ class LPRFragment  : Fragment() {
 
             override fun onFailure(call: Call<Void>, t: Throwable) {
                 // Handle failure (e.g., network failure, timeout)
-                Toast.makeText(requireActivity(), "User Already Registered, Please Login!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireActivity(), "Something Went Wrong!", Toast.LENGTH_SHORT).show()
                 progressBar.visibility=View.GONE
             }
         })
@@ -300,5 +301,11 @@ class LPRFragment  : Fragment() {
                     Toast.makeText(requireActivity(), "Error fetching data", Toast.LENGTH_SHORT).show()
                 }
             })
+    }
+
+    private fun moveToHomeContainer(){
+        val i=Intent(requireActivity(),HomeContainerActivity::class.java)
+        startActivity(i)
+        requireActivity().finish()
     }
 }

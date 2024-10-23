@@ -355,6 +355,7 @@ class NetSaleFragment : Fragment() {
             summary.Month!!.contains(query, ignoreCase = true) ||
                     summary.ManagerName!!.contains(query, ignoreCase = true) ||
                     summary.SEName!!.contains(query, ignoreCase = true) ||
+                    summary.BPCode!!.contains(query,ignoreCase = true) ||
                     summary.DistrictName.toString().contains(query, ignoreCase = true) ||
                     summary.SumOfDH.toString().contains(query, ignoreCase = true)||
                     summary.SumOfPV.toString().contains(query,ignoreCase = true) ||
@@ -498,12 +499,12 @@ class NetSaleFragment : Fragment() {
             val summaryList = adapter.getNetSaleList()
 
             // Define a table with 7 columns
-            val table = com.itextpdf.layout.element.Table(floatArrayOf(2f, 2f, 2f, 2f, 2f, 2f, 2f)).apply {
+            val table = com.itextpdf.layout.element.Table(floatArrayOf(2f, 2f,2f, 2f, 2f, 2f, 2f, 2f)).apply {
                 setWidth(com.itextpdf.layout.property.UnitValue.createPercentValue(100f)) // Stretch to full width
             }
 
             // Add table headers (7 columns)
-            val headers = listOf("Manager Name", "SE Name", "District Name", "Sum of PV", "Sum of DH", "Sum of MY", "Total Net Sales")
+            val headers = listOf("Manager Name", "SE Name", "BP Code","District Name", "Sum of PV", "Sum of DH", "Sum of MY", "Total Net Sales")
             headers.forEach { header ->
                 table.addHeaderCell(Cell().add(Paragraph(header).setFont(font).setBold())) // Add bold headers
             }
@@ -512,6 +513,7 @@ class NetSaleFragment : Fragment() {
             summaryList.forEach { summary ->
                 table.addCell(Cell().add(Paragraph(summary.ManagerName).setFont(font)))
                 table.addCell(Cell().add(Paragraph(summary.SEName).setFont(font)))
+                table.addCell(Cell().add(Paragraph(summary.BPCode).setFont(font)))
                 table.addCell(Cell().add(Paragraph(summary.DistrictName).setFont(font)))
                 table.addCell(Cell().add(Paragraph(summary.SumOfPV.toString()).setFont(font)))
                 table.addCell(Cell().add(Paragraph(summary.SumOfDH.toString()).setFont(font)))

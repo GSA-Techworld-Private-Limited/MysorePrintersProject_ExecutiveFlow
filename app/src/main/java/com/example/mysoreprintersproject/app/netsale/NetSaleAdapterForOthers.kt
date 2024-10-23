@@ -44,6 +44,7 @@ class NetSaleAdapterForOthers (
         val txtsumofdh:TextView=itemView.findViewById(R.id.txtsumofdh)
         val txtsumofpv:TextView=itemView.findViewById(R.id.txtsumofpv)
         val txtsumofmy:TextView=itemView.findViewById(R.id.txtsumofmy)
+        val txtBpCode:TextView=itemView.findViewById(R.id.txtBpCode)
 
         fun bindView(postmodel: NetSaleDataOthers) {
             agentName.text = postmodel.ManagerName
@@ -53,6 +54,7 @@ class NetSaleAdapterForOthers (
             txtsumofdh.text=postmodel.SumOfDH.toString()
             txtsumofpv.text=postmodel.SumOfPV.toString()
             txtsumofmy.text=postmodel.SumOfMY.toString()
+            txtBpCode.text=postmodel.BPCode
         }
     }
 }
