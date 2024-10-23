@@ -3,8 +3,10 @@ package com.example.mysoreprintersproject.app.attendance
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -43,7 +45,9 @@ import com.example.mysoreprintersproject.network.SessionManager
 import com.example.mysoreprintersproject.repository.AuthRepository
 import com.example.mysoreprintersproject.responses.CheckInRequest
 import com.example.mysoreprintersproject.responses.CheckOutRequest
+import com.example.mysoreprintersproject.responses.FinalLocations
 import com.example.mysoreprintersproject.responses.ProfileResponses
+import com.example.mysoreprintersproject.responses.SupplyReportResponse
 import com.example.mysoreprintersproject.responses.UserRepository
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
@@ -54,8 +58,16 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import org.osmdroid.config.Configuration
+import org.osmdroid.library.BuildConfig
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.Marker
+import org.osmdroid.views.overlay.Polyline
 import retrofit2.Call
 import retrofit2.Response
+import java.io.File
 
 class AttendanceFragment :
     BaseFragment<CheckInViewModel, FragmentAttendanceBinding, UserRepository>() {
@@ -70,7 +82,9 @@ class AttendanceFragment :
 
     private lateinit var database: DatabaseReference
 
+    private lateinit var mapView: MapView
 
+    private val locationsList = mutableListOf<GeoPoint>()
 
 
     @Deprecated("Deprecated in Java")
@@ -162,6 +176,7 @@ class AttendanceFragment :
 
         setInitialButtonStyles()
 
+
         val token = sessionManager.fetchAuthToken()
         val authorization = "Bearer $token"
         val id = sessionManager.fetchUserId()!!
@@ -177,10 +192,12 @@ class AttendanceFragment :
                     sendLocationToFirebase(lattitude!!,longitude!!)
                     sessionManager.saveCheckInState(true) // Save check-in state
                     startLocationService()
+                    mapView.visibility=View.GONE
                     binding.progressbar.visibility=View.GONE
                 }
                 is Resource.Failure -> {
                     Toast.makeText(requireActivity(), "Check-In failed!", Toast.LENGTH_SHORT).show()
+                    mapView.visibility=View.GONE
                     binding.progressbar.visibility=View.GONE
                 }
                 else -> { /* Handle other cases if needed */ }
@@ -195,6 +212,8 @@ class AttendanceFragment :
                     toggleButtons(false)
                     sessionManager.saveCheckInState(false) // Save check-out state
                     stopLocationService()
+                    mapView.visibility=View.VISIBLE
+                    getFinalLocations()
                     binding.progressbar.visibility=View.GONE
 
                 }
@@ -241,6 +260,23 @@ class AttendanceFragment :
                 binding.progressbar.visibility=View.GONE
             }
         }
+
+
+        // Initialize Osmdroid configuration
+        val osmdroidBasePath = File(
+            Environment.getExternalStorageDirectory().absolutePath + "/osmdroid"
+        )
+        if (!osmdroidBasePath.exists()) {
+            osmdroidBasePath.mkdirs()
+        }
+        Configuration.getInstance().osmdroidBasePath = osmdroidBasePath
+        Configuration.getInstance().userAgentValue = BuildConfig.APPLICATION_ID
+
+        mapView = binding.mapView
+
+
+        //getFinalLocations()
+       // setupOfflineMap()
 
     }
 
@@ -381,5 +417,101 @@ class AttendanceFragment :
         val api = remoteDateSource.buildApi(DataSource::class.java, token)
         return UserRepository(api, userPreferences)
     }
+
+
+    private fun setupOfflineMap() {
+        // Set tile source for offline use
+        mapView.setTileSource(TileSourceFactory.MAPNIK)
+
+        // Enable zoom controls and gestures
+        mapView.setMultiTouchControls(true)
+        mapView.controller.setZoom(15.0)
+        mapView.controller.setCenter(GeoPoint(37.7749, -122.4194)) // Center on a specific location (San Francisco)
+
+        // Add a marker to the map
+        val marker = Marker(mapView)
+        marker.position = GeoPoint(37.7749, -122.4194)
+        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+        mapView.overlays.add(marker)
+    }
+
+
+
+    private fun getFinalLocations() {
+        val serviceGenerator = APIManager.apiInterface
+        val accessToken = sessionManager.fetchAuthToken()
+        val authorization = "Bearer $accessToken"
+        val id = sessionManager.fetchUserId()!!
+
+        serviceGenerator.getFinalCordinations(authorization, id)
+            .enqueue(object : retrofit2.Callback<List<FinalLocations>> {
+                override fun onResponse(
+                    call: Call<List<FinalLocations>>,
+                    response: Response<List<FinalLocations>>
+                ) {
+                    if (response.isSuccessful && response.body() != null) {
+                        val locations = response.body()!!
+                        // Clear existing markers before adding new ones
+                        mapView.overlays.clear()
+                        locationsList.clear() // Clear previous location list
+
+                        // Iterate through locations and add markers
+                        for (i in locations.indices) {
+                            val location = locations[i]
+                            val latitude = location.latitude
+                            val longitude = location.longitude
+
+                            // Check for null values
+                            if (latitude != null && longitude != null) {
+                                addMarkerToMap(latitude.toDouble(), longitude.toDouble(), i + 1) // Pass the index for labeling
+                            }
+                        }
+                        mapView.invalidate() // Refresh the map view
+                    } else {
+                        Toast.makeText(requireActivity(), "Failed to retrieve data", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<List<FinalLocations>>, t: Throwable) {
+                    Log.e("SupplyReportFragment", "Error fetching data: ${t.message}", t)
+                    Toast.makeText(requireActivity(), "Error fetching data: ${t.message}", Toast.LENGTH_SHORT).show()
+                }
+            })
+    }
+
+    private fun addMarkerToMap(latitude: Double, longitude: Double, index: Int) {
+        val geoPoint = GeoPoint(latitude, longitude)
+        locationsList.add(geoPoint) // Add to locations list
+
+        val marker = Marker(mapView)
+        marker.position = geoPoint
+        marker.title = "$index" // Set title to 1st, 2nd, etc.
+        marker.icon = resources.getDrawable(R.drawable.ic_location, null) // Use your marker icon drawable
+        mapView.overlays.add(marker)
+
+        // Optional: Center the map on the first marker added
+        if (mapView.overlays.size == 1) {
+            mapView.controller.setZoom(15.0) // Set zoom level
+            mapView.controller.setCenter(geoPoint) // Center map
+        }
+
+        // Draw the polyline connecting the locations
+        if (locationsList.size > 1) {
+            drawPolyline()
+        }
+
+        mapView.invalidate() // Refresh the map view
+    }
+
+    private fun drawPolyline() {
+        val polyline = Polyline(mapView)
+        polyline.setPoints(locationsList) // Set the list of GeoPoints for the polyline
+        polyline.color = Color.BLUE // Set the polyline color to blue
+        polyline.width = 5f // Set the width of the polyline
+        mapView.overlays.add(polyline) // Add the polyline to the map's overlays
+    }
+
+
+
 
 }

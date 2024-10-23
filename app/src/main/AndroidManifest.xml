@@ -120,6 +120,11 @@
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="location" />
+
+
+        <meta-data
+            android:name="osmdroid.basePath"
+            android:value="osmdroid" />
     </application>
 
 </manifest>

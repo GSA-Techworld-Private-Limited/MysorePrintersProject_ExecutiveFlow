@@ -451,6 +451,8 @@ class DailyWorkSummaryFragment : Fragment() {
 //                    getAgentName()
 //                    getPlacesVisited()
 
+                    moveToHomeContainer()
+
                 } else {
                     // Handle other HTTP error codes if needed
                     Toast.makeText(requireActivity(), "failed: ${response.message()}", Toast.LENGTH_SHORT).show()
@@ -491,6 +493,14 @@ class DailyWorkSummaryFragment : Fragment() {
                     Toast.makeText(requireActivity(), "Error fetching data", Toast.LENGTH_SHORT).show()
                 }
             })
+    }
+
+
+
+    private fun moveToHomeContainer(){
+        val i=Intent(requireActivity(),HomeContainerActivity::class.java)
+        startActivity(i)
+        requireActivity().finish()
     }
 }
 

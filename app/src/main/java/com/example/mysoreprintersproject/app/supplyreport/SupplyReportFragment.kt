@@ -175,7 +175,7 @@ class SupplyReportFragment : Fragment() {
         val exportButton: Button = requireView().findViewById(R.id.export_button)
         exportButton.setOnClickListener {
             exportToPdf()
-            // progressBar.visibility = View.VISIBLE
+            progressBar.visibility=View.VISIBLE
         }
 
 
@@ -198,7 +198,7 @@ class SupplyReportFragment : Fragment() {
 
 
         // Date format and calendar
-        val dateFormat = SimpleDateFormat("dd-MM-yyyy", Locale.US)
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
         val calendar = Calendar.getInstance()
 
 
@@ -208,7 +208,7 @@ class SupplyReportFragment : Fragment() {
                 calendar.set(year, month, dayOfMonth)
                 selectedFromDate = dateFormat.format(calendar.time)
                 fromSpinner.setText(selectedFromDate)
-                filterResponses()
+                //filterResponses()
             }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show()
         }
 
@@ -217,7 +217,20 @@ class SupplyReportFragment : Fragment() {
                 calendar.set(year, month, dayOfMonth)
                 selectedToDate = dateFormat.format(calendar.time)
                 toSpinner.setText(selectedToDate)
-                filterResponses() // Filter on date selection
+
+                // Show the progress bar
+                progressBar.visibility = View.VISIBLE
+
+                // Filter responses on a background thread
+                Thread {
+                    filterResponses() // This should contain your logic to filter the responses
+
+                    // After filtering is complete, update the UI on the main thread
+                    requireActivity().runOnUiThread {
+                        // Hide the progress bar after filtering
+                        progressBar.visibility = View.GONE
+                    }
+                }.start() // Start the thread
             }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show()
         }
 
@@ -238,13 +251,21 @@ class SupplyReportFragment : Fragment() {
         segmentSpinner.setOnItemSelectedListener(object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 selectedSegment = segmentSpinner.getItemAtPosition(position).toString()
-                filterResponses() // Call the method to filter responses based on the selected segment
+
+                // Check if the selected segment is the placeholder item
+                if (selectedSegment != "Segments") {
+                    filterResponses() // Call the method to filter responses based on the selected segment
+                    progressBar.visibility=View.VISIBLE
+                } else {
+                    selectedSegment = "" // Reset selectedSegment to null if the placeholder is selected
+                }
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {
                 // Handle case when nothing is selected, if necessary
             }
         })
+
 
         getSupplyReport()
 
@@ -291,6 +312,51 @@ class SupplyReportFragment : Fragment() {
             })
     }
 
+    // Update filterResponses() to call getSupplyReportCustomRange() when dates are selected
+    private fun filterResponses() {
+        if (!selectedFromDate.isNullOrEmpty() && !selectedToDate.isNullOrEmpty()) {
+            getSupplyReportCustomRange() // Call this function when both dates are set
+        }
+    }
+
+    private fun getSupplyReportCustomRange() {
+        val serviceGenerator = APIManager.apiInterface
+        val accessToken = sessionManager.fetchAuthToken()
+        val authorization = "Bearer $accessToken"
+        val id = sessionManager.fetchUserId()!!
+
+        val period = "6"
+
+        serviceGenerator.getSupplyReportCustom(authorization,selectedFromDate!!,selectedToDate!!,selectedSegment!!)
+            .enqueue(object : retrofit2.Callback<List<SupplyReportResponse>> {
+                override fun onResponse(
+                    call: Call<List<SupplyReportResponse>>,
+                    response: Response<List<SupplyReportResponse>>
+                ) {
+                    progressBar.visibility=View.GONE
+                    if (response.isSuccessful) {
+                        val reports = response.body()
+                        if (!reports.isNullOrEmpty()) {
+                            summaryResponses = reports
+                            setupRecyclerView(summaryResponses)
+                        } else {
+                            // Handle empty data
+                            Toast.makeText(requireActivity(), "No data found", Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        Toast.makeText(requireActivity(), "Failed to retrieve data", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<List<SupplyReportResponse>>, t: Throwable) {
+                    Log.e("SupplyReportFragment", "Error fetching data: ${t.message}", t)
+                    Toast.makeText(requireActivity(), "Error fetching data: ${t.message}", Toast.LENGTH_SHORT).show()
+                    progressBar.visibility=View.GONE
+                }
+            })
+    }
+
+
 
     private fun setupRecyclerView(summaryResponses: List<SupplyReportResponse>) {
          recyclerView = requireView().findViewById(R.id.recyclerview)
@@ -319,42 +385,42 @@ class SupplyReportFragment : Fragment() {
     }
 
 
-    private fun filterResponses() {
-        if (!::summaryResponses.isInitialized) return
-
-        // Log the selected dates for debugging
-        Log.d("FilterResponses", "From Date: $selectedFromDate, To Date: $selectedToDate")
-
-        // Proceed to filter the responses
-        val filteredList = summaryResponses.filter { summary ->
-            val date = summary.Date ?: return@filter false
-
-            // Debugging log to check the summary date
-            Log.d("FilterResponses", "Summary Date: $date")
-
-            // Ensure both from and to dates are not null
-            val isInDateRange = selectedFromDate?.let { from ->
-                selectedToDate?.let { to ->
-                    // Compare using string comparison for "dd-MM-yyyy" format
-                    date in from..to
-                } ?: true // No 'to' date means it doesn't filter by date
-            } ?: true // No 'from' date means it doesn't filter by date
-
-            // Check if the summary's segment matches the selected segment
-            val isSegmentMatch = selectedSegment?.let { segment ->
-                summary.segment.equals(segment, ignoreCase = true) // Case-insensitive comparison
-            } ?: true
-
-            // Return true if both conditions are satisfied
-            isInDateRange || isSegmentMatch
-        }
-
-        // Check if filteredList is empty and log the result
-        Log.d("FilterResponses", "Filtered list size: ${filteredList.size}")
-
-        // Update RecyclerView with the filtered results
-        (recyclerView.adapter as? SupplyReportAdapter)?.updateData(filteredList)
-    }
+//    private fun filterResponses() {
+//        if (!::summaryResponses.isInitialized) return
+//
+//        // Log the selected dates for debugging
+//        Log.d("FilterResponses", "From Date: $selectedFromDate, To Date: $selectedToDate")
+//
+//        // Proceed to filter the responses
+//        val filteredList = summaryResponses.filter { summary ->
+//            val date = summary.Date ?: return@filter false
+//
+//            // Debugging log to check the summary date
+//            Log.d("FilterResponses", "Summary Date: $date")
+//
+//            // Ensure both from and to dates are not null
+//            val isInDateRange = selectedFromDate?.let { from ->
+//                selectedToDate?.let { to ->
+//                    // Compare using string comparison for "dd-MM-yyyy" format
+//                    date in from..to
+//                } ?: true // No 'to' date means it doesn't filter by date
+//            } ?: true // No 'from' date means it doesn't filter by date
+//
+//            // Check if the summary's segment matches the selected segment
+//            val isSegmentMatch = selectedSegment?.let { segment ->
+//                summary.segment.equals(segment, ignoreCase = true) // Case-insensitive comparison
+//            } ?: true
+//
+//            // Return true if both conditions are satisfied
+//            isInDateRange || isSegmentMatch
+//        }
+//
+//        // Check if filteredList is empty and log the result
+//        Log.d("FilterResponses", "Filtered list size: ${filteredList.size}")
+//
+//        // Update RecyclerView with the filtered results
+//        (recyclerView.adapter as? SupplyReportAdapter)?.updateData(filteredList)
+//    }
 
 
 
@@ -398,6 +464,7 @@ class SupplyReportFragment : Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun exportToPdf() {
+         progressBar.visibility = View.VISIBLE
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             requestNotificationPermission()
         } else {
@@ -469,6 +536,8 @@ class SupplyReportFragment : Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun generatePdf() {
+
+        progressBar.visibility = View.VISIBLE
         val resolver = requireContext().contentResolver
         val contentValues = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, "supply_report.pdf")
@@ -480,6 +549,7 @@ class SupplyReportFragment : Fragment() {
         if (uri == null) {
             requireActivity().runOnUiThread {
                 Toast.makeText(requireContext(), "Error creating file", Toast.LENGTH_SHORT).show()
+                progressBar.visibility = View.GONE
             }
             return
         }
@@ -527,6 +597,7 @@ class SupplyReportFragment : Fragment() {
             requireActivity().runOnUiThread {
                 Toast.makeText(requireContext(), "PDF generated successfully", Toast.LENGTH_SHORT).show()
                 showNotification(uri)
+                progressBar.visibility = View.GONE
 
             }
 
@@ -534,6 +605,7 @@ class SupplyReportFragment : Fragment() {
             e.printStackTrace()
             requireActivity().runOnUiThread {
                 Toast.makeText(requireContext(), "Error generating PDF: ${e.message}", Toast.LENGTH_SHORT).show()
+                progressBar.visibility = View.GONE
             }
         }
     }

@@ -12,6 +12,7 @@ data class NetSaleDataOthers (
 
     @SerializedName("Manager_Name"    ) var ManagerName   : String? = null,
     @SerializedName("SE_Name"         ) var SEName        : String? = null,
+    @SerializedName("BP_Code")var BPCode:String?=null,
     @SerializedName("District_Name"   ) var DistrictName  : String? = null,
     @SerializedName("Month"           ) var Month         : String? = null,
     @SerializedName("Sum_of_DH"       ) var SumOfDH       : Int?    = null,

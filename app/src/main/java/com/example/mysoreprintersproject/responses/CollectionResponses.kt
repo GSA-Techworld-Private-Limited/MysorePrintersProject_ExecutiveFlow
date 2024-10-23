@@ -8,7 +8,7 @@ data class CollectionResponses(
     @SerializedName("sale_organization"  ) var saleOrganization : Int?    = null,
     @SerializedName("location"           ) var location         : String? = null,
     @SerializedName("manager_name"       ) var managerName      : String? = null,
-    @SerializedName("customer"           ) var customer         : Int?    = null,
+    @SerializedName("customer"           ) var customer         : Long?    = null,
     @SerializedName("Name_1"             ) var Name1            : String? = null,
     @SerializedName("sale_employee_id"   ) var saleEmployeeId   : Int?    = null,
     @SerializedName("sale_employee"      ) var saleEmployee     : String? = null,

@@ -8,6 +8,7 @@ import com.example.mysoreprintersproject.responses.CollectionResponses
 import com.example.mysoreprintersproject.responses.CollectionSummaryReportResponses
 import com.example.mysoreprintersproject.responses.DailyWorkingSummaryResponses
 import com.example.mysoreprintersproject.responses.ExecutiveDashboard
+import com.example.mysoreprintersproject.responses.FinalLocations
 import com.example.mysoreprintersproject.responses.LocationNameResponse
 import com.example.mysoreprintersproject.responses.LoginResponse
 import com.example.mysoreprintersproject.responses.NetSaleDataForOthers
@@ -84,6 +85,19 @@ interface DataSource {
         @Query("period")period:String
     ):Call<List<SupplyReportResponse>>
 
+    @GET("/app-executive/supply_report_custom/")
+    fun getSupplyReportCustom(
+        @Header("Authorization") token: String,
+        @Query("from")from:String,
+        @Query("to")to:String,
+        @Query("segment")segment:String
+    ):Call<List<SupplyReportResponse>>
+
+    @GET("/app-executive/ListLocationCoordinates/")
+    fun getFinalCordinations(
+        @Header("Authorization") token: String,
+        @Query("id")id:String,
+    ):Call<List<FinalLocations>>
 
     @GET("/app-executive/executive_netsales/")
     fun getNetSale(
